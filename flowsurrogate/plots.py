@@ -69,11 +69,17 @@ def cd_scatter(results: dict[str, tuple[np.ndarray, np.ndarray]], path: Path) ->
 
 def data_efficiency(curves: dict[str, list[tuple[int, float]]], path: Path, ylabel: str = "test rel. $L_2$") -> None:
     fig, ax = plt.subplots(figsize=(4.6, 3.4), constrained_layout=True)
+    sizes: set[int] = set()
     for name, pts in curves.items():
         pts = sorted(pts)
+        sizes.update(p[0] for p in pts)
         ax.plot([p[0] for p in pts], [p[1] for p in pts], "o-", label=name, ms=4)
     ax.set_xscale("log")
     ax.set_yscale("log")
+    # Tick at the sample counts actually used; the default log decades collide.
+    ax.set_xticks(sorted(sizes))
+    ax.set_xticklabels([str(s) for s in sorted(sizes)])
+    ax.minorticks_off()
     ax.set_xlabel("training samples (solver runs)")
     ax.set_ylabel(ylabel)
     ax.grid(alpha=0.3, which="both")

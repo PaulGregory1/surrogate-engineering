@@ -112,13 +112,16 @@ def main() -> None:
             preds_for_fig[PRETTY.get(tag, tag)] = norm.decode_fields(fields.cpu()) * test_set.m
             cd_pairs[PRETTY.get(tag, tag)] = (norm.decode_cd(torch.as_tensor(cd)).numpy(), test_set.cd_raw)
         else:
+            shape = tuple(test_set.y.shape[1:])
+            obj.predict(test_set.params[:1], test_set.re[:1], shape)  # warm-up
             t0 = time.perf_counter()
             for _ in range(20):
-                obj.predict(test_set.params[:1], test_set.re[:1], tuple(test_set.y.shape[1:]))
+                obj.predict(test_set.params[:1], test_set.re[:1], shape)
             lat = (time.perf_counter() - t0) / 20 * 1e3
             t0 = time.perf_counter()
-            obj.predict(test_set.params, test_set.re, tuple(test_set.y.shape[1:]))
-            lat32 = (time.perf_counter() - t0) / len(test_set) * 1e3
+            for _ in range(5):
+                obj.predict(test_set.params[:32], test_set.re[:32], shape)
+            lat32 = (time.perf_counter() - t0) / 5 / 32 * 1e3
             f, cd = obj.predict(test_set.params, test_set.re, tuple(test_set.y.shape[1:]))
             preds_for_fig[PRETTY.get(tag, tag)] = norm.decode_fields(torch.from_numpy(f.astype(np.float32))) * test_set.m
             cd_pairs[PRETTY.get(tag, tag)] = (norm.decode_cd(torch.as_tensor(cd)).numpy(), test_set.cd_raw)

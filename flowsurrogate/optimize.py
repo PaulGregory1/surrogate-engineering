@@ -116,8 +116,8 @@ def optimise(
         opt.step()
         with torch.no_grad():
             coeffs.clamp_(-cfg.coeff_bound, cfg.coeff_bound)
-        history["cd_mean"].append(float(cd.mean()))
-        history["cd_best"].append(float(cd.min()))
+        history["cd_mean"].append(float(cd.mean().detach()))
+        history["cd_best"].append(float(cd.min().detach()))
 
     with torch.no_grad():
         x = render_inputs(coeffs, target_area, cfg.reynolds, domain, cfg.mask_eps)

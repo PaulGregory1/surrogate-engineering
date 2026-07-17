@@ -44,7 +44,7 @@ def field_comparison(
         _show(axes[i, 0], preds[name][channel], mask, -vmax, vmax)
         im = _show(axes[i, 1], err, mask, -0.15 * vmax, 0.15 * vmax, cmap="coolwarm")
         axes[i, 0].set_ylabel(name, fontsize=9)
-        axes[i, 1].set_title("error (x6.7 scale)", fontsize=7)
+        axes[i, 1].set_title("error (colour scale 6.7x tighter)", fontsize=7)
         fig.colorbar(im, ax=axes[i, 1], fraction=0.03)
     fig.savefig(path, dpi=130)
     plt.close(fig)

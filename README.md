@@ -34,6 +34,11 @@ Three things worth reading off that table rather than the loss curves:
   (0.027 -> 0.025).  At this weight it is not enforcing physics; saying otherwise
   would be overselling it.
 
+Off-distribution (higher Re, stronger deformations than anything in training) every
+model roughly doubles its field error and the ranking is preserved — U-Net 0.078 ->
+0.165, POD + kernel ridge 0.107 -> 0.257.  Nothing here generalises for free; the
+neural surrogates simply degrade from a better starting point.
+
 **Data efficiency** — the same two models refitted on subsets, equal training budget
 (`figs/data_efficiency.png`):
 

@@ -1,0 +1,80 @@
+[
+  {
+    "grid": "192x96",
+    "D_cells": 20.0,
+    "blockage_pct": 20.833333333333336,
+    "Re": 20.0,
+    "cd_raw": 3.127460479736328,
+    "cd_corrected": 1.960092418723636,
+    "cd_reference": 2.05,
+    "cd_error_pct": -4.385735672017751,
+    "Lw_over_D": 0.85,
+    "Lw_reference": 0.93,
+    "cd_drift": 3.1044477509567514e-05
+  },
+  {
+    "grid": "192x96",
+    "D_cells": 20.0,
+    "blockage_pct": 20.833333333333336,
+    "Re": 40.0,
+    "cd_raw": 2.3301351070404053,
+    "cd_corrected": 1.460379815349976,
+    "cd_reference": 1.55,
+    "cd_error_pct": -5.781947396775741,
+    "Lw_over_D": 1.95,
+    "Lw_reference": 2.35,
+    "cd_drift": 5.905362559133209e-05
+  },
+  {
+    "grid": "288x192",
+    "D_cells": 20.0,
+    "blockage_pct": 10.416666666666668,
+    "Re": 20.0,
+    "cd_raw": 2.540496826171875,
+    "cd_corrected": 2.0387928088506064,
+    "cd_reference": 2.05,
+    "cd_error_pct": -0.5466922511899216,
+    "Lw_over_D": 1.0,
+    "Lw_reference": 0.93,
+    "cd_drift": 4.536560663837008e-05
+  },
+  {
+    "grid": "288x192",
+    "D_cells": 20.0,
+    "blockage_pct": 10.416666666666668,
+    "Re": 40.0,
+    "cd_raw": 1.8938798904418945,
+    "cd_corrected": 1.5198714919388294,
+    "cd_reference": 1.55,
+    "cd_error_pct": -1.943774713623911,
+    "Lw_over_D": 2.3,
+    "Lw_reference": 2.35,
+    "cd_drift": 6.964463682379574e-05
+  },
+  {
+    "grid": "288x192",
+    "D_cells": 30.0,
+    "blockage_pct": 15.625,
+    "Re": 20.0,
+    "cd_raw": 2.926893711090088,
+    "cd_corrected": 2.0836967923678458,
+    "cd_reference": 2.05,
+    "cd_error_pct": 1.6437459691632172,
+    "Lw_over_D": 0.9666666666666667,
+    "Lw_reference": 0.93,
+    "cd_drift": 4.486547550186515e-05
+  },
+  {
+    "grid": "288x192",
+    "D_cells": 30.0,
+    "blockage_pct": 15.625,
+    "Re": 40.0,
+    "cd_raw": 2.178873300552368,
+    "cd_corrected": 1.55117054306902,
+    "cd_reference": 1.55,
+    "cd_error_pct": 0.07551890767870124,
+    "Lw_over_D": 2.2,
+    "Lw_reference": 2.35,
+    "cd_drift": 6.033930185367353e-05
+  }
+]

@@ -59,6 +59,7 @@ def main() -> None:
 
     base = GraphDataset(args.data_dir / "train.npz")
     stats = (base.mean, base.std)
+    peak_stats = (base.peak_mean, base.peak_std)
     splits = ["test", "res", "ood"]
     available = [s for s in splits if (args.data_dir / f"{s}.npz").exists()]
 
@@ -74,6 +75,7 @@ def main() -> None:
                 use_position=pos,
                 with_grid=grid,
                 stats=stats,
+                peak_stats=peak_stats,
             )
         return cache[key]
 
@@ -95,10 +97,11 @@ def main() -> None:
         }
         for split in available:
             ds = get(split, cfg.use_coarse_solution, cfg.use_position, cfg.model == "grid-cnn")
-            m = field_metrics(predict(model, ds, device), ds)
+            fields, peaks = predict(model, ds, device)
+            m = field_metrics(fields, ds, peaks)
             row.update({f"{split}_{k}": v for k, v in m.items()})
             if split == "test" and tag in ("gnn-mp10-glob", "grid-cnn", "gnn-mp0"):
-                preds_for_fig[PRETTY.get(tag, tag)] = predict(model, ds, device)[fig_index]
+                preds_for_fig[PRETTY.get(tag, tag)] = fields[fig_index]
         row["latency_ms"] = latency_ms(model, get("test", cfg.use_coarse_solution, cfg.use_position, cfg.model == "grid-cnn"), device)
         rows.append(row)
         print(f"  {tag:24s} test rel L2 {row['test_rel_l2']:.4f}  peak err {row['test_peak_err_pct']:.2f}%", flush=True)
@@ -159,6 +162,7 @@ def main() -> None:
         ("test_peak_err_pct", "peak err %", "{:.2f}"),
         ("test_peak_err_p95_pct", "peak err p95 %", "{:.2f}"),
         ("test_peak_bias_pct", "peak bias %", "{:+.2f}"),
+        ("test_peak_from_field_err_pct", "peak-from-field err %", "{:.2f}"),
         ("latency_ms", "inference (ms)", "{:.1f}"),
     ]
     gen_cols = [("model", "model", "{}")] + [
@@ -181,9 +185,11 @@ def main() -> None:
         md_table(all_rows, acc_cols),
         "",
         "`peak err` is the error on the maximum von Mises stress of the part -- the number a "
-        "structural engineer actually signs off on.  `interpolation floor` is what a *perfect* "
-        "model would still get wrong, because a coarse node set cannot sample the peak of a fine "
-        "stress field.",
+        "structural engineer signs off on.  For the learned models it comes from the "
+        "graph-level head; for the two non-learned references, and for the "
+        "`peak-from-field` column, it is the maximum of the nodal field.  "
+        "`interpolation floor` is what a *perfect* model would still get wrong by reading "
+        "the peak off coarse nodes, which is exactly why the head exists.",
         "",
         "## Generalisation",
         "",

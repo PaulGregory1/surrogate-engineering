@@ -61,25 +61,33 @@ def test_coarse_solution_features_change_the_input_width(sample):
     assert b.x.shape[1] == a.x.shape[1] + 3
 
 
-def test_models_predict_one_value_per_node(sample):
+def test_models_predict_a_node_field_and_a_graph_scalar(sample):
     g = build_graph(sample, False, True, 0.0, 1.0, with_grid=True)
     batch = collate([g, g])
     gnn = build("gnn", n_node_features=g.x.shape[1], hidden=16, n_message_passing=3, use_global=True)
     cnn = build("grid-cnn", in_ch=4, base=8, depth=2)
-    assert gnn(batch).shape == (batch.x.shape[0],)
-    assert cnn(batch).shape == (batch.x.shape[0],)
+    for model in (gnn, cnn):
+        field, peak = model(batch)
+        assert field.shape == (batch.x.shape[0],)
+        assert peak.shape == (2,)
+
+
+def test_peak_target_is_the_fine_mesh_maximum(sample):
+    g = build_graph(sample, False, True, 0.0, 1.0, peak_stats=(2.0, 4.0))
+    assert g.y_peak.shape == (1,)
+    assert abs(float(g.y_peak[0]) * 4.0 + 2.0 - float(sample["max_vm_fine"])) < 1e-4
 
 
 def test_zero_message_passing_is_a_pointwise_mlp(sample):
     g = build_graph(sample, False, True, 0.0, 1.0)
     model = build("gnn", n_node_features=g.x.shape[1], hidden=16, n_message_passing=0)
-    single = model(collate([g]))
-    # Duplicating a node must not change any prediction if there is no communication.
+    single, _ = model(collate([g]))
+    # Permuting the nodes must permute the predictions if there is no communication.
     assert single.shape == (g.x.shape[0],)
     perm = torch.randperm(g.x.shape[0])
     g2 = build_graph(sample, False, True, 0.0, 1.0)
     g2.x = g.x[perm]
-    assert torch.allclose(model(collate([g2])), single[perm], atol=1e-5)
+    assert torch.allclose(model(collate([g2]))[0], single[perm], atol=1e-5)
 
 
 def test_rasterise_marks_holes_as_void(sample):

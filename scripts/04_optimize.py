@@ -75,6 +75,7 @@ def main() -> None:
     model, cfg = load_model(args.runs_dir / f"{args.model}.pt", device=str(device))
     base = GraphDataset(args.data_dir / "train.npz")
     mean, std = base.mean, base.std
+    peak_mean, peak_std = base.peak_mean, base.peak_std
 
     rng = np.random.default_rng(args.seed)
     designs = []
@@ -83,14 +84,18 @@ def main() -> None:
         designs.append(Design(holes=d.holes, load_angle=args.load_angle))
 
     fine_peak, coarse_peak, gnn_peak = [], [], []
-    t_fine = t_coarse = t_gnn = 0.0
+    t_fine = t_mesh = t_solve = t_gnn = 0.0
     samples = []
 
     for i, design in enumerate(designs):
+        # Meshing and solving are timed apart: the plain GNN needs the coarse *mesh*
+        # but not the coarse *solve*, and charging it for one would understate it.
         t0 = time.perf_counter()
         cm = build_mesh(design, args.h_coarse)
+        t_mesh += time.perf_counter() - t0
+        t0 = time.perf_counter()
         cs = solve(cm, design)
-        t_coarse += time.perf_counter() - t0
+        t_solve += time.perf_counter() - t0
 
         sample = {
             "nodes": cm.nodes.astype(np.float32),
@@ -108,9 +113,13 @@ def main() -> None:
             "h_coarse": np.float32(args.h_coarse),
         }
         t0 = time.perf_counter()
-        g = build_graph(sample, cfg.use_coarse_solution, cfg.use_position, mean, std, with_grid=cfg.model == "grid-cnn")
+        g = build_graph(
+            sample, cfg.use_coarse_solution, cfg.use_position, mean, std,
+            with_grid=cfg.model == "grid-cnn", peak_stats=(peak_mean, peak_std),
+        )
         with torch.no_grad():
-            pred = model(collate([g]).to(device)).cpu().numpy() * std + mean
+            _, peak_out = model(collate([g]).to(device))
+            pred_peak = float(peak_out.cpu().numpy()[0]) * peak_std + peak_mean
         t_gnn += time.perf_counter() - t0
 
         t0 = time.perf_counter()
@@ -124,7 +133,7 @@ def main() -> None:
 
         fine_peak.append(fs.max_vm)
         coarse_peak.append(float(cs.vm_node.max()))
-        gnn_peak.append(float(pred.max()))
+        gnn_peak.append(pred_peak)
         if (i + 1) % 25 == 0:
             print(f"  {i + 1}/{args.n_candidates} candidates scored", flush=True)
 
@@ -155,9 +164,12 @@ def main() -> None:
         "load_angle": args.load_angle,
         "cost_per_design_s": {
             "fine_fem": t_fine / args.n_candidates,
-            "coarse_fem": t_coarse / args.n_candidates,
-            "gnn_on_coarse_mesh": (t_coarse + t_gnn) / args.n_candidates,
-            "gnn_inference_only": t_gnn / args.n_candidates,
+            "coarse_fem": (t_mesh + t_solve) / args.n_candidates,
+            "gnn_on_coarse_mesh": (t_mesh + t_gnn + (t_solve if cfg.use_coarse_solution else 0.0))
+            / args.n_candidates,
+            "coarse_meshing_only": t_mesh / args.n_candidates,
+            "coarse_solve_only": t_solve / args.n_candidates,
+            "gnn_graph_build_and_inference": t_gnn / args.n_candidates,
         },
         "peak_stress_range": [float(fine_peak.min()), float(fine_peak.max())],
         "strategies": {"coarse FEM": regret(coarse_peak), "GNN": regret(gnn_peak)},
@@ -186,8 +198,12 @@ def main() -> None:
             f"top-{args.top_k} shortlist regret {r['regret_pct']:5.2f}%"
         )
     c = out["cost_per_design_s"]
-    print(f"cost/design: fine {c['fine_fem']:.2f}s | coarse {c['coarse_fem']:.2f}s | "
-          f"GNN {c['gnn_on_coarse_mesh']:.2f}s (inference alone {c['gnn_inference_only'] * 1000:.0f} ms)")
+    print(
+        f"cost/design: fine FEM {c['fine_fem']:.2f}s | coarse FEM {c['coarse_fem']:.2f}s | "
+        f"GNN {c['gnn_on_coarse_mesh']:.2f}s "
+        f"(meshing {c['coarse_meshing_only'] * 1000:.0f} ms + network {c['gnn_graph_build_and_inference'] * 1000:.0f} ms)"
+    )
+    print(f"speed-up of the GNN pipeline over fine FEM: {out['speedup_vs_fine']:.1f}x")
     print(f"wrote {args.out}")
 
 

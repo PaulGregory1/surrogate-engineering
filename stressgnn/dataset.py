@@ -193,8 +193,9 @@ class Graph:
     x: torch.Tensor  # (N, F) node features
     edge_index: torch.Tensor  # (2, E) directed, both orientations present
     edge_attr: torch.Tensor  # (E, 3)
-    y: torch.Tensor  # (N,) normalised target
+    y: torch.Tensor  # (N,) normalised nodal target
     node_batch: torch.Tensor  # (N,) sample index within the batch
+    y_peak: torch.Tensor  # (n_graphs,) normalised fine-mesh peak stress
     n_graphs: int = 1
     meta: dict = field(default_factory=dict)
     grid: torch.Tensor | None = None  # (B, 4, H, W), grid baseline only
@@ -208,6 +209,7 @@ class Graph:
             self.edge_attr.to(device),
             self.y.to(device),
             self.node_batch.to(device),
+            self.y_peak.to(device),
             self.n_graphs,
             self.meta,
             move(self.grid),
@@ -222,6 +224,7 @@ def build_graph(
     target_mean: float,
     target_std: float,
     with_grid: bool = False,
+    peak_stats: tuple[float, float] = (0.0, 1.0),
 ) -> Graph:
     nodes = sample["nodes"].astype(np.float32)
     tris = sample["tris"].astype(np.int64)
@@ -248,12 +251,14 @@ def build_graph(
     x = np.concatenate(feats, axis=1).astype(np.float32)
     y = ((sample["vm_target"] - target_mean) / target_std).astype(np.float32)
     grid, uv = rasterise(sample) if with_grid else (None, None)
+    peak = (float(sample["max_vm_fine"]) - peak_stats[0]) / peak_stats[1]
     return Graph(
         x=torch.from_numpy(x),
         edge_index=torch.from_numpy(ei.astype(np.int64)),
         edge_attr=torch.from_numpy(edge_attr.astype(np.float32)),
         y=torch.from_numpy(y),
         node_batch=torch.zeros(len(nodes), dtype=torch.long),
+        y_peak=torch.tensor([peak], dtype=torch.float32),
         meta={k: float(sample[k]) for k in ("max_vm_fine", "max_vm_coarse", "max_vm_target", "h_coarse")},
         grid=None if grid is None else torch.from_numpy(grid).unsqueeze(0),
         uv=None if uv is None else torch.from_numpy(uv),
@@ -269,6 +274,7 @@ def collate(graphs: list[Graph]) -> Graph:
         edge_attr=torch.cat([g.edge_attr for g in graphs]),
         y=torch.cat([g.y for g in graphs]),
         node_batch=torch.cat([torch.full((g.x.shape[0],), i, dtype=torch.long) for i, g in enumerate(graphs)]),
+        y_peak=torch.cat([g.y_peak for g in graphs]),
         n_graphs=len(graphs),
         meta={"per_graph": [g.meta for g in graphs]},
         grid=torch.cat([g.grid for g in graphs]) if has_grid else None,
@@ -287,6 +293,7 @@ class GraphDataset:
         stats: tuple[float, float] | None = None,
         limit: int | None = None,
         with_grid: bool = False,
+        peak_stats: tuple[float, float] | None = None,
     ):
         blob = np.load(path)
         self.n = len(blob["load_angle"]) if limit is None else min(limit, len(blob["load_angle"]))
@@ -294,9 +301,13 @@ class GraphDataset:
         if stats is None:
             all_t = np.concatenate([s["vm_target"] for s in self.samples])
             stats = (float(all_t.mean()), float(all_t.std()))
+        if peak_stats is None:
+            peaks = np.array([float(s["max_vm_fine"]) for s in self.samples])
+            peak_stats = (float(peaks.mean()), float(peaks.std()))
         self.mean, self.std = stats
+        self.peak_mean, self.peak_std = peak_stats
         self.graphs = [
-            build_graph(s, use_coarse_solution, use_position, self.mean, self.std, with_grid)
+            build_graph(s, use_coarse_solution, use_position, self.mean, self.std, with_grid, peak_stats)
             for s in self.samples
         ]
         self.n_features = self.graphs[0].x.shape[1]
@@ -309,3 +320,6 @@ class GraphDataset:
 
     def denormalise(self, y: torch.Tensor) -> torch.Tensor:
         return y * self.std + self.mean
+
+    def denormalise_peak(self, y: torch.Tensor) -> torch.Tensor:
+        return y * self.peak_std + self.peak_mean

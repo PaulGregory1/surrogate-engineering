@@ -27,7 +27,8 @@ class TrainConfig:
     use_global: bool = False
     use_coarse_solution: bool = False
     use_position: bool = True
-    lambda_max: float = 0.0  # extra weight on the per-part peak stress
+    lambda_peak: float = 0.3  # weight of the graph-level peak-stress head
+    lambda_max: float = 0.0  # extra term pulling the predicted *field*'s max to the target's
     n_train: int | None = None
     seed: int = 0
     name: str | None = None
@@ -73,18 +74,43 @@ def per_graph_max(values: torch.Tensor, node_batch: torch.Tensor, n_graphs: int)
     return torch.stack([values[node_batch == i].max() for i in range(n_graphs)])
 
 
-def loss_fn(pred: torch.Tensor, batch: Graph, lambda_max: float) -> tuple[torch.Tensor, dict]:
+def loss_fn(out: tuple[torch.Tensor, torch.Tensor], batch: Graph, cfg: TrainConfig) -> tuple[torch.Tensor, dict]:
+    """Returns the loss and a dict of *detached tensors*.
+
+    Deliberately not floats: calling `float()` on a GPU scalar blocks until the queue
+    drains, so doing it per step serialises host and device.  On MPS that alone cost
+    ~2x here.  The caller accumulates these on-device and syncs once per epoch.
+    """
+    pred, pred_peak = out
     field = F.mse_loss(pred, batch.y)
-    logs = {"field": float(field)}
-    total = field
-    if lambda_max > 0:
+    peak = F.mse_loss(pred_peak, batch.y_peak)
+    total = field + cfg.lambda_peak * peak
+    logs = {"field": field.detach(), "peak": peak.detach()}
+    if cfg.lambda_max > 0:
         pm = per_graph_max(pred, batch.node_batch, batch.n_graphs)
         tm = per_graph_max(batch.y, batch.node_batch, batch.n_graphs)
-        peak = F.mse_loss(pm, tm)
-        total = total + lambda_max * peak
-        logs["peak"] = float(peak)
-    logs["total"] = float(total)
+        fmax = F.mse_loss(pm, tm)
+        total = total + cfg.lambda_max * fmax
+        logs["field_max"] = fmax.detach()
+    logs["total"] = total.detach()
     return total, logs
+
+
+def make_batches(dataset, batch_size: int, device, rng: np.random.Generator | None = None) -> list[Graph]:
+    """Collate once and keep the batches resident on the device.
+
+    Re-collating every step leaves the GPU waiting on host-side tensor concatenation;
+    for a dataset this size (~120 MB of graphs) it is cheaper to build the batches
+    once.  The cost is that batch *composition* is then fixed and only the batch order
+    is shuffled between epochs -- a mild loss of stochasticity, worth ~2x throughput.
+    """
+    idx = np.arange(len(dataset))
+    if rng is not None:
+        rng.shuffle(idx)
+    return [
+        collate([dataset[j] for j in idx[i : i + batch_size]]).to(device)
+        for i in range(0, len(idx), batch_size)
+    ]
 
 
 def iterate(dataset: GraphDataset, batch_size: int, shuffle: bool, rng: np.random.Generator | None = None):
@@ -99,13 +125,13 @@ def iterate(dataset: GraphDataset, batch_size: int, shuffle: bool, rng: np.rando
 def evaluate_loss(model, dataset, cfg, device) -> dict[str, float]:
     model.eval()
     acc, n = {}, 0
-    for batch in iterate(dataset, cfg.batch_size, shuffle=False):
+    for batch in dataset if isinstance(dataset, list) else iterate(dataset, cfg.batch_size, shuffle=False):
         batch = batch.to(device)
-        _, logs = loss_fn(model(batch), batch, cfg.lambda_max)
+        _, logs = loss_fn(model(batch), batch, cfg)
         for k, v in logs.items():
             acc[k] = acc.get(k, 0.0) + v
         n += 1
-    return {k: v / max(n, 1) for k, v in acc.items()}
+    return {k: float(v) / max(n, 1) for k, v in acc.items()}  # one sync, at the end
 
 
 def train(
@@ -141,6 +167,9 @@ def train(
     n_steps = cfg.epochs * max(1, int(np.ceil(len(train_set_used) / cfg.batch_size)))
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=cfg.lr, total_steps=n_steps, pct_start=0.15)
 
+    train_batches = make_batches(train_set_used, cfg.batch_size, dev, np.random.default_rng(cfg.seed))
+    val_batches = make_batches(val_set, cfg.batch_size, dev)
+
     history, best = [], {"val": float("inf"), "epoch": -1}
     ckpt = out_dir / f"{cfg.tag}.pt"
     t0 = time.perf_counter()
@@ -148,10 +177,11 @@ def train(
     for epoch in range(cfg.epochs):
         model.train()
         run, nb = {}, 0
-        for batch in iterate(train_set_used, cfg.batch_size, shuffle=True, rng=rng):
-            batch = batch.to(dev)
+        order = rng.permutation(len(train_batches))
+        for bi in order:
+            batch = train_batches[bi]
             opt.zero_grad(set_to_none=True)
-            loss, logs = loss_fn(model(batch), batch, cfg.lambda_max)
+            loss, logs = loss_fn(model(batch), batch, cfg)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
@@ -159,8 +189,8 @@ def train(
             for k, v in logs.items():
                 run[k] = run.get(k, 0.0) + v
             nb += 1
-        row = {"epoch": epoch, **{f"train_{k}": v / max(nb, 1) for k, v in run.items()}}
-        row.update({f"val_{k}": v for k, v in evaluate_loss(model, val_set, cfg, dev).items()})
+        row = {"epoch": epoch, **{f"train_{k}": float(v) / max(nb, 1) for k, v in run.items()}}
+        row.update({f"val_{k}": v for k, v in evaluate_loss(model, val_batches, cfg, dev).items()})
         history.append(row)
         if row["val_total"] < best["val"]:
             best = {"val": row["val_total"], "epoch": epoch}

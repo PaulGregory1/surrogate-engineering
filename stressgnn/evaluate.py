@@ -23,43 +23,64 @@ from .dataset import GraphDataset, collate
 
 
 @torch.no_grad()
-def predict(model, dataset: GraphDataset, device, batch_size: int = 8) -> list[np.ndarray]:
-    """Per-graph predictions in physical units."""
+def predict(model, dataset: GraphDataset, device, batch_size: int = 8) -> tuple[list[np.ndarray], np.ndarray]:
+    """Per-graph nodal fields and peak-stress predictions, in physical units."""
     model.eval()
-    out: list[np.ndarray] = []
+    fields: list[np.ndarray] = []
+    peaks: list[np.ndarray] = []
     for i in range(0, len(dataset), batch_size):
         graphs = [dataset[j] for j in range(i, min(i + batch_size, len(dataset)))]
         batch = collate(graphs).to(device)
-        pred = dataset.denormalise(model(batch).cpu())
+        node_out, peak_out = model(batch)
+        pred = dataset.denormalise(node_out.cpu())
+        peaks.append(dataset.denormalise_peak(peak_out.cpu()).numpy())
         idx = 0
         for g in graphs:
             n = g.x.shape[0]
-            out.append(pred[idx : idx + n].numpy())
+            fields.append(pred[idx : idx + n].numpy())
             idx += n
-    return out
+    return fields, np.concatenate(peaks)
 
 
 def _rel_l2(pred: np.ndarray, true: np.ndarray) -> float:
     return float(np.linalg.norm(pred - true) / max(np.linalg.norm(true), 1e-12))
 
 
-def field_metrics(preds: list[np.ndarray], dataset: GraphDataset) -> dict[str, float]:
-    rel, mae, peak_err, peak_signed = [], [], [], []
+def field_metrics(
+    preds: list[np.ndarray], dataset: GraphDataset, peaks: np.ndarray | None = None
+) -> dict[str, float]:
+    """Nodal-field errors, plus peak-stress error from the scalar head if given.
+
+    `peak_from_field_*` is always reported as well: it is what you get by taking the
+    maximum of the predicted nodal field, and it is bounded below by the interpolation
+    floor no matter how good the model is.  The scalar head is not.
+    """
+    fine = np.array([float(s["max_vm_fine"]) for s in dataset.samples])
+    rel, mae, from_field = [], [], []
     for p, sample in zip(preds, dataset.samples):
         target = sample["vm_target"]
         rel.append(_rel_l2(p, target))
         mae.append(float(np.abs(p - target).mean()))
-        fine = float(sample["max_vm_fine"])
-        peak_err.append(abs(float(p.max()) - fine) / fine)
-        peak_signed.append((float(p.max()) - fine) / fine)
-    return {
+        from_field.append(float(p.max()))
+    from_field = np.array(from_field)
+
+    out = {
         "rel_l2": float(np.mean(rel)),
         "rel_l2_p95": float(np.percentile(rel, 95)),
         "mae": float(np.mean(mae)),
-        "peak_err_pct": 100 * float(np.mean(peak_err)),
-        "peak_err_p95_pct": 100 * float(np.percentile(peak_err, 95)),
-        "peak_bias_pct": 100 * float(np.mean(peak_signed)),
+        "peak_from_field_err_pct": 100 * float(np.mean(np.abs(from_field - fine) / fine)),
+        "peak_from_field_bias_pct": 100 * float(np.mean((from_field - fine) / fine)),
     }
+    head = from_field if peaks is None else peaks
+    err = np.abs(head - fine) / fine
+    out.update(
+        {
+            "peak_err_pct": 100 * float(np.mean(err)),
+            "peak_err_p95_pct": 100 * float(np.percentile(err, 95)),
+            "peak_bias_pct": 100 * float(np.mean((head - fine) / fine)),
+        }
+    )
+    return out
 
 
 def baseline_metrics(dataset: GraphDataset) -> dict[str, dict[str, float]]:

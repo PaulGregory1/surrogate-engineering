@@ -55,8 +55,9 @@ class GridUNet(nn.Module):
         self.up = nn.ModuleList([nn.Conv2d(chans[i + 1], chans[i], 1) for i in range(depth)])
         self.dec = nn.ModuleList([_block(2 * chans[i], chans[i]) for i in range(depth)])
         self.head = nn.Conv2d(base, 1, 1)
+        self.peak_head = nn.Sequential(nn.Linear(chans[depth], 64), nn.GELU(), nn.Linear(64, 1))
 
-    def forward(self, graph) -> torch.Tensor:
+    def forward(self, graph) -> tuple[torch.Tensor, torch.Tensor]:
         h = graph.grid
         skips = []
         for enc in self.enc:
@@ -64,9 +65,10 @@ class GridUNet(nn.Module):
             skips.append(h)
             h = self.pool(h)
         h = self.bottleneck(h)
+        peak = self.peak_head(h.mean(dim=(2, 3))).squeeze(-1)
         for i in reversed(range(len(self.dec))):
             h = F.interpolate(h, size=skips[i].shape[-2:], mode="bilinear", align_corners=False)
             h = self.up[i](h)
             h = self.dec[i](torch.cat([h, skips[i]], dim=1))
         field = self.head(h)[:, 0]
-        return bilinear_sample(field, graph.uv, graph.node_batch)
+        return bilinear_sample(field, graph.uv, graph.node_batch), peak

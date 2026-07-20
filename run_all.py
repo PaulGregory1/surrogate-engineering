@@ -42,6 +42,12 @@ def main() -> None:
         opt += ["--n-candidates", "30"]
 
     run("generate data", gen, ROOT / "data" / "ood.npz", args.force)
+    run(
+        "mesh convergence",
+        ["scripts/01_validate_fem.py"] + (["--n-designs", "2", "--sizes", "0.06", "0.03", "0.014"] if args.quick else []),
+        ROOT / "results" / "fem_convergence.json",
+        args.force,
+    )
     run("train surrogates", train, ROOT / "runs" / "grid-cnn.pt", args.force)
     run("report", ["scripts/03_report.py"], ROOT / "RESULTS.md", args.force)
     run("design selection", opt, ROOT / "results" / "optimization.json", args.force)

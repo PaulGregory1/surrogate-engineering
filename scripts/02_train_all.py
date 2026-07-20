@@ -55,7 +55,9 @@ def main() -> None:
         if key not in cache:
             kw = dict(use_coarse_solution=key[0], use_position=key[1], with_grid=key[2])
             tr = GraphDataset(args.data_dir / "train.npz", **kw)
-            va = GraphDataset(args.data_dir / "val.npz", stats=(tr.mean, tr.std), **kw)
+            va = GraphDataset(
+                args.data_dir / "val.npz", stats=(tr.mean, tr.std), peak_stats=(tr.peak_mean, tr.peak_std), **kw
+            )
             cache[key] = (tr, va)
             print(f"loaded data for {key}: {len(tr)} train / {len(va)} val, {tr.n_features} node features", flush=True)
         tr, va = cache[key]

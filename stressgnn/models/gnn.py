@@ -87,11 +87,19 @@ class MeshGraphNet(nn.Module):
             self.global_init = nn.Parameter(torch.zeros(1, hidden))
         self.blocks = nn.ModuleList([MessagePassingBlock(hidden, use_global) for _ in range(n_message_passing)])
         self.decoder = mlp([hidden, hidden, out_dim], layer_norm=False)
+        # Graph-level head for the peak stress.  Reading the peak off the predicted
+        # nodal field would cap the accuracy at the interpolation floor -- a coarse
+        # node set simply does not contain the fine field's maximum -- so the QoI gets
+        # its own regression head, exactly like the drag head in the flow project.
+        self.peak_head = mlp([2 * hidden if use_global else hidden, hidden, 1], layer_norm=False)
 
-    def forward(self, graph) -> torch.Tensor:
+    def forward(self, graph) -> tuple[torch.Tensor, torch.Tensor]:
         v = self.node_encoder(graph.x)
         e = self.edge_encoder(graph.edge_attr)
         g = self.global_init.expand(graph.n_graphs, -1) if self.use_global else None
         for block in self.blocks:
             v, e, g = block(v, e, graph.edge_index, g, graph.node_batch, graph.n_graphs)
-        return self.decoder(v).squeeze(-1)
+        pooled = scatter_mean(v, graph.node_batch, graph.n_graphs)
+        if self.use_global:
+            pooled = torch.cat([pooled, g], dim=-1)
+        return self.decoder(v).squeeze(-1), self.peak_head(pooled).squeeze(-1)

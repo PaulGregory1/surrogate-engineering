@@ -48,6 +48,8 @@ def main() -> None:
     run("train surrogates", train, ROOT / "runs" / "fno.pt", args.force)
     run("report", ["scripts/03_report.py"], ROOT / "RESULTS.md", args.force)
     run("optimise shape", opt, ROOT / "results" / "optimization.json", args.force)
+    run("setup figure", ["scripts/05_setup_figure.py"], ROOT / "figs" / "setup.png", args.force)
+    run("explainer figures", ["scripts/06_explainer_figures.py"], ROOT / "figs" / "architectures.png", args.force)
     subprocess.run([sys.executable, "-m", "pytest", "tests", "-q"], cwd=ROOT, check=False)
 
 

@@ -30,6 +30,7 @@ def main() -> None:
     ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--device", default="auto")
     ap.add_argument("--skip-ablations", action="store_true")
+    ap.add_argument("--force", action="store_true", help="retrain models that already have a history file")
     args = ap.parse_args()
 
     runs = [
@@ -51,6 +52,11 @@ def main() -> None:
     # One dataset object per feature configuration; the graphs are cached in memory.
     cache: dict[tuple, tuple[GraphDataset, GraphDataset]] = {}
     for cfg in runs:
+        # A completed run writes its history file last, so its presence means the run
+        # finished.  Skipping those makes the sweep resumable after an interruption.
+        if not args.force and (args.out_dir / f"{cfg.tag}_history.json").exists():
+            print(f"  [{cfg.tag}] already trained, skipping", flush=True)
+            continue
         key = (cfg.use_coarse_solution, cfg.use_position, cfg.model in ("grid-cnn",))
         if key not in cache:
             kw = dict(use_coarse_solution=key[0], use_position=key[1], with_grid=key[2])

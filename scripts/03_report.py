@@ -87,8 +87,15 @@ def main() -> None:
 
     for ckpt in sorted(args.runs_dir.glob("*.pt")):
         tag = ckpt.stem
+        history_path = args.runs_dir / f"{tag}_history.json"
+        if not history_path.exists():
+            # A checkpoint without a history file is a run still in flight: the
+            # checkpoint is written on every validation improvement, the history only
+            # at the end.  Reporting it would mix a half-trained model into the table.
+            print(f"  {tag:24s} still training, skipped", flush=True)
+            continue
         model, cfg = load_model(ckpt, device=str(device))
-        hist = json.loads((args.runs_dir / f"{tag}_history.json").read_text())
+        hist = json.loads(history_path.read_text())
         row = {
             "model": PRETTY.get(tag, tag),
             "tag": tag,

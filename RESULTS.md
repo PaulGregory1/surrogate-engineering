@@ -10,11 +10,16 @@ Dataset cost: **1.84 s/sample** (fine + coarse solve + interpolation).
 |---|---|---|---|---|---|---|---|
 | coarse FEM (no ML) | - | 0.0975 | 35.78 | 41.56 | -35.78 | 35.78 | - |
 | interpolation floor | - | 0.0000 | 10.70 | 13.33 | -10.70 | 10.70 | - |
-| U-Net on a Cartesian grid | 1,816,194 | 0.1257 | 5.24 | 15.81 | +2.09 | 10.29 | 56.8 |
-| GNN, 10 message-passing steps | 309,826 | 0.1549 | 5.98 | 17.43 | +1.76 | 10.13 | 151.8 |
-| GNN, 10 steps + global latent | 480,386 | 0.1583 | 6.56 | 18.38 | +1.98 | 10.78 | 353.2 |
-| GNN, 2 message-passing steps | 76,354 | 0.1775 | 11.02 | 30.43 | +5.73 | 11.69 | 51.0 |
-| MLP per node (no message passing) | 17,986 | 0.2497 | 11.50 | 30.35 | +3.85 | 36.14 | 30.8 |
+| U-Net on a Cartesian grid | 1,816,194 | 0.1257 | 5.24 | 15.81 | +2.09 | 10.29 | 2.8 |
+| GNN, 15 message-passing steps | 455,746 | 0.1603 | 5.48 | 16.18 | +1.47 | 10.59 | 8.9 |
+| GNN, 10 message-passing steps | 309,826 | 0.1549 | 5.98 | 17.43 | +1.76 | 10.13 | 6.4 |
+| GNN + global, fed the coarse solve | 480,578 | 0.0424 | 6.04 | 18.83 | +1.58 | 11.39 | 19.7 |
+| GNN, 10 steps + global latent | 480,386 | 0.1583 | 6.56 | 18.38 | +1.98 | 10.78 | 19.8 |
+| GNN, 5 message-passing steps | 163,906 | 0.1611 | 7.21 | 18.79 | +2.03 | 10.87 | 4.0 |
+| GNN + global, peak-stress loss | 480,386 | 0.2267 | 10.12 | 32.74 | +1.19 | 11.64 | 19.6 |
+| GNN, 2 message-passing steps | 76,354 | 0.1775 | 11.02 | 30.43 | +5.73 | 11.69 | 2.5 |
+| MLP per node (no message passing) | 17,986 | 0.2497 | 11.50 | 30.35 | +3.85 | 36.14 | 1.5 |
+| GNN + global, no node coordinates | 480,258 | 0.2299 | 12.03 | 33.69 | +5.41 | 11.38 | 19.6 |
 
 `peak err` is the error on the maximum von Mises stress of the part -- the number a structural engineer signs off on.  For the learned models it comes from the graph-level head; for the two non-learned references, and for the `peak-from-field` column, it is the maximum of the nodal field.  `interpolation floor` is what a *perfect* model would still get wrong by reading the peak off coarse nodes, which is exactly why the head exists.
 
@@ -25,7 +30,12 @@ Dataset cost: **1.84 s/sample** (fine + coarse solve + interpolation).
 | coarse FEM (no ML) | 35.78 | 24.41 | 35.45 |
 | interpolation floor | 10.70 | 10.24 | 10.53 |
 | U-Net on a Cartesian grid | 5.24 | 5.14 | 88.14 |
+| GNN, 15 message-passing steps | 5.48 | 10.58 | 73.74 |
 | GNN, 10 message-passing steps | 5.98 | 13.48 | 78.67 |
+| GNN + global, fed the coarse solve | 6.04 | 7.56 | 50.95 |
 | GNN, 10 steps + global latent | 6.56 | 11.51 | 58.04 |
+| GNN, 5 message-passing steps | 7.21 | 11.29 | 57.06 |
+| GNN + global, peak-stress loss | 10.12 | 12.34 | 48.94 |
 | GNN, 2 message-passing steps | 11.02 | 15.82 | 50.63 |
 | MLP per node (no message passing) | 11.50 | 14.08 | 44.46 |
+| GNN + global, no node coordinates | 12.03 | 15.02 | 78.83 |

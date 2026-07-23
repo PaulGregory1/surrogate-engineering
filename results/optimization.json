@@ -1,0 +1,38 @@
+{
+  "n_candidates": 150,
+  "removed_area_fraction": 0.08,
+  "load_angle": -1.0471975511965976,
+  "cost_per_design_s": {
+    "fine_fem": 0.8348469794805472,
+    "coarse_fem": 0.04315556872946521,
+    "gnn_on_coarse_mesh": 0.10500659294426441,
+    "coarse_meshing_only": 0.03038527229335159,
+    "coarse_solve_only": 0.012770296436113616,
+    "gnn_graph_build_and_inference": 0.061851024214799204
+  },
+  "peak_stress_range": [
+    19.33230388508759,
+    36.10812330402252
+  ],
+  "strategies": {
+    "coarse FEM": {
+      "chosen_index": 69,
+      "chosen_true_peak": 19.33230388508759,
+      "regret_pct": 0.0,
+      "spearman": 0.8915471798746611,
+      "top1_index": 65,
+      "top1_true_peak": 19.73319197467892,
+      "top1_regret_pct": 2.0736695014429403
+    },
+    "GNN": {
+      "chosen_index": 73,
+      "chosen_true_peak": 19.60467425730479,
+      "regret_pct": 1.4088872895656206,
+      "spearman": 0.8556771412062759,
+      "top1_index": 73,
+      "top1_true_peak": 19.60467425730479,
+      "top1_regret_pct": 1.4088872895656206
+    }
+  },
+  "speedup_vs_fine": 7.9504244073861985
+}

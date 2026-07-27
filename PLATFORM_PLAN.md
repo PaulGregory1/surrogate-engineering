@@ -2,8 +2,9 @@
 
 **Objectif** : construire une mini-plateforme web locale qui expose les deux surrogates
 (`flow-surrogate`, `stress-gnn`) derrière une interface graphique interactive, orchestrée
-par un agent Claude (Anthropic SDK) qui traduit des intentions ingénieur en appels aux
-modèles et à l'optimiseur.
+par un agent Claude (**Claude Agent SDK**, branché sur l'abonnement Claude Code local —
+pas de clé API) qui traduit des intentions ingénieur en appels aux modèles et à
+l'optimiseur.
 
 Ce document est un **brief d'exécution**. Tu (Claude Code) es libre sur l'implémentation
 mais tu dois respecter les jalons, les contrats d'API et les critères d'acceptation.
@@ -24,13 +25,18 @@ Elle doit donc démontrer, dans l'ordre :
    fidélité (LBM / FEM).
 3. **Modernité outillage** : un agent LLM qui *orchestre* du code métier via
    **tool use**, pas un chatbot cosmétique.
+4. **Qualité produit** : l'interface doit être irréprochable visuellement — voir
+   §4.1. Le test : "si je montre ça en visio à un prospect, il pense produit,
+   pas prototype."
 
 **Non-goals** (à refuser explicitement si tu es tenté d'y aller) :
 - pas d'authentification, pas de base de données, pas de déploiement cloud ;
 - pas de génération de code Python à la volée par le LLM ;
 - pas de réentraînement des modèles depuis l'UI ;
 - pas de refactor des projets ML sous-jacents ;
-- pas de 3D — les deux projets sont 2D, on reste 2D.
+- pas de 3D — les deux projets sont 2D, on reste 2D ;
+- pas de SDK API `anthropic` + clé API pour l'agent — c'est le Claude Agent SDK
+  branché sur l'abonnement Claude Code, ou rien (voir §5).
 
 ---
 
@@ -49,10 +55,10 @@ Elle doit donc démontrer, dans l'ordre :
                   ▼                                  ▼
 ┌──────────────────────────────────────┐  ┌────────────────────────┐
 │  Backend FastAPI (engine_copilot/)   │  │  Agent Claude          │
-│  ─ /api/flow/predict                 │◄─┤  (Anthropic SDK,       │
-│  ─ /api/flow/optimize (SSE)          │  │   tool use loop)       │
-│  ─ /api/flow/verify                  │  │  Tools = endpoints ci- │
-│  ─ /api/flow/simulate (LBM frames)   │  │  contre, sérialisés.   │
+│  ─ /api/flow/predict                 │◄─┤  (Claude Agent SDK,    │
+│  ─ /api/flow/optimize (SSE)          │  │   via CLI local,       │
+│  ─ /api/flow/verify                  │  │   abonnement Claude    │
+│  ─ /api/flow/simulate (LBM frames)   │  │   Code, pas d'API key) │
 │  ─ /api/stress/predict               │  └────────────────────────┘
 │  ─ /api/stress/optimize              │
 │  ─ /api/report/generate              │
@@ -74,12 +80,21 @@ Elle doit donc démontrer, dans l'ordre :
 | Plots 2D scientifiques | **Plotly.js** (`react-plotly.js`) | heatmaps interactifs, colorbars propres |
 | Overlay / streamlines | **SVG natif** au-dessus du canvas Plotly | contrôle total sur le contour + traçage particules |
 | Style | **TailwindCSS** + `shadcn/ui` | look pro sans temps design |
-| Agent LLM | **`@anthropic-ai/sdk`** côté serveur (Node… non : Python) → **`anthropic`** en Python | on garde tout en Python, on stream côté frontend via SSE |
+| Micro-interactions | **Framer Motion** | transitions de panneaux, morphing de forme, nombres qui s'animent — ce qui fait "produit" plutôt que "démo académique" |
+| Agent LLM | **Claude Agent SDK** (`claude-agent-sdk`, Python) — **PAS** le SDK API `anthropic` | tourne sur le CLI Claude Code local, authentifié via `claude login` (abonnement Claude Code) → aucune clé API, aucune facturation à la requête |
 | Streaming | **SSE** (Server-Sent Events) | plus simple que WebSocket, unidirectionnel suffit |
 | Package manager frontend | `pnpm` | rapide, lockfile propre |
 
-> **Décision-clé** : le SDK Anthropic tourne **dans le backend Python**, pas dans le
-> navigateur. Ne jamais exposer la clé API côté client.
+> **Décision-clé #1** : l'agent tourne via le **Claude Agent SDK**, qui pilote le
+> binaire `claude` (Claude Code CLI) déjà installé et authentifié sur cette machine.
+> Pas de `ANTHROPIC_API_KEY`, pas de `.env` secret : l'auth est celle de la session
+> `claude login`. C'est un produit différent du SDK API classique (`anthropic`) — ne
+> pas les confondre à l'implémentation. Doc à jour : `https://code.claude.com/docs/en/agent-sdk`
+> (vérifier la surface d'API exacte avant d'écrire `agent.py`).
+>
+> **Décision-clé #2** : chaque écran doit passer le test "vendable à un client" —
+> voir §4.1 pour ce que ça implique concrètement (animations, skeletons, thème
+> clair/sombre, export).
 
 ---
 
@@ -93,8 +108,7 @@ surrogate-engineering/
 ├── stress-gnn/              # inchangé
 └── engine-copilot/          # ← nouveau
     ├── README.md
-    ├── pyproject.toml
-    ├── .env.example         # ANTHROPIC_API_KEY=
+    ├── pyproject.toml       # pas de .env secret — voir §7.5, l'auth passe par `claude login`
     ├── backend/
     │   ├── engine_copilot/
     │   │   ├── __init__.py
@@ -134,11 +148,15 @@ surrogate-engineering/
             │   ├── HoleEditor.tsx
             │   ├── ChatPanel.tsx
             │   ├── ToolCallCard.tsx
-            │   └── MetricsBadge.tsx
+            │   ├── MetricsBadge.tsx
+            │   ├── AnimatedNumber.tsx    # transition numérique sur Cd/erreurs/peak vM
+            │   ├── Skeleton.tsx          # placeholders de chargement, réutilisé partout
+            │   └── ThemeToggle.tsx       # dark (défaut) / light
             └── pages/
-                ├── FlowLab.tsx          # onglet 1
-                ├── StressLab.tsx        # onglet 2
-                └── ChatOrchestrator.tsx # onglet 3, agent transverse
+                ├── Home.tsx              # onglet 0, hero + les deux workflows en cartes
+                ├── FlowLab.tsx           # onglet 1
+                ├── StressLab.tsx         # onglet 2
+                └── ChatOrchestrator.tsx  # onglet 3, agent transverse
 ```
 
 ### `engine-copilot/pyproject.toml` (minimal)
@@ -152,7 +170,7 @@ dependencies = [
   "fastapi>=0.115",
   "uvicorn[standard]>=0.30",
   "pydantic>=2.7",
-  "anthropic>=0.40",
+  "claude-agent-sdk",     # pas "anthropic" — voir §1, décision-clé #1
   "numpy",
   "torch",
   "sse-starlette>=2.1",
@@ -163,7 +181,16 @@ dependencies = [
 testpaths = ["backend/tests"]
 ```
 
-Installation : `pip install -e ../flow-surrogate -e ../stress-gnn -e .`
+Installation :
+```
+pip install -e ../flow-surrogate -e ../stress-gnn -e .
+npm install -g @anthropic-ai/claude-code   # le SDK pilote ce binaire, il doit être sur le PATH
+claude login                               # une fois — authentifie via l'abonnement Claude Code
+```
+
+**Vérifie avant M5** que `claude --version` répond et que la session est authentifiée
+(commande de statut exacte à confirmer dans la doc du SDK). Si l'utilisateur n'a
+jamais fait `claude login` sur cette machine, arrête-toi et demande-le lui.
 
 ---
 
@@ -384,13 +411,42 @@ stream d'événements typés (texte, tool_use, tool_result, fin de tour). Détai
 
 ## 4. Frontend — spec des composants
 
-### 4.1 Palette et look
+### 4.1 Standard de qualité visuelle — "je vends ça à un client"
 
-Objectif visuel : **sobre, scientifique, dark mode par défaut**. Références :
-observablehq, streamlit gallery, plotly dark theme.
+Le bar n'est pas "ça marche", c'est "un prospect qui voit ça en démo pense
+produit, pas prototype". Concrètement :
+
+- **Aucun état cru** : skeletons pendant le chargement (composant `Skeleton.tsx`
+  réutilisé partout), transitions Framer Motion (150-250ms, `easeOut`) sur tout
+  changement de panneau ou de valeur, jamais de saut brut ni de flash de contenu.
+- **Chiffres qui comptent, pas qui sautent** : `AnimatedNumber.tsx` anime la
+  transition sur $C_d$, erreurs %, peak vM plutôt que remplacer le texte
+  instantanément.
+- **Micro-interactions** : hover states partout où c'est cliquable, focus rings
+  clavier visibles, boutons avec état "en cours" inline (spinner, pas un overlay
+  qui bloque toute la page).
+- **Export soigné** : bouton export PNG (`Plotly.toImage`) sur chaque graphique ;
+  CSS `@media print` pensé dès le début pour le rapport, pas rajouté à la fin.
+- **Une vraie page d'accueil** (`Home.tsx`) : hero bref + les deux workflows en
+  cartes cliquables avec un chiffre clé chacune ("713× plus rapide que LBM",
+  "6.0% d'erreur pic") plutôt que de tomber directement dans un formulaire vide.
+- **Thème clair fonctionnel en plus du dark mode** (`ThemeToggle.tsx`) — un
+  prospect qui partage son écran en journée n'a pas envie d'un fond noir.
+
+**Avant d'écrire le moindre composant de graphique**, invoque le skill `dataviz`
+de Claude Code — il donne la méthode de choix de couleurs (validée par script,
+pas à l'œil), les specs de marks, et les règles d'accessibilité. Les colormaps
+scientifiques ci-dessous (viridis/RdBu_r/magma) sont déjà de bons choix — garde-les —
+mais applique la méthode `dataviz` pour tout le reste de la palette produit
+(accents, statuts, dark/light).
+
+Objectif visuel : **sobre, scientifique, dark mode par défaut, avec un thème
+clair propre**. Références : observablehq, Linear, Plotly dark theme — pas
+"tableau de bord Bootstrap".
 
 - Fond : `#0b0f14` (background), `#141a22` (cards), `#1f2937` (borders)
-- Accent : `#22d3ee` (cyan) pour actions, `#f59e0b` (amber) pour warnings surrogate
+- Accent : `#22d3ee` (cyan) pour actions, `#f59e0b` (amber) pour warnings surrogate,
+  `#34d399` (vert) pour "vérifié / dans le training set"
 - Colormaps :
   - vitesse `u` : `viridis`
   - pression `p` : `RdBu_r`
@@ -506,13 +562,46 @@ Prompts suggérés en bas du chat (chips cliquables) :
 
 ## 5. Agent Claude — spec détaillée
 
+**Changement majeur vs une intégration API classique** : l'agent utilise le
+**Claude Agent SDK** (`claude-agent-sdk`), pas le SDK API `anthropic` avec une
+clé facturée à l'usage. Ce SDK pilote le CLI Claude Code local, authentifié via
+`claude login` — donc branché sur l'abonnement Claude Code de l'utilisateur, sans
+facturation séparée. Trois conséquences pratiques :
+
+1. **Pas de `client.messages.create()` ni de boucle tool-use manuelle** : le
+   Claude Agent SDK a son propre agentic loop intégré (le même moteur que Claude
+   Code) — ne réécris pas de `while` sur `tool_use`/`tool_result`, configure des
+   tools et laisse le SDK gérer l'appel, l'exécution, et le renvoi du résultat.
+2. **Les tools sont des fonctions Python décorées**, exposées via un serveur MCP
+   *in-process* déclaré au SDK (typiquement `create_sdk_mcp_server` + un champ
+   `mcp_servers` dans les options) — le SDK dérive le schéma de la signature.
+3. **L'auth n'a rien à voir avec `ANTHROPIC_API_KEY`** — vérifie `claude login`
+   au démarrage du backend (§7.5), pas de `.env` secret.
+
+**Avant d'écrire `agent.py` et `tools.py`** : WebFetch
+`https://code.claude.com/docs/en/agent-sdk` (section Python) et vérifie le nom
+exact du décorateur de tool, la signature de `create_sdk_mcp_server`, les champs
+de `ClaudeAgentOptions` (`mcp_servers`, `allowed_tools`, `system_prompt`,
+`permission_mode`, `model`), et la classe de conversation multi-tours streamée
+(historiquement `ClaudeSDKClient` avec `.query()` / `.receive_response()`). Le
+squelette ci-dessous décrit l'**architecture attendue**, pas la syntaxe finale —
+adapte-le une fois la doc vérifiée.
+
 ### 5.1 Modèle et paramètres
 
-- Modèle : `claude-sonnet-4-5` (ou `claude-opus-4-5` si dispo dans le SDK courant) ;
-- `max_tokens: 2048` par tour ;
-- `temperature: 0.2` — on veut du raisonnement stable, pas de créativité ;
-- Streaming activé (`stream=True`) — chaque delta est repackagé en événement SSE
-  vers le frontend.
+- Modèle : laisse le SDK utiliser le modèle par défaut de la session Claude Code,
+  sauf si `ClaudeAgentOptions` permet un override explicite — dans ce cas
+  `claude-opus-5`, avec repli sur le défaut du CLI si l'override n'est pas
+  supporté par la version installée.
+- Streaming activé — chaque message/bloc reçu du SDK est repackagé en événement
+  SSE vers le frontend.
+- Cap le nombre de tours d'outils à **6** (paramètre du SDK s'il existe, sinon
+  compteur manuel dans `agent.py`).
+- **`permission_mode`** : les 8 tools sont des wrappers propres autour de nos
+  propres endpoints (pas de shell, pas d'écriture disque arbitraire) — configure
+  le SDK pour auto-approuver uniquement ces tools via `allowed_tools`, et
+  **n'active aucun tool intégré** (pas de `Bash`/`Write`/`Read` génériques —
+  l'agent n'a besoin que de son propre domaine).
 
 ### 5.2 System prompt (à copier tel quel, adapte les numbers si tu as mieux)
 
@@ -549,13 +638,15 @@ Off-distribution is Re > 150 for flow, or hole count > 4 / atypical loads for st
 Warn the user when they push there.
 ```
 
-### 5.3 Tools exposés (JSON schemas, à définir dans `tools.py`)
+### 5.3 Tools exposés (fonctions Python, à définir dans `tools.py`)
 
-**IMPORTANT** : chaque tool `input_schema` DOIT être la traduction du body Pydantic
-de l'endpoint correspondant. Utilise `TypeAdapter(...).json_schema()` pour
-l'auto-générer et rester cohérent.
+**IMPORTANT** : chaque tool est une fonction Python décorée dont la
+signature/schéma reflète le body Pydantic de l'endpoint FastAPI correspondant.
+Le corps de la fonction appelle directement la fonction Python du service (tout
+tourne dans le même process) — ne duplique pas la logique métier dans le tool.
 
-Liste des tools :
+Liste des tools (inchangée dans son contenu, sa forme change — plus de JSON
+schema écrit à la main) :
 
 1. `flow_predict` → `POST /api/flow/predict` (sans SSE)
 2. `flow_optimize` → wrappe `/api/flow/optimize` en collectant le stream jusqu'au
@@ -571,44 +662,27 @@ Liste des tools :
 8. `render_report` → appelle `/api/report/generate` (mais côté serveur, sans
    re-appeler Claude — utilise un template déterministe pour éviter les boucles).
 
-### 5.4 Boucle tool use (Python, `agent.py`)
+### 5.4 Boucle conversationnelle (Python, `agent.py`)
 
-```python
-async def chat_stream(messages: list[dict]) -> AsyncIterator[dict]:
-    client = anthropic.AsyncAnthropic()
-    while True:
-        response = await client.messages.create(
-            model=MODEL,
-            system=SYSTEM_PROMPT,
-            tools=TOOL_DEFS,
-            messages=messages,
-            max_tokens=2048,
-        )
-        # émettre les text blocks au fil de l'eau
-        for block in response.content:
-            if block.type == "text":
-                yield {"type": "text", "delta": block.text}
-            elif block.type == "tool_use":
-                yield {"type": "tool_use_start", "id": block.id,
-                       "name": block.name, "input": block.input}
-                result = await run_tool(block.name, block.input)
-                yield {"type": "tool_use_end", "id": block.id, "result": result}
-                # préparer le tour suivant
-                messages.append({"role": "assistant", "content": response.content})
-                messages.append({
-                    "role": "user",
-                    "content": [{"type": "tool_result", "tool_use_id": block.id,
-                                 "content": json.dumps(result)}],
-                })
-                break
-        else:
-            # aucun tool call → on a fini
-            yield {"type": "end"}
-            return
-```
+Le Claude Agent SDK possède son propre agentic loop — **ne réécris pas de boucle
+`while` manuelle sur `tool_use`/`tool_result` comme avec le SDK API classique**.
+`agent.py` se limite à :
 
-Cap le nombre de tours à **6** pour éviter les boucles infinies. Log chaque tool
-call avec ses arguments dans un fichier `logs/agent.jsonl`.
+1. Construire les `ClaudeAgentOptions` une fois au démarrage (system prompt,
+   serveur MCP in-process avec les 8 tools, `allowed_tools`, cap de tours).
+2. Pour chaque message reçu sur `/api/agent/chat`, passer le message au SDK et
+   consommer le flux de messages qu'il retourne (texte, appel d'outil, résultat
+   d'outil, fin de tour).
+3. Repackager chaque message en événement SSE vers le frontend — le contrat
+   `{"type": "text", ...}` / `{"type": "tool_use_start", ...}` / etc. décrit plus
+   haut reste la bonne cible côté frontend, seule la source change.
+4. Logger chaque tool call avec ses arguments dans `logs/agent.jsonl` (le SDK
+   expose probablement les tool calls dans le flux — sinon, hook-le dans chaque
+   fonction tool).
+
+Pas de gestion manuelle de `messages.append(...)` avec des blocs `tool_result` —
+c'est exactement ce que le SDK fait à ta place, et c'est tout l'intérêt de
+l'utiliser ici plutôt que le SDK API brut.
 
 ---
 
@@ -618,12 +692,15 @@ Chaque jalon = un commit atomique avec un critère d'acceptation objectif.
 
 ### M0 — Scaffolding (env, pas encore de logique)
 - Créer l'arborescence `engine-copilot/` complète (vide au besoin).
-- `pyproject.toml`, `.env.example`, `README.md` minimal.
-- `pnpm create vite@latest frontend --template react-ts` puis Tailwind + shadcn.
-- Backend : `uvicorn engine_copilot.main:app --reload` sert `/api/health` → `{"ok": true}`.
-- Frontend : `pnpm dev` sert une page avec trois onglets vides (Flow / Stress / Chat).
-- **Critère** : les deux serveurs démarrent, `curl localhost:8000/api/health` OK,
-  navigateur affiche l'app.
+- `pyproject.toml`, `README.md` minimal (pas de `.env.example` — voir §7.5).
+- `pnpm create vite@latest frontend --template react-ts` puis Tailwind + shadcn +
+  `framer-motion`.
+- Backend : `uvicorn engine_copilot.main:app --reload` sert `/api/health` →
+  `{"ok": true, "claude_authenticated": true}`.
+- Frontend : `pnpm dev` sert une page avec quatre onglets (Home / Flow / Stress /
+  Chat) — Home peut être un hero statique à ce stade.
+- **Critère** : les deux serveurs démarrent, `curl localhost:8000/api/health`
+  montre `claude_authenticated: true`, navigateur affiche l'app.
 
 ### M1 — Flow prediction end-to-end (statique)
 - `flow_service.py` : charge `unet-phys.pt` au startup, expose une fonction
@@ -659,8 +736,11 @@ Chaque jalon = un commit atomique avec un critère d'acceptation objectif.
   cliquer « Optimize » réduit le peak vM observé sur au moins 3 designs sur 5.
 
 ### M5 — Agent Claude
-- `tools.py` avec les 8 tools ; schemas Pydantic → JSON schema auto.
-- `agent.py` : boucle tool-use avec streaming.
+- Vérifie `claude login` (voir §7.5) avant de commencer.
+- `tools.py` avec les 8 tools définis comme fonctions Python décorées pour le
+  Claude Agent SDK (voir §5.3).
+- `agent.py` : `ClaudeAgentOptions` + boucle conversationnelle qui consomme le
+  flux du SDK (voir §5.4 — le SDK gère l'agentic loop, pas toi).
 - `/api/agent/chat` SSE.
 - `ChatPanel` + `ToolCallCard` : affichage des appels d'outil en cours et
   résultats compacts, avec liens deep-link vers les labs.
@@ -698,16 +778,26 @@ Le contour est recalculé côté client pour l'interactivité. Test unitaire :
 ### 7.4 CORS
 FastAPI CORS middleware, autoriser `http://localhost:5173` uniquement.
 
-### 7.5 Clé Anthropic
-Lire depuis `.env` avec `pydantic-settings`. Ne JAMAIS logger. Ne JAMAIS renvoyer
-au frontend. Le `README.md` doit préciser la variable et un lien vers la console
-Anthropic.
+### 7.5 Auth Claude Code (pas de clé API)
+Au démarrage du backend (`lifespan` FastAPI), vérifie que le CLI `claude` est
+installé et authentifié (commande exacte à confirmer dans la doc du SDK). Si
+l'auth est absente, `/api/health` doit répondre avec un champ explicite
+(`{"ok": false, "reason": "claude_not_authenticated"}`) plutôt que de planter au
+premier message du chat. Le `README.md` doit préciser ces deux commandes comme
+seule étape de setup pour l'onglet Chat :
+```
+npm install -g @anthropic-ai/claude-code
+claude login
+```
+**Aucune clé API, aucun `.env` secret.** N'introduis jamais de champ
+`ANTHROPIC_API_KEY` nulle part dans ce projet.
 
-### 7.6 Timeout et coût
-- Chaque appel Claude cappé à 30 s côté serveur.
+### 7.6 Timeout et limites
+- Chaque tour agent cappé à 30 s côté serveur.
 - Boucle tool use cappée à 6 tours.
-- Un compteur de tokens cumulés par session est affiché en bas du ChatPanel
-  (petit texte gris `1.2k in / 340 out — $0.008`).
+- Affiche en bas du ChatPanel un compteur d'usage de session — **pas un montant
+  en dollars** (il n'y en a pas, l'abonnement Claude Code couvre l'usage) :
+  quelque chose comme `12 messages · 4 tool calls cette session`.
 
 ### 7.7 Compatibilité device
 Réutilise `pick_device()` de `flowsurrogate.train` — mps sur Mac Apple Silicon,
@@ -735,8 +825,9 @@ Une fois tous les jalons complets :
    cd engine-copilot/backend && uvicorn engine_copilot.main:app --reload
    cd engine-copilot/frontend && pnpm dev
    ```
-2. Ouvrir `http://localhost:5173`, naviguer entre les trois onglets, tout marche
-   sans configuration additionnelle (sauf `ANTHROPIC_API_KEY` pour l'onglet Chat).
+2. Ouvrir `http://localhost:5173`, naviguer entre les quatre onglets, tout marche
+   sans configuration additionnelle (sauf avoir fait `claude login` une fois —
+   pas de clé API, pas d'abonnement séparé).
 3. Un enregistrement GIF de 30 s dans `engine-copilot/docs/demo.gif` montrant :
    optim flow live → verify → chat qui orchestre → stress lab.
 4. Un README avec le mermaid d'architecture et une section « Design decisions »
@@ -766,11 +857,14 @@ avant de continuer.
 2. Vérifie que `flow-surrogate/runs/unet-phys.pt` et
    `stress-gnn/runs/gnn-mp10-glob.pt` existent (sinon avertis l'utilisateur —
    il faudra les régénérer avec les scripts de leurs projets respectifs).
-3. Exécute M0 → M6 dans l'ordre. Après **chaque** jalon :
+3. Vérifie que `claude` (le CLI) est installé et authentifié. Si non, arrête-toi
+   et demande à l'utilisateur de faire `claude login` — tout M5/M6 en dépend.
+4. Exécute M0 → M6 dans l'ordre. Après **chaque** jalon :
    - lance les tests correspondants,
    - vérifie le critère d'acceptation à la main,
    - commit avec un message `M0: scaffolding`, `M1: flow prediction`, etc.
-4. Après M6, ouvre un dernier PR (ou dernier commit) avec le gif de démo et la
+   - avant d'écrire du code de graphique (M1-M4), invoque le skill `dataviz`.
+5. Après M6, ouvre un dernier PR (ou dernier commit) avec le gif de démo et la
    section « Design decisions » du README.
 
 Bon build.

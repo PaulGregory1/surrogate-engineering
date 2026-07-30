@@ -6,22 +6,34 @@ following `../PLATFORM_PLAN.md`.
 
 ## Status
 
-Work in progress, built milestone by milestone (see `PLATFORM_PLAN.md §6`). Check
-`git log` for what's landed so far — this README is updated as milestones complete.
+Landed: **M0** (scaffolding), **M1** (flow prediction, real U-Net surrogate), most of
+**M3** (optimizer backend — SSE endpoint built, frontend panel not wired yet), and
+**M5** (Claude Agent SDK chat, real tool-calling, verified live). Not yet started:
+**M2** (LBM animation), **M4** (Stress Lab), **M6** (report/polish). See `git log`
+for the exact history and `PLATFORM_PLAN.md §6` for what each milestone covers.
+
+Known limitation: the chat agent resumes context via the SDK's `resume` session id
+rather than a fully server-managed multi-session model — fine for one user, would
+need per-browser-tab session handling for multiple concurrent users.
 
 ## Setup
 
 ```bash
 cd engine-copilot
 python3.12 -m venv .venv
-./.venv/bin/pip install -e ../flow-surrogate -e ../stress-gnn fastapi "uvicorn[standard]" pydantic numpy torch sse-starlette httpx pytest
+./.venv/bin/pip install -e ../flow-surrogate -e ../stress-gnn -e .
 
 cd frontend
 pnpm install
+
+# Chat tab only — no API key, ever:
+npm install -g @anthropic-ai/claude-code
+claude login
 ```
 
-No API key, no `.env` secret required for the model endpoints. The Chat tab (M5)
-will need `claude login` once — see `PLATFORM_PLAN.md §7.5`.
+No API key, no `.env` secret anywhere in this project. The Chat tab runs on the
+**Claude Agent SDK**, authenticated via the local `claude login` session (your
+Claude Code subscription) — see `PLATFORM_PLAN.md §5, §7.5`.
 
 ## Run
 

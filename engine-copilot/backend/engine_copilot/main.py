@@ -7,6 +7,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 
+from pydantic import BaseModel
+
+from .agent import agent_session
 from .flow_service import flow_service
 from .schemas import FlowPredictRequest, FlowPredictResponse
 
@@ -60,5 +63,18 @@ async def flow_optimize(reynolds: float = 80.0, n_starts: int = 8, iters: int = 
                 break
             event = "done" if item.get("done") else "iteration"
             yield {"event": event, "data": json.dumps(item)}
+
+    return EventSourceResponse(event_stream())
+
+
+class ChatRequest(BaseModel):
+    message: str
+
+
+@app.post("/api/agent/chat")
+async def agent_chat(req: ChatRequest):
+    async def event_stream():
+        async for event in agent_session.chat(req.message):
+            yield {"event": event["type"], "data": json.dumps(event, default=str)}
 
     return EventSourceResponse(event_stream())

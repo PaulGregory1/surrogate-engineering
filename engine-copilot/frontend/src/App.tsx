@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { FlowLab } from './pages/FlowLab'
+import { ChatOrchestrator } from './pages/ChatOrchestrator'
 import { ComingSoon } from './pages/ComingSoon'
 import { ThemeToggle } from './components/ThemeToggle'
 
@@ -58,16 +59,7 @@ function App() {
               />
             }
           />
-          <Route
-            path="/chat"
-            element={
-              <ComingSoon
-                title="Chat Orchestrator"
-                milestone="M5 — pas encore construit"
-                description="Agent Claude (Claude Agent SDK, branché sur l'abonnement Claude Code local) qui orchestre les deux labs via tool use. Prochaine étape du plan."
-              />
-            }
-          />
+          <Route path="/chat" element={<ChatOrchestrator />} />
         </Routes>
       </main>
     </div>

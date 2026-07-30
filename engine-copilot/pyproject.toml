@@ -9,8 +9,9 @@ dependencies = [
   "numpy",
   "torch",
   "sse-starlette>=2.1",
+  "claude-agent-sdk",  # drives the local `claude` CLI — auth via `claude login`, no API key
+  "anyio",
 ]
-# claude-agent-sdk is added in M5 once claude login is confirmed (see PLATFORM_PLAN.md §5, §7.5)
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]

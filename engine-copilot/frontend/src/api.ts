@@ -36,3 +36,42 @@ export async function getHealth(): Promise<HealthResponse> {
   const res = await fetch('/api/health')
   return res.json()
 }
+
+export type AgentEvent =
+  | { type: 'text'; delta: string }
+  | { type: 'tool_use_start'; id: string; name: string; input: Record<string, unknown> }
+  | { type: 'tool_use_end'; id: string; result: unknown; is_error: boolean }
+  | { type: 'end'; usage: Record<string, unknown>; is_error: boolean }
+
+// EventSource can't send a POST body, so this streams text/event-stream
+// manually off a fetch() ReadableStream — the standard pattern for
+// POST-triggered SSE.
+export async function streamAgentChat(message: string, onEvent: (e: AgentEvent) => void): Promise<void> {
+  const res = await fetch('/api/agent/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  })
+  if (!res.ok || !res.body) throw new Error(`agent chat failed: ${res.status}`)
+
+  const reader = res.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    // The stream arrives with \r\n line endings (Vite's dev proxy normalizes
+    // them), so normalize before splitting on the blank-line event boundary.
+    buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, '\n')
+
+    const chunks = buffer.split('\n\n')
+    buffer = chunks.pop() ?? ''
+    for (const chunk of chunks) {
+      const dataLine = chunk.split('\n').find((l) => l.startsWith('data:'))
+      if (!dataLine) continue
+      const payload = JSON.parse(dataLine.slice(5).trim())
+      onEvent(payload as AgentEvent)
+    }
+  }
+}

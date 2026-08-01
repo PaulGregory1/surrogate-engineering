@@ -15,10 +15,13 @@ import torch
 
 from flowsurrogate.data import Normalizer, input_channels, load_splits
 from flowsurrogate.geometry import Domain, area, solid_mask
+from flowsurrogate.lbm import SolverConfig
 from flowsurrogate.optimize import boundary_xy, render_inputs, to_params
+from flowsurrogate.optimize import verify as lbm_verify
 from flowsurrogate.train import load_model, pick_device
 
 from . import config
+from .device_lock import MPS_LOCK
 
 
 def downscale(field: np.ndarray, factor: int) -> np.ndarray:
@@ -64,7 +67,7 @@ class FlowService:
         x = input_channels(params, np.asarray([reynolds]), self.domain)
         x_t = torch.from_numpy(x).to(self.device)
 
-        with torch.no_grad():
+        with MPS_LOCK, torch.no_grad():
             fields_norm, cd_norm = model(x_t)
             fields = self.norm.decode_fields(fields_norm)[0].cpu().numpy()
             cd = float(self.norm.decode_cd(cd_norm)[0].cpu())
@@ -84,7 +87,13 @@ class FlowService:
                 "p": downscale(fields[2], config.FIELD_DOWNSCALE).tolist(),
             },
             "mask": downscale(mask.astype(np.float64), config.FIELD_DOWNSCALE).round().astype(int).tolist(),
-            "domain": {"nx": self.domain.nx, "ny": self.domain.ny},
+            "domain": {
+                "nx": self.domain.nx,
+                "ny": self.domain.ny,
+                "cx": self.domain.cx,
+                "cy": self.domain.cy,
+                "downscale": config.FIELD_DOWNSCALE,
+            },
             "boundary_xy": boundary.tolist(),
             "target_area": target_area,
             "latency_ms": latency_ms,
@@ -115,14 +124,15 @@ class FlowService:
 
         history: dict[str, list[float]] = {"cd_mean": [], "cd_best": []}
         for it in range(iters):
-            opt.zero_grad(set_to_none=True)
-            x = render_inputs(coeffs, target_area, reynolds, self.domain, mask_eps=0.7)
-            _, cd_norm = model(x)
-            cd = self.norm.decode_cd(cd_norm)
-            cd.sum().backward()
-            opt.step()
-            with torch.no_grad():
-                coeffs.clamp_(-coeff_bound, coeff_bound)
+            with MPS_LOCK:
+                opt.zero_grad(set_to_none=True)
+                x = render_inputs(coeffs, target_area, reynolds, self.domain, mask_eps=0.7)
+                _, cd_norm = model(x)
+                cd = self.norm.decode_cd(cd_norm)
+                cd.sum().backward()
+                opt.step()
+                with torch.no_grad():
+                    coeffs.clamp_(-coeff_bound, coeff_bound)
             cd_mean = float(cd.mean().detach())
             cd_best = float(cd.min().detach())
             history["cd_mean"].append(cd_mean)
@@ -144,7 +154,7 @@ class FlowService:
         for p in model.parameters():
             p.requires_grad_(True)
 
-        with torch.no_grad():
+        with MPS_LOCK, torch.no_grad():
             x = render_inputs(coeffs, target_area, reynolds, self.domain, mask_eps=0.7)
             cd_final = self.norm.decode_cd(model(x)[1]).cpu().numpy()
         best_idx = int(np.argmin(cd_final))
@@ -156,6 +166,49 @@ class FlowService:
             "history": history,
             "cd_surrogate_final": float(cd_final[best_idx]),
             "target_area": target_area,
+        }
+
+    def verify(
+        self,
+        coeffs: list[float],
+        reynolds: float,
+        target_area: float | None = None,
+        steps: int = 9000,
+        model_key: str = "unet-phys",
+    ) -> dict:
+        """Runs the real LBM on `coeffs` and compares it against the surrogate.
+
+        Uses `flowsurrogate.optimize.verify()` unmodified (own compiled solver
+        instance) rather than the shared singleton in `lbm_frames.py`: verify wants
+        the fully time-averaged, high-step-count answer, while the shared singleton
+        is tuned for the shorter, differently-configured runs `/api/flow/simulate`
+        streams frame-by-frame.
+        """
+        t0 = time.perf_counter()
+        target_area = target_area or self.default_target_area
+        solver_cfg = SolverConfig(n_steps=steps, n_avg=min(2500, max(200, steps // 3)))
+        coeffs_arr = np.asarray([coeffs], dtype=np.float64)
+        # Not held across self.predict() below — that call takes MPS_LOCK itself,
+        # and the lock isn't reentrant.
+        with MPS_LOCK:
+            cd_lbm, fields, _params = lbm_verify(coeffs_arr, target_area, reynolds, self.domain, solver_cfg, device=str(self.device))
+
+        pred = self.predict(coeffs, reynolds, model_key, target_area)
+        cd_surrogate = pred["cd_surrogate"]
+        cd_lbm_val = float(cd_lbm[0])
+        gap_pct = 100.0 * abs(cd_lbm_val - cd_surrogate) / max(abs(cd_lbm_val), 1e-9)
+        wall_time_s = time.perf_counter() - t0
+
+        return {
+            "cd_lbm": cd_lbm_val,
+            "cd_surrogate": cd_surrogate,
+            "gap_pct": gap_pct,
+            "fields": {
+                "u": downscale(fields["u"][0], config.FIELD_DOWNSCALE).tolist(),
+                "v": downscale(fields["v"][0], config.FIELD_DOWNSCALE).tolist(),
+                "p": downscale(fields["p"][0], config.FIELD_DOWNSCALE).tolist(),
+            },
+            "wall_time_s": wall_time_s,
         }
 
 

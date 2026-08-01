@@ -1,69 +1,52 @@
-import { useEffect, useState } from 'react'
-import { NavLink, Route, Routes } from 'react-router-dom'
-import { Home } from './pages/Home'
-import { FlowLab } from './pages/FlowLab'
-import { ChatOrchestrator } from './pages/ChatOrchestrator'
-import { ComingSoon } from './pages/ComingSoon'
-import { ThemeToggle } from './components/ThemeToggle'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { AppSidebar } from '@/components/AppSidebar'
+import { ChatProvider, useChat } from '@/chat/ChatProvider'
+import { ChatSidebar } from '@/chat/ChatSidebar'
+import { Home } from '@/pages/Home'
+import { FlowLab } from '@/pages/FlowLab'
+import { StressLab } from '@/pages/StressLab'
 
-const TABS = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/flow', label: 'Flow Lab', end: false },
-  { to: '/stress', label: 'Stress Lab', end: false },
-  { to: '/chat', label: 'Chat', end: false },
-]
-
-function App() {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+function Shell() {
+  const { toggle } = useChat()
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-  }, [theme])
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+        e.preventDefault()
+        toggle()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [toggle])
 
   return (
-    <div className="min-h-full flex flex-col">
-      <nav className="nc-card sticky top-0 z-10 flex items-center gap-1 px-4 py-2.5 rounded-none border-x-0 border-t-0">
-        <span className="font-semibold text-sm mr-4">Engine-Copilot</span>
-        {TABS.map((t) => (
-          <NavLink
-            key={t.to}
-            to={t.to}
-            end={t.end}
-            className={({ isActive }) =>
-              `px-3 py-1.5 rounded-md text-sm transition ${isActive ? 'font-medium' : 'hover:brightness-125'}`
-            }
-            style={({ isActive }) => ({
-              color: isActive ? 'var(--accent)' : 'var(--text-muted)',
-              background: isActive ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'transparent',
-            })}
-          >
-            {t.label}
-          </NavLink>
-        ))}
-        <div className="ml-auto">
-          <ThemeToggle theme={theme} onToggle={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} />
-        </div>
-      </nav>
-
-      <main className="flex-1">
+    <div className="flex h-full overflow-hidden">
+      <AppSidebar />
+      <main className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/flow" element={<FlowLab />} />
-          <Route
-            path="/stress"
-            element={
-              <ComingSoon
-                title="Stress Lab"
-                milestone="M4 — pas encore construit"
-                description="Prédiction de contrainte de von Mises sur une plaque perforée via le GNN, avec optimiseur de positions de trous. Prochaine étape du plan."
-              />
-            }
-          />
-          <Route path="/chat" element={<ChatOrchestrator />} />
+          <Route path="/stress" element={<StressLab />} />
+          {/* The chat used to be its own page; it now lives in the sidebar on every
+              page, so the old route just lands on the overview with the panel open. */}
+          <Route path="/chat" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      <ChatSidebar />
     </div>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <ChatProvider>
+      <TooltipProvider delayDuration={200}>
+        <Shell />
+      </TooltipProvider>
+    </ChatProvider>
+  )
+}

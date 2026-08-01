@@ -1,74 +1,151 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+/* Single dark scheme — there is no light theme and no toggle. The `dark` class is
+   stamped once on <html> (index.html) purely so shadcn's `dark:` utilities resolve;
+   nothing ever removes it. */
+@custom-variant dark (&:is(.dark *));
+
+/* Palette provenance: the chart slots below are the dataviz reference palette's dark
+   column, validated against this file's --card surface (#121419) — lightness band,
+   chroma floor, adjacent-pair CVD separation, normal-vision floor and 3:1 contrast all
+   pass. The UI primary is a deeper step of slot 1's own blue ramp, so the accent and
+   "series 1" are the same hue at two steps. Re-run the validator before changing any
+   of them. `src/lib/chartTheme.ts` mirrors these hexes for Plotly, which cannot read
+   CSS custom properties. */
 :root {
-  --bg: #0b0f14;
-  --card: #141a22;
-  --border: #1f2937;
-  --text: #e5e7eb;
-  --text-muted: #9ca3af;
-  --accent: #22d3ee;
-  --warn: #f59e0b;
-  --ok: #34d399;
   color-scheme: dark;
+  --radius: 0.625rem;
+
+  --background: #0a0b0e;
+  --foreground: #e9ecf2;
+
+  --card: #121419;
+  --card-foreground: #e9ecf2;
+  --popover: #161a21;
+  --popover-foreground: #e9ecf2;
+
+  /* blue ramp step 500 — 5.3:1 against white, so button labels clear AA at 14px */
+  --primary: #256abf;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1b1f28;
+  --secondary-foreground: #e9ecf2;
+
+  --muted: #171b22;
+  --muted-foreground: #8b93a3;
+
+  --accent: #1e232d;
+  --accent-foreground: #e9ecf2;
+
+  --destructive: #d03b3b;
+  --destructive-foreground: #ffffff;
+
+  --border: #232833;
+  --input: #2a3040;
+  /* blue ramp step 400 — the same hue as --primary, one step up, for ink and marks */
+  --ring: #3987e5;
+
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+
+  /* Reserved: status never doubles as a series color. */
+  --good: #0ca30c;
+  --warning: #fab219;
+  --critical: #d03b3b;
+
+  --sidebar: #0c0e12;
+  --sidebar-foreground: #e9ecf2;
+  --sidebar-primary: #256abf;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1a1f28;
+  --sidebar-accent-foreground: #e9ecf2;
+  --sidebar-border: #1e222b;
+  --sidebar-ring: #3987e5;
 }
 
-:root[data-theme="light"] {
-  --bg: #fafafa;
-  --card: #ffffff;
-  --border: #e5e7eb;
-  --text: #111827;
-  --text-muted: #6b7280;
-  color-scheme: light;
+@theme inline {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-good: var(--good);
+  --color-warning: var(--warning);
+  --color-critical: var(--critical);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  transition: background-color 200ms ease, color 200ms ease;
-}
-
-.nc-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-.nc-skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--border) 25%,
-    color-mix(in srgb, var(--border) 60%, var(--card)) 50%,
-    var(--border) 75%
-  );
-  background-size: 200% 100%;
-  animation: nc-shimmer 1.4s ease-in-out infinite;
-  border-radius: 6px;
-}
-
-@keyframes nc-shimmer {
-  0% {
-    background-position: 200% 0;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-  100% {
-    background-position: -200% 0;
+
+  html,
+  body,
+  #root {
+    height: 100%;
   }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04";
+  }
+
+  /* Numbers that sit in a column (axis ticks, table rows, metric readouts that update
+     in place) need equal digit widths so they don't jitter; large standalone figures
+     keep the font's proportional figures, which look tighter at display sizes. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Plotly renders its own SVG; these keep its chrome from fighting the app surface. */
+.js-plotly-plot .plotly .modebar {
+  display: none !important;
 }
 
 @media print {
-  nav,
   .no-print {
     display: none !important;
   }

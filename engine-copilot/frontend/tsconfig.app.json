@@ -8,6 +8,12 @@
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 
+    /* `paths` without `baseUrl`: resolved relative to this file, which is what
+       TypeScript 7 will require anyway. */
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

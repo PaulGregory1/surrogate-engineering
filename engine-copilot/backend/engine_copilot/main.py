@@ -13,6 +13,7 @@ from .agent import agent_session
 from .flow_service import flow_service
 from .lbm_frames import simulate_streaming
 from .schemas import (
+    FlowOptimizeRequest,
     FlowPredictRequest,
     FlowPredictResponse,
     FlowSimulateRequest,
@@ -79,10 +80,12 @@ def flow_predict(req: FlowPredictRequest) -> dict:
 
 
 @app.post("/api/flow/optimize")
-async def flow_optimize(reynolds: float = 80.0, n_starts: int = 16, iters: int = 250, model: str = "unet-phys", seed: int = 0):
+async def flow_optimize(req: FlowOptimizeRequest):
     async def event_stream():
         loop = asyncio.get_event_loop()
-        gen = flow_service.optimise_streaming(reynolds, n_starts, iters, model, seed)
+        gen = flow_service.optimise_streaming(
+            req.reynolds, req.n_starts, req.iters, req.model, req.seed, init_coeffs=req.coeffs
+        )
         while True:
             item = await loop.run_in_executor(None, lambda: next(gen, None))
             if item is None:

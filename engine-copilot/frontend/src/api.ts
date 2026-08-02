@@ -51,6 +51,20 @@ async function readSSE(res: Response, onData: (data: any) => void): Promise<void
   }
 }
 
+// SSE has no way to report failure once the 200 headers are out: a backend generator
+// that raises — or a server running stale code — just closes the stream. Without this
+// guard a truncated or empty stream resolves like a success and the caller sits there
+// showing nothing, which is indistinguishable from "still computing".
+async function readSSEUntilDone(res: Response, label: string, onData: (data: any) => void): Promise<void> {
+  let sawDone = false
+  await readSSE(res, (data) => {
+    if (data.error) throw new Error(`${label} : ${data.error}`)
+    if (data.done) sawDone = true
+    onData(data)
+  })
+  if (!sawDone) throw new Error(`${label} : le flux s’est interrompu avant la fin — backend arrêté, ou code obsolète (relance uvicorn).`)
+}
+
 export interface FlowVerifyRequest {
   coeffs: number[]
   reynolds: number
@@ -77,6 +91,8 @@ export async function verifyFlow(req: FlowVerifyRequest): Promise<FlowVerifyResp
 }
 
 export interface FlowOptimizeParams {
+  /** The shape on screen. Seeds start #0 so the run descends from the user's design. */
+  coeffs?: number[]
   reynolds: number
   n_starts?: number
   iters?: number
@@ -100,21 +116,17 @@ export interface FlowOptimizeDone {
   target_area: number
 }
 
-// The optimize endpoint takes query params, not a JSON body (see main.py) — it
-// predates the JSON-body convention used everywhere else and streams fine either way.
 export async function streamFlowOptimize(
   params: FlowOptimizeParams,
   onIteration: (it: FlowOptimizeIteration) => void,
   onDone: (d: FlowOptimizeDone) => void,
 ): Promise<void> {
-  const qs = new URLSearchParams(
-    Object.entries(params).reduce<Record<string, string>>((acc, [k, v]) => {
-      if (v !== undefined) acc[k] = String(v)
-      return acc
-    }, {}),
-  )
-  const res = await fetch(`/api/flow/optimize?${qs.toString()}`, { method: 'POST' })
-  await readSSE(res, (data) => (data.done ? onDone(data) : onIteration(data)))
+  const res = await fetch('/api/flow/optimize', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  })
+  await readSSEUntilDone(res, 'Optimisation', (data) => (data.done ? onDone(data) : onIteration(data)))
 }
 
 export interface FlowSimulateRequest {
@@ -148,7 +160,7 @@ export async function streamFlowSimulate(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(req),
   })
-  await readSSE(res, (data) => (data.done ? onDone(data) : onFrame(data)))
+  await readSSEUntilDone(res, 'Simulation', (data) => (data.done ? onDone(data) : onFrame(data)))
 }
 
 export interface HealthResponse {
@@ -238,5 +250,5 @@ export async function streamStressOptimize(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(req),
   })
-  await readSSE(res, (data) => (data.done ? onDone(data) : onIteration(data)))
+  await readSSEUntilDone(res, 'Optimisation', (data) => (data.done ? onDone(data) : onIteration(data)))
 }

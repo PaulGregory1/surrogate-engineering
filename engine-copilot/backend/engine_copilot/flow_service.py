@@ -100,11 +100,25 @@ class FlowService:
             "model": model_key,
         }
 
-    def optimise_streaming(self, reynolds: float, n_starts: int, iters: int, model_key: str, seed: int):
+    def optimise_streaming(
+        self,
+        reynolds: float,
+        n_starts: int,
+        iters: int,
+        model_key: str,
+        seed: int,
+        init_coeffs: list[float] | None = None,
+    ):
         """Adam optimisation over the shape coefficients, yielding progress every 2 iters.
 
         Mirrors flowsurrogate.optimize.optimise() but as a generator so /api/flow/optimize
         can stream it over SSE instead of only returning the final result.
+
+        `init_coeffs` (the design currently on screen) seeds start #0, mirroring how
+        stress_service.optimise_streaming starts from the user's `holes`. Without it every
+        start comes from `sample_shapes`, so the run is identical for every user design at
+        a given seed and the UI ends up showing "Départ: your shape" beside a result it had
+        no part in. Any remaining starts stay random, which is what `n_starts > 1` is for.
         """
         from flowsurrogate.geometry import sample_shapes
 
@@ -115,6 +129,10 @@ class FlowService:
         coeff_bound = 0.16
 
         init = sample_shapes(rng, n_starts, coeff_range=coeff_bound * 0.6)[:, 1:]
+        if init_coeffs is not None:
+            # Clamped to the same box the optimiser projects onto each step, so start #0
+            # is a point the run can actually occupy.
+            init[0] = np.clip(np.asarray(init_coeffs, dtype=init.dtype), -coeff_bound, coeff_bound)
         coeffs = torch.tensor(init, dtype=torch.float32, device=self.device, requires_grad=True)
         opt = torch.optim.Adam([coeffs], lr=8e-3)
 

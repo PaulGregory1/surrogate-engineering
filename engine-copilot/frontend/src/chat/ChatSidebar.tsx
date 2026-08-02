@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Eraser, PanelRightClose, Send, Sparkles } from 'lucide-react'
+import { Eraser, PanelRightClose, Send } from 'lucide-react'
 import { ToolCallCard } from '@/components/ToolCallCard'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { CALQUE_EASE } from '@/lib/motion'
 import { useChat, useChatSuggestions } from './ChatProvider'
 
 function Composer() {
@@ -22,8 +22,8 @@ function Composer() {
   }
 
   return (
-    <div className="border-t border-sidebar-border p-3">
-      <div className="focus-within:border-ring/60 focus-within:ring-ring/20 flex items-end gap-2 rounded-lg border border-input bg-background p-2 transition focus-within:ring-[3px]">
+    <div className="border-t border-line p-3">
+      <div className="flex items-end gap-2 rounded-[10px] border border-line2 bg-white p-2 transition-shadow focus-within:shadow-[var(--focus)]">
         <textarea
           ref={ref}
           rows={1}
@@ -42,16 +42,15 @@ function Composer() {
               submit()
             }
           }}
-          className="max-h-[140px] flex-1 resize-none bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground disabled:opacity-50"
+          className="max-h-[140px] flex-1 resize-none bg-transparent text-ctl leading-relaxed outline-none placeholder:text-ink3 disabled:opacity-50"
         />
-        <Button size="icon-sm" onClick={submit} disabled={busy} aria-label="Envoyer">
+        {/* Outline, not filled: the lab's primary action already spends this
+            screen's one orange flat. */}
+        <Button variant="outline" size="icon-sm" onClick={submit} disabled={busy} aria-label="Envoyer">
           <Send />
         </Button>
       </div>
-      <p className="mt-1.5 text-[10px] text-muted-foreground">
-        <kbd className="rounded border border-border px-1">Entrée</kbd> pour envoyer ·{' '}
-        <kbd className="rounded border border-border px-1">⇧ Entrée</kbd> pour un saut de ligne
-      </p>
+      <p className="cq-k mt-2">ENTRÉE POUR ENVOYER · ⇧ ENTRÉE POUR UN SAUT DE LIGNE</p>
     </div>
   )
 }
@@ -68,27 +67,24 @@ function Transcript() {
   }, [turns])
 
   if (turns.length === 0) {
+    // An empty state is an invitation, never an excuse.
     return (
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-3 pt-6">
-        <div className="flex flex-col items-start gap-2">
-          <div className="rounded-lg border border-sidebar-border bg-muted/40 p-2">
-            <Sparkles className="size-4 text-ring" />
-          </div>
-          <p className="text-sm font-medium">Copilote d&apos;ingénierie</p>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            L&apos;agent voit la configuration affichée à l&apos;écran et peut appeler les mêmes
-            modèles que les labs. Pose-lui une question sans quitter la page.
+      <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 pt-7">
+        <div>
+          <div className="cq-k mb-3">COPILOTE D’INGÉNIERIE</div>
+          <div className="cq-value text-[20px]">Pose ta question sans quitter la page</div>
+          <p className="mt-3 cq-muted text-body leading-[1.7]">
+            L’agent voit la configuration affichée à l’écran et appelle les mêmes modèles que les
+            labs. Chaque appel reste visible dans la conversation.
           </p>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <div className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-            Pour démarrer
-          </div>
+        <div className="flex flex-col gap-2">
+          <div className="cq-k">POUR DÉMARRER</div>
           {suggestions.map((s) => (
             <button
               key={s}
               onClick={() => send(s)}
-              className="rounded-md border border-sidebar-border bg-muted/30 px-2.5 py-2 text-left text-xs leading-snug text-muted-foreground transition hover:border-ring/40 hover:bg-muted/60 hover:text-foreground"
+              className="rounded-[10px] border border-line2 border-l-2 border-l-transparent bg-white px-3 py-2.5 text-left cq-muted text-body leading-snug transition-colors duration-150 hover:border-l-or hover:text-ink"
             >
               {s}
             </button>
@@ -99,14 +95,15 @@ function Transcript() {
   }
 
   return (
-    <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto p-3">
+    <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto p-4">
       {turns.map((turn, i) => (
-        <div key={i} className="space-y-1.5">
+        <div key={i} className="space-y-2">
           {turn.role === 'user' ? (
-            <div className="flex justify-end">
-              <div className="max-w-[90%] rounded-lg rounded-br-sm bg-primary px-3 py-2 text-sm leading-relaxed text-primary-foreground">
-                {turn.text}
-              </div>
+            // The transcript reads as a document, not as a chat app: the question is
+            // a quoted sheet of paper, the answer is body text under it. A filled
+            // orange bubble would be an orange flat carrying no quantity.
+            <div className="rounded-[10px] rounded-tr-sm border border-line2 bg-white px-3 py-2 text-ctl leading-relaxed">
+              {turn.text}
             </div>
           ) : (
             <>
@@ -121,15 +118,17 @@ function Transcript() {
                 />
               ))}
               {turn.text ? (
-                <div className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/90">{turn.text}</div>
+                <div className="px-0.5 text-ctl leading-relaxed whitespace-pre-wrap text-ink">
+                  {turn.text}
+                </div>
               ) : (
                 busy &&
                 i === turns.length - 1 && (
-                  <div className="flex gap-1 py-1">
+                  <div className="flex gap-1 px-0.5 py-1">
                     {[0, 1, 2].map((d) => (
                       <motion.span
                         key={d}
-                        className="size-1.5 rounded-full bg-muted-foreground"
+                        className="size-1 rounded-full bg-ink3"
                         animate={{ opacity: [0.25, 1, 0.25] }}
                         transition={{ duration: 1.1, repeat: Infinity, delay: d * 0.18 }}
                       />
@@ -159,22 +158,21 @@ export function ChatSidebar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-30 bg-background/70 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-30 bg-paper/60 backdrop-blur-sm lg:hidden"
           />
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 380, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 34 }}
-            className="no-print fixed inset-y-0 right-0 z-40 max-w-full shrink-0 overflow-hidden border-l border-sidebar-border bg-sidebar lg:static lg:z-auto"
+            transition={{ duration: 0.42, ease: CALQUE_EASE }}
+            className="no-print fixed inset-y-0 right-0 z-40 max-w-full shrink-0 overflow-hidden border-l border-line bg-sidebar backdrop-blur-xl backdrop-saturate-150 lg:static lg:z-auto"
           >
             <div className="flex h-full w-[380px] max-w-[100vw] flex-col">
-              <header className="flex h-14 shrink-0 items-center gap-2 border-b border-sidebar-border px-3">
-                <Sparkles className="size-4 shrink-0 text-ring" />
-                <span className="text-sm font-medium">Copilote</span>
+              <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-line px-4">
+                <span className="cq-k">COPILOTE</span>
                 {pageContext && (
-                  <span className="truncate rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                    {pageContext.label}
+                  <span className="cq-k truncate rounded-full border border-line2 px-2 py-0.5 text-ink2">
+                    {pageContext.label.toUpperCase()}
                   </span>
                 )}
                 <div className="ml-auto flex items-center gap-0.5">
@@ -200,7 +198,6 @@ export function ChatSidebar() {
               </header>
 
               <Transcript />
-              <Separator className="bg-sidebar-border" />
               <Composer />
             </div>
           </motion.aside>

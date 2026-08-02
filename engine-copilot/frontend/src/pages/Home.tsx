@@ -2,19 +2,18 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Grid2x2, Wind } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { usePublishChatContext } from '@/chat/ChatProvider'
+import { reveal } from '@/lib/motion'
 
 const LABS = [
   {
     to: '/flow',
     icon: Wind,
     title: 'Flow Lab',
-    domain: 'Aérodynamique externe',
-    stat: '713×',
-    statLabel: 'plus rapide que le solveur LBM',
+    domain: 'AÉRODYNAMIQUE EXTERNE',
+    stat: '713',
+    statUnit: '×',
+    statLabel: 'PLUS RAPIDE QUE LE SOLVEUR LBM',
     description:
       'Dessine un corps immergé, lis son coefficient de traînée en temps réel, puis laisse une descente de gradient à travers le surrogate chercher la forme la moins traînante — et vérifie le résultat dans le vrai solveur.',
     method: 'U-Net + contrainte de continuité',
@@ -23,9 +22,10 @@ const LABS = [
     to: '/stress',
     icon: Grid2x2,
     title: 'Stress Lab',
-    domain: 'Mécanique des structures',
-    stat: '6.0%',
-    statLabel: 'erreur attendue sur le pic',
+    domain: 'MÉCANIQUE DES STRUCTURES',
+    stat: '6.0',
+    statUnit: '%',
+    statLabel: 'ERREUR ATTENDUE SUR LE PIC',
     description:
       'Place les perçages d’une plaque sous charge, vois la carte de von Mises se recalculer à chaque déplacement, et fais chercher au modèle un placement qui abaisse le pic de contrainte.',
     method: 'MeshGraphNet, 10 passes de message',
@@ -60,74 +60,76 @@ export function Home() {
 
   return (
     <>
-      <PageHeader title="Vue d’ensemble" subtitle="Deux workflows d’ingénierie pilotés par des surrogates entraînés" />
+      <PageHeader
+        title="Vue d’ensemble"
+        subtitle="Deux workflows d’ingénierie pilotés par des surrogates entraînés"
+      />
 
-      <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-          <Badge variant="outline" className="mb-4 font-normal text-muted-foreground">
-            Engine-Copilot
-          </Badge>
-          <h2 className="max-w-2xl text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+      {/* This is an index of instruments, not a landing page — which is why nothing
+          here reaches the 40px ceiling and the headline is set in serif roman at 28,
+          quieter than the two measured figures it introduces. */}
+      <div className="mx-auto w-full max-w-4xl px-6 py-12">
+        <motion.div {...reveal()}>
+          <div className="cq-k mb-4">ENGINE-COPILOT · DÉMONSTRATEUR</div>
+          <h2 className="cq-value max-w-[26ch] text-[28px]">
             Des surrogates ML, mis entre les mains d’un ingénieur.
           </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+          <p className="cq-muted mt-5 max-w-[62ch] text-body leading-[1.7]">
             Écoulement externe et plaque perforée, résolus en millisecondes par des modèles entraînés
             sur un solveur de référence — toujours contextualisés par leur erreur connue, et
             vérifiables face à ce solveur en un clic.
           </p>
         </motion.div>
 
-        <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mt-11 grid grid-cols-1 gap-4 md:grid-cols-2">
           {LABS.map((lab, i) => (
-            <motion.div
-              key={lab.to}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.06 * (i + 1) }}
-            >
-              <Link to={lab.to} className="group block h-full rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
-                <Card className="h-full gap-4 transition group-hover:border-ring/40 group-hover:bg-card/80">
-                  <CardContent className="flex h-full flex-col gap-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex size-8 items-center justify-center rounded-md border border-border bg-muted/50">
-                        <lab.icon className="size-4 text-ring" />
-                      </div>
-                      <div className="leading-tight">
-                        <div className="font-semibold">{lab.title}</div>
-                        <div className="text-[11px] text-muted-foreground">{lab.domain}</div>
-                      </div>
-                      <ArrowRight className="ml-auto size-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground" />
-                    </div>
+            <motion.div key={lab.to} {...reveal(0.08 * (i + 1))}>
+              <Link
+                to={lab.to}
+                className="group block h-full rounded-[16px] outline-none focus-visible:shadow-[var(--focus)]"
+              >
+                <div className="flex h-full flex-col gap-5 rounded-[16px] border border-line2 bg-white p-5 shadow-card transition-colors duration-200 group-hover:border-ink3">
+                  <div className="flex items-center gap-2.5">
+                    <lab.icon className="size-3.5 shrink-0 text-burnt" />
+                    <div className="cq-title">{lab.title}</div>
+                    <span className="cq-k ml-auto">{lab.domain}</span>
+                  </div>
 
-                    <div>
-                      <div className="text-4xl font-semibold tracking-tight">{lab.stat}</div>
-                      <div className="mt-0.5 text-xs text-muted-foreground">{lab.statLabel}</div>
+                  <div>
+                    {/* The ratio is the headline of the whole card — set big and
+                        bold on purpose, above the charte's 40px ceiling. */}
+                    <div className="cq-hero">
+                      {lab.stat}
+                      <i>{lab.statUnit}</i>
                     </div>
+                    <div className="cq-k mt-3 text-burnt">{lab.statLabel}</div>
+                  </div>
 
-                    <p className="text-sm leading-relaxed text-muted-foreground">{lab.description}</p>
+                  <p className="cq-muted text-body leading-[1.7]">{lab.description}</p>
 
-                    <div className="mt-auto pt-1">
-                      <Separator className="mb-3" />
-                      <div className="font-mono text-[11px] text-muted-foreground">{lab.method}</div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <div className="mt-auto flex items-center gap-3 border-t border-line pt-3">
+                    <span className="cq-num text-k tracking-normal text-ink3">{lab.method}</span>
+                    <ArrowRight className="ml-auto size-3.5 text-ink3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-ink" />
+                  </div>
+                </div>
               </Link>
             </motion.div>
           ))}
         </div>
 
-        <div className="mt-12">
-          <h3 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Ce qui tient la démo</h3>
-          <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <motion.div className="mt-12" {...reveal(0.24)}>
+          <div className="cq-k">CE QUI TIENT LA DÉMO</div>
+          <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-3">
             {PRINCIPLES.map((p) => (
-              <div key={p.title} className="border-t border-border pt-3">
-                <div className="text-sm font-medium">{p.title}</div>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{p.body}</p>
+              // Ink rule over the heading, hairline everywhere else — the same
+              // contrast jump that holds a data table together without stripes.
+              <div key={p.title} className="border-t border-ink pt-3">
+                <div className="text-body font-medium">{p.title}</div>
+                <p className="cq-muted mt-2 text-body leading-[1.7]">{p.body}</p>
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </>
   )

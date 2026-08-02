@@ -18,13 +18,14 @@ import type { FlowPredictResponse } from '@/api'
 
 // Scale per field, by what the field actually *is*:
 //   u is dominated by the freestream and reads as a magnitude — how fast is the flow
-//     here — so it takes the sequential ramp, where the wake deficit shows as a dark
-//     trail. Diverging it around zero paints the whole domain one colour, because
-//     almost every cell sits at the positive end and the symmetric range flattens it.
+//     here — so it takes the sequential blue→red ramp, where the wake deficit falls
+//     back to blue against a red freestream. Diverging it around zero paints the
+//     whole domain one colour, because almost every cell sits at the positive end.
 //   v and p genuinely straddle zero — the counter-rotating shear layers and the
-//     front/rear pressure split ARE the signal — so they take the diverging scale,
-//     pinned with `zmid: 0`. Without that anchor Plotly centres the neutral colour on
-//     the data's own midpoint and the sign stops meaning anything.
+//     front/rear pressure split ARE the signal — so they take the diverging scale
+//     (blue ← neutral → red), pinned with `zmid: 0`. Without that anchor Plotly
+//     centres the neutral on the data's own midpoint and the sign stops meaning
+//     anything.
 const PANELS: {
   key: 'u' | 'v' | 'p'
   title: string
@@ -35,21 +36,21 @@ const PANELS: {
   {
     key: 'u',
     title: 'Vitesse axiale',
-    caption: 'u — sombre = déficit de sillage',
+    caption: 'u — bleu = sillage',
     colorscale: SEQUENTIAL,
     diverging: false,
   },
   {
     key: 'v',
     title: 'Vitesse transverse',
-    caption: 'v — cisaillement, signé',
+    caption: 'v — cisaillement',
     colorscale: DIVERGING,
     diverging: true,
   },
   {
     key: 'p',
     title: 'Pression',
-    caption: 'p — dépression arrière, signée',
+    caption: 'p — dépression arrière',
     colorscale: DIVERGING,
     diverging: true,
   },
@@ -61,7 +62,9 @@ function maskField(field: number[][], mask: number[][]): (number | null)[][] {
 
 export function FieldViewer({ result, loading }: { result: FlowPredictResponse | null; loading: boolean }) {
   // The obstacle silhouette drawn over the masked cells, so the body reads as a solid
-  // object rather than a hole in the data.
+  // object rather than a hole in the data. Solid ink, not paper: the diverging scale's
+  // neutral sits a shade off white, so a paper-filled body would be indistinguishable
+  // from a region of the field that happens to be at zero.
   const bodyPath = useMemo(() => {
     if (!result) return null
     const { x, y } = boundaryToGrid(result.boundary_xy, result.domain)
@@ -90,10 +93,13 @@ export function FieldViewer({ result, loading }: { result: FlowPredictResponse |
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
       {panels.map((p) => (
-        <div key={p.key} className="flex flex-col overflow-hidden rounded-xl border border-border bg-card">
-          <div className="px-3 pt-2.5">
-            <div className="text-xs font-medium">{p.title}</div>
-            <div className="text-[10px] text-muted-foreground">{p.caption}</div>
+        <div
+          key={p.key}
+          className="flex flex-col overflow-hidden rounded-[16px] border border-line2 bg-white shadow-card"
+        >
+          <div className="px-4 pt-3">
+            <div className="text-[12.5px] font-medium tracking-[-0.01em]">{p.title}</div>
+            <div className="cq-k mt-1">{p.caption}</div>
           </div>
           <Plot
             data={[
@@ -119,8 +125,8 @@ export function FieldViewer({ result, loading }: { result: FlowPredictResponse |
                       path: bodyPath,
                       xref: 'x',
                       yref: 'y',
-                      fillcolor: INK.surface,
-                      line: { color: INK.axis, width: 1 },
+                      fillcolor: INK.ink,
+                      line: { color: INK.ink, width: 1 },
                     },
                   ]
                 : [],
@@ -134,7 +140,7 @@ export function FieldViewer({ result, loading }: { result: FlowPredictResponse |
             min={p.min}
             max={p.max}
             diverging={p.diverging}
-            className="px-3 pb-2.5"
+            className="px-4 pb-3"
           />
         </div>
       ))}

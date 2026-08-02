@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import Plot from 'react-plotly.js'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ColorScaleLegend } from '@/components/ColorScaleLegend'
-import { FIELD_AXIS, FIELD_MARGIN, MAGMA, PLOT_CONFIG, SERIES, baseLayout, fieldRange } from '@/lib/chartTheme'
+import { FIELD_AXIS, FIELD_MARGIN, MARK, PLOT_CONFIG, SEQUENTIAL, baseLayout, fieldRange } from '@/lib/chartTheme'
 import type { StressPredictResponse } from '@/api'
 
 // The "pulse" on the peak marker is driven as a Plotly trace (marker size/opacity
 // oscillating), not literal CSS on a DOM overlay: Plotly owns its own internal SVG
 // layout (margins, colorbar width) and a naively-positioned absolute div drifts out
-// of alignment with the true data coordinates. Two stacked star traces — a growing,
+// of alignment with the true data coordinates. Two stacked traces — a growing,
 // fading halo plus a fixed-size solid core — read as a pulse without fighting that.
 export function StressViewer({
   result,
@@ -68,9 +68,11 @@ export function StressViewer({
           y: ys,
           z: result.field.vm,
           type: 'heatmap',
-          // von Mises stress is an unsigned magnitude, so this is a sequential,
-          // perceptually-uniform ramp — the peak has to be findable by eye.
-          colorscale: MAGMA,
+          // von Mises stress is an unsigned magnitude, on the blue→red ramp every
+          // FEA post-processor ships as its default: unloaded material sits blue,
+          // the concentration at the hole edge goes red, and an engineer finds the
+          // critical zone without reading the key.
+          colorscale: SEQUENTIAL,
           zmin: vmMin,
           zmax: vmMax,
           zsmooth: 'best',
@@ -84,7 +86,13 @@ export function StressViewer({
                 y: [result.peak_location[1]],
                 type: 'scatter' as const,
                 mode: 'markers' as const,
-                marker: { symbol: 'circle', size: haloSize, color: SERIES[0], opacity: haloOpacity, line: { width: 0 } },
+                marker: {
+                  symbol: 'circle',
+                  size: haloSize,
+                  color: MARK.focus,
+                  opacity: haloOpacity,
+                  line: { width: 0 },
+                },
                 hoverinfo: 'skip' as const,
                 showlegend: false,
               },
@@ -93,9 +101,11 @@ export function StressViewer({
                 y: [result.peak_location[1]],
                 type: 'scatter' as const,
                 mode: 'markers' as const,
-                // The 2px ring in the surface colour is what keeps the marker legible
-                // wherever the magma ramp happens to be bright underneath it.
-                marker: { symbol: 'circle', size: 9, color: SERIES[0], line: { color: '#ffffff', width: 2 } },
+                // The focal mark: knocked out of the paper and ringed in ink. It
+                // lands by definition on the deep-red end of the ramp, where a
+                // solid ink dot would vanish and an orange ring would read as part
+                // of the field rather than as a mark on top of it.
+                marker: { symbol: 'circle', size: 8, color: '#FFFFFF', line: { color: MARK.focus, width: 2 } },
                 hovertemplate: `pic σ_vM = ${result.peak_vm_surrogate.toFixed(2)}<extra></extra>`,
                 showlegend: false,
               },
@@ -112,7 +122,7 @@ export function StressViewer({
       config={PLOT_CONFIG}
       style={{ width: '100%' }}
       />
-      <ColorScaleLegend stops={MAGMA} min={vmMin} max={vmMax} className="px-1 pt-1" />
+      <ColorScaleLegend stops={SEQUENTIAL} min={vmMin} max={vmMax} className="px-1 pt-1.5" />
     </div>
   )
 }

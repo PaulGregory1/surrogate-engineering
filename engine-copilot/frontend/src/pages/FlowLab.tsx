@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { TriangleAlert } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { PageHeader } from '@/components/PageHeader'
 import { ShapeEditor } from '@/components/ShapeEditor'
 import { FieldViewer } from '@/components/FieldViewer'
-import { MetricsBadge } from '@/components/MetricsBadge'
 import { StatTile } from '@/components/StatTile'
 import { FlowAnimation } from '@/components/FlowAnimation'
 import { OptimizerPanel } from '@/components/OptimizerPanel'
-import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { usePublishChatContext } from '@/chat/ChatProvider'
+import { settle } from '@/lib/motion'
 import { predictFlow, type FlowPredictResponse } from '@/api'
 
 const DEFAULT_TARGET_AREA = 307 // refined once the first prediction comes back
@@ -52,6 +50,11 @@ export function FlowLab() {
 
   const targetArea = result?.target_area ?? DEFAULT_TARGET_AREA
 
+  // The prediction's own error bar, in the units the reader is looking at. A
+  // surrogate value shown without its variance is a substantive error, not a
+  // stylistic one — so this rides directly under the figure, never in a tooltip.
+  const band = result ? (result.cd_surrogate * result.cd_error_pct_expected) / 100 : null
+
   // Hand the design on screen to the copilot, so a question can just say "cette forme".
   usePublishChatContext({
     label: 'Flow Lab',
@@ -82,7 +85,7 @@ export function FlowLab() {
               {MODELS.map((m) => (
                 <SelectItem key={m.value} value={m.value}>
                   <span>{m.label}</span>
-                  <span className="text-muted-foreground">· {m.hint}</span>
+                  <span className="text-ink3">· {m.hint}</span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -101,52 +104,69 @@ export function FlowLab() {
           />
 
           <div className="flex min-w-0 flex-col gap-4">
-            <Card className="py-4">
-              <CardContent className="flex flex-wrap items-center gap-x-6 gap-y-4 px-4">
+            {/* The charte's panel, at its recipe width: the one 40px figure, its
+                interval, then the supporting facts as key/value rows. Everything
+                the prediction is worth saying fits here, which is why there is no
+                prose beside it. */}
+            <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
+              <div className="cq-calque w-full shrink-0 px-[21px] py-[19px] sm:w-[298px]">
                 <StatTile
-                  label="Coefficient de traînée"
+                  label="COEFFICIENT DE TRAÎNÉE"
                   value={result?.cd_surrogate ?? null}
                   decimals={3}
                   loading={loading && !result}
-                  hint="Cd — surface projetée constante"
+                  interval={band !== null ? `± ${band.toFixed(3)} · AIRE CONSTANTE` : undefined}
                 />
-                <Separator orientation="vertical" className="hidden h-12 sm:block" />
-                <div className="flex flex-wrap items-center gap-3">
-                  <AnimatePresence mode="wait">
-                    {result && (
-                      <motion.div
-                        key={result.model}
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        <MetricsBadge label={result.model} errorPct={result.cd_error_pct_expected} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  {reynolds > 150 && (
-                    <span className="flex items-center gap-1.5 text-[11px] text-warning">
-                      <TriangleAlert className="size-3" />
-                      Re au-delà du domaine d’entraînement (20–150)
-                    </span>
-                  )}
-                </div>
                 {result && (
-                  <div className="ml-auto text-right">
-                    <div className="text-xs text-muted-foreground">Latence</div>
-                    <div className="tnum font-mono text-sm">{result.latency_ms.toFixed(1)} ms</div>
-                  </div>
+                  <motion.div className="mt-4" key={result.model} {...settle()}>
+                    <div className="cq-row">
+                      <span>Modèle</span>
+                      <span>{result.model}</span>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="cq-row cursor-default">
+                          <span>Erreur mesurée</span>
+                          <span>± {result.cd_error_pct_expected.toFixed(2)} %</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-64">
+                        Erreur relative moyenne de <span className="font-mono">{result.model}</span> sur le
+                        jeu de test, face au solveur haute-fidélité. La valeur affichée est une
+                        prédiction, pas une mesure.
+                      </TooltipContent>
+                    </Tooltip>
+                    <div className="cq-row">
+                      <span>Latence</span>
+                      <span>{result.latency_ms.toFixed(1)} ms</span>
+                    </div>
+                    {/* The interval printed as bounds, not as a ± — it is the one
+                        thing a reader actually acts on, and "between 1.677 and
+                        1.712" needs no arithmetic. */}
+                    {band !== null && (
+                      <div className="cq-row">
+                        <span>Intervalle</span>
+                        <span>
+                          {(result.cd_surrogate - band).toFixed(3)} — {(result.cd_surrogate + band).toFixed(3)}
+                        </span>
+                      </div>
+                    )}
+                    {reynolds > 150 && (
+                      <div className="cq-row">
+                        <span>Enveloppe</span>
+                        <span className="cq-warn">Re {reynolds.toFixed(0)} hors 20–150</span>
+                      </div>
+                    )}
+                  </motion.div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {error && (
-              <Card className="border-critical/40 py-3">
-                <CardContent className="flex items-start gap-2 px-4 text-sm text-critical">
-                  <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-                  {error}
-                </CardContent>
-              </Card>
+              <div className="cq-error">
+                <div className="text-body font-medium">La prédiction n’a pas abouti.</div>
+                <div className="mt-1 cq-num text-band cq-muted">{error}</div>
+              </div>
             )}
 
             <FieldViewer result={result} loading={loading && !result} />

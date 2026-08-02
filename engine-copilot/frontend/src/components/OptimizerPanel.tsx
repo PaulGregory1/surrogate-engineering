@@ -1,16 +1,23 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, LoaderCircle, Sparkles, TriangleAlert } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { ShapePreview } from './ShapeEditor'
 import { ConvergencePlot, type ConvergencePoint } from './ConvergencePlot'
 import { AnimatedNumber } from './AnimatedNumber'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+import { settle } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { streamFlowOptimize, verifyFlow, type FlowOptimizeIteration } from '@/api'
+
+const ITERS = 250
+// One start, seeded with the shape on screen. The Cd landscape at fixed area is
+// effectively unimodal across the whole Re slider — starts as different as blunt,
+// slender, wavy and flat land on the same optimum to ~1e-4 in Cd — so the 15 extra
+// random starts bought nothing, took 16x longer, and left DÉPART showing a shape the
+// result had never descended from. The endpoint still accepts n_starts > 1.
+const N_STARTS = 1
 
 export function OptimizerPanel({
   coeffs,
@@ -48,7 +55,7 @@ export function OptimizerPanel({
     setVerifyResult(null)
     try {
       await streamFlowOptimize(
-        { reynolds, n_starts: 16, iters: 250, model, seed: 0 },
+        { coeffs, reynolds, n_starts: N_STARTS, iters: ITERS, model, seed: 0 },
         (it: FlowOptimizeIteration) => {
           setHistory((h) => [...h, { it: it.it, cd_best: it.cd_best, cd_mean: it.cd_mean }])
           setBestCoeffs(it.coeffs_best)
@@ -80,45 +87,62 @@ export function OptimizerPanel({
   }
 
   const started = history.length > 0 || finalCd !== null
+  const lastIt = history.length ? history[history.length - 1].it + 1 : 0
+  const progress = Math.min(1, lastIt / ITERS)
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Optimisation de forme</CardTitle>
-        <CardDescription>
-          Descente Adam à travers le surrogate gelé, 16 démarrages, aire constante — Re&nbsp;=&nbsp;
-          {reynolds.toFixed(0)}.
+    <Card className="gap-5 py-5">
+      <CardHeader className="px-5">
+        <CardTitle className="cq-title">Optimisation de forme</CardTitle>
+        <CardDescription className="cq-muted text-body">
+          Descente Adam à travers le surrogate gelé, depuis la forme à l’écran, à aire constante —
+          Re&nbsp;=&nbsp;{reynolds.toFixed(0)}.
         </CardDescription>
         <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
+          {/* The single orange flat of this screen. It is also the whole "one bold
+              move" budget: nothing else here is filled. */}
           <Button onClick={runOptimize} disabled={running}>
-            {running ? <LoaderCircle className="animate-spin" /> : <Sparkles />}
+            <Sparkles />
             {running ? 'Optimisation…' : 'Optimiser'}
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-5">
+      <CardContent className="flex flex-col gap-5 px-5">
         {error && (
-          <div className="flex items-start gap-1.5 text-xs text-warning">
-            <TriangleAlert className="mt-px size-3 shrink-0" />
-            {error}
+          <div className="cq-error">
+            <div className="text-body font-medium">L’optimisation n’a pas abouti.</div>
+            <div className="mt-1 cq-num text-band cq-muted">{error}</div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        {/* No spinner: a rule filling along the measure ramp, with the real cost
+            printed beside it. The product sells speed — show it. */}
+        {running && (
+          <div>
+            <div className="cq-k mb-2">
+              DESCENTE · {lastIt} / {ITERS} ITÉRATIONS · AIRE CONSTANTE
+            </div>
+            <div className="cq-progress">
+              <div style={{ width: `${progress * 100}%` }} />
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
           <div className="flex items-center gap-3">
             <figure className="flex-1">
               <ShapePreview coeffs={initialCoeffs ?? coeffs} targetArea={targetArea} />
-              <figcaption className="mt-1.5 text-center text-[11px] text-muted-foreground">Départ</figcaption>
+              <figcaption className="cq-k mt-2 text-center">DÉPART</figcaption>
             </figure>
-            <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+            <ArrowRight className="size-4 shrink-0 text-ink3" />
             <figure className="flex-1">
               <ShapePreview
                 coeffs={bestCoeffs ?? coeffs}
                 targetArea={targetArea}
-                className={cn(running && 'ring-1 ring-ring/40')}
+                tone={started ? 'measure' : 'ink'}
               />
-              <figcaption className="mt-1.5 text-center text-[11px] text-muted-foreground">Optimisé</figcaption>
+              <figcaption className={cn('cq-k mt-2 text-center', started && 'text-burnt')}>OPTIMISÉ</figcaption>
             </figure>
           </div>
 
@@ -126,10 +150,14 @@ export function OptimizerPanel({
             {started ? (
               <ConvergencePlot history={history} />
             ) : (
-              <div className="flex h-[300px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border">
-                <Sparkles className="size-5 text-muted-foreground" />
-                <p className="max-w-56 text-center text-xs text-muted-foreground">
-                  Lance l’optimisation pour voir la convergence du Cd, itération par itération.
+              // An empty state is an invitation, never an excuse — and this is
+              // exactly where the background masses carry the panel.
+              <div className="flex h-[300px] flex-col items-center justify-center px-6 text-center">
+                <div className="cq-k mb-3">AUCUNE DESCENTE LANCÉE</div>
+                <div className="cq-value max-w-[16ch] text-[22px]">Cherche la forme la moins traînante</div>
+                <p className="mt-3 max-w-[38ch] cq-muted text-body leading-[1.7]">
+                  {ITERS} itérations de descente depuis la forme à l’écran, à aire projetée
+                  constante.
                 </p>
               </div>
             )}
@@ -139,48 +167,48 @@ export function OptimizerPanel({
         {finalCd !== null && (
           <>
             <Separator />
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <motion.div className="flex flex-wrap items-end gap-x-8 gap-y-4" {...settle()}>
               <div>
-                <div className="text-xs text-muted-foreground">Cd optimisé (surrogate)</div>
-                <div className="text-2xl font-semibold tracking-tight">
+                <div className="cq-k">CD OPTIMISÉ · SURROGATE</div>
+                <div className="cq-value mt-2 text-[26px]">
                   <AnimatedNumber value={finalCd} decimals={3} />
                 </div>
               </div>
 
-              <Separator orientation="vertical" className="hidden h-10 sm:block" />
-
-              <div className="flex flex-1 flex-wrap items-center gap-3">
+              <div className="flex flex-1 flex-wrap items-center gap-4">
                 <Button variant="outline" size="sm" onClick={runVerify} disabled={running || verifying}>
-                  {verifying ? <LoaderCircle className="animate-spin" /> : null}
                   {verifying ? 'Solveur LBM…' : 'Vérifier au solveur'}
                 </Button>
 
                 {verifyResult ? (
-                  <motion.div
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs"
-                  >
-                    <span className="text-muted-foreground">
-                      surrogate <span className="tnum font-mono text-foreground">{verifyResult.cd_surrogate.toFixed(3)}</span>
+                  <motion.div className="flex flex-wrap items-center gap-x-5 gap-y-1" {...settle()}>
+                    <span className="cq-k">
+                      SURROGATE{' '}
+                      <span className="cq-num text-band text-ink tracking-normal">
+                        {verifyResult.cd_surrogate.toFixed(3)}
+                      </span>
                     </span>
-                    <span className="text-muted-foreground">
-                      LBM <span className="tnum font-mono text-foreground">{verifyResult.cd_lbm.toFixed(3)}</span>
+                    <span className="cq-k">
+                      LBM{' '}
+                      <span className="cq-num text-band text-ink tracking-normal">
+                        {verifyResult.cd_lbm.toFixed(3)}
+                      </span>
                     </span>
-                    <Badge
-                      variant="outline"
+                    {/* The gap is a measured quantity, so it gets the orange — and
+                        goes burnt past 5 %, the one deviation mark the charte has. */}
+                    <span
                       className={cn(
-                        'font-normal',
-                        verifyResult.gap_pct < 5
-                          ? 'border-good/40 bg-good/10 text-good'
-                          : 'border-warning/40 bg-warning/10 text-warning',
+                        'cq-num text-band',
+                        verifyResult.gap_pct < 5 ? 'text-or' : 'text-burnt',
                       )}
                     >
-                      écart {verifyResult.gap_pct.toFixed(1)}%
-                    </Badge>
+                      écart {verifyResult.gap_pct.toFixed(1)} %
+                    </span>
                   </motion.div>
                 ) : (
-                  <span className="text-[11px] text-muted-foreground">
+                  // No italic here: this screen already spends its one serif moment
+                  // on the headline Cd, at the top of the lab.
+                  <span className="max-w-[38ch] cq-muted text-body leading-[1.7]">
                     Rejoue le design optimisé dans le vrai solveur — la seule mesure honnête.
                   </span>
                 )}
@@ -197,11 +225,9 @@ export function OptimizerPanel({
                   </Button>
                 )}
               </div>
-            </div>
+            </motion.div>
           </>
         )}
-
-        {running && history.length === 0 && <Skeleton className="h-4 w-40" />}
       </CardContent>
     </Card>
   )

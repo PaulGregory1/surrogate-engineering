@@ -3,10 +3,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 
 /**
- * The stat-tile contract: a sentence-case label, one value, and optional supporting
- * marks. The value keeps the font's proportional figures — `tabular-nums` gives every
- * digit the width of a zero, which reads loose at display sizes — but the readout
- * animates in place, so it is measured in a fixed-width box to stop the row shifting.
+ * A panel's principal value: a micro-label, one figure, and the interval under it.
+ *
+ * The figure is the charte's single display slot — Instrument Serif **roman** at
+ * 40px, never italic, never sans, never bold, never larger. It reads as a
+ * breathing space rather than a headline precisely because everything around it
+ * sits between 9 and 12.5px; enlarge it and the whole screen changes register.
+ *
+ * The interval is not decoration and not optional — a surrogate prediction shown
+ * without its variance is a substantive error, not a stylistic one. Callers derive
+ * it from the model's measured test error; `interval` is only ever omitted where
+ * the number being shown is a measurement rather than a prediction.
  */
 export function StatTile({
   label,
@@ -14,34 +21,34 @@ export function StatTile({
   unit,
   decimals = 2,
   loading = false,
-  hint,
-  trailing,
+  interval,
   className,
 }: {
   label: string
   value: number | null
+  /** rendered as the `<i>` of the 40px figure — 16px, italic, ink3 */
   unit?: string
   decimals?: number
   loading?: boolean
-  hint?: string
-  trailing?: React.ReactNode
+  /** e.g. `± 0.006 · SURFACE PROJETÉE CONSTANTE` — mono orange, under the figure */
+  interval?: string
   className?: string
 }) {
   return (
-    <div className={cn('flex min-w-0 flex-col gap-1', className)}>
-      <div className="text-xs text-muted-foreground">{label}</div>
+    <div className={cn('flex min-w-0 flex-col', className)}>
+      <div className="cq-k">{label}</div>
       {loading || value === null ? (
-        <Skeleton className="h-8 w-24" />
+        <Skeleton className="mt-2.5 h-9 w-28" />
       ) : (
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-3xl leading-none font-semibold tracking-tight">
-            <AnimatedNumber value={value} decimals={decimals} />
-          </span>
-          {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
-          {trailing}
+        // AnimatedNumber counts to the new value in place, so the figure runs on
+        // tabular numerals: without them every frame re-measures and the whole row
+        // twitches sideways for the length of the transition.
+        <div className="cq-value mt-2.5">
+          <AnimatedNumber value={value} decimals={decimals} />
+          {unit && <i>{unit}</i>}
         </div>
       )}
-      {hint && <div className="text-[11px] text-muted-foreground">{hint}</div>}
+      {interval && !loading && value !== null && <div className="cq-band mt-2">{interval}</div>}
     </div>
   )
 }

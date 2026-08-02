@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import Plot from 'react-plotly.js'
 import { motion } from 'framer-motion'
-import { LoaderCircle, Sparkles, TriangleAlert } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { AnimatedNumber } from './AnimatedNumber'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { INK, PLOT_CONFIG, SERIES, axis, baseLayout } from '@/lib/chartTheme'
+import { INK, MARK, PLOT_CONFIG, axisX, axisY, baseLayout } from '@/lib/chartTheme'
+import { settle } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { streamStressOptimize, type StressOptimizeIteration } from '@/api'
+
+const N_ITERS = 30
 
 export function StressOptimizePanel({
   holes,
@@ -38,7 +40,7 @@ export function StressOptimizePanel({
     setFinalPeak(null)
     try {
       await streamStressOptimize(
-        { holes, load_angle_deg: loadAngleDeg, model, n_iters: 30, seed: 0 },
+        { holes, load_angle_deg: loadAngleDeg, model, n_iters: N_ITERS, seed: 0 },
         (it: StressOptimizeIteration) => {
           setHistory((h) => [...h, { it: it.it, peak: it.peak_vm_current }])
           if (it.it === 0) setInitialPeak(it.peak_vm_current)
@@ -57,28 +59,42 @@ export function StressOptimizePanel({
 
   const improvedPct = initialPeak && finalPeak ? (100 * (initialPeak - finalPeak)) / initialPeak : null
   const last = history[history.length - 1]
+  const progress = history.length ? Math.min(1, (last.it + 1) / N_ITERS) : 0
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Placement des trous</CardTitle>
-        <CardDescription>
+    <Card className="gap-5 py-5">
+      <CardHeader className="px-5">
+        <CardTitle className="cq-title">Placement des trous</CardTitle>
+        <CardDescription className="cq-muted text-body">
           Recherche aléatoire locale sur le surrogate GNN — la topologie du maillage change à chaque
           essai, donc pas de gradient exploitable ici. Aire retirée constante.
         </CardDescription>
         <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
+          {/* The single orange flat of this screen. */}
           <Button onClick={run} disabled={running}>
-            {running ? <LoaderCircle className="animate-spin" /> : <Sparkles />}
+            <Sparkles />
             {running ? 'Recherche…' : 'Optimiser'}
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-4 px-5">
         {error && (
-          <div className="flex items-start gap-1.5 text-xs text-warning">
-            <TriangleAlert className="mt-px size-3 shrink-0" />
-            {error}
+          <div className="cq-error">
+            <div className="text-body font-medium">La recherche n’a pas abouti.</div>
+            <div className="mt-1 cq-num text-band cq-muted">{error}</div>
+          </div>
+        )}
+
+        {/* No spinner: a rule filling along the measure ramp, with the real count. */}
+        {running && (
+          <div>
+            <div className="cq-k mb-2">
+              RECHERCHE · {history.length} / {N_ITERS} ESSAIS
+            </div>
+            <div className="cq-progress">
+              <div style={{ width: `${progress * 100}%` }} />
+            </div>
           </div>
         )}
 
@@ -90,7 +106,7 @@ export function StressOptimizePanel({
                 y: history.map((h) => h.peak),
                 type: 'scatter',
                 mode: 'lines',
-                line: { color: SERIES[0], width: 2 },
+                line: { color: MARK.measure, width: 2 },
                 hovertemplate: 'it %{x} · pic %{y:.2f}<extra></extra>',
               },
               {
@@ -98,15 +114,16 @@ export function StressOptimizePanel({
                 y: [last.peak],
                 type: 'scatter',
                 mode: 'markers',
-                marker: { size: 8, color: SERIES[0], line: { color: INK.surface, width: 2 } },
+                // The focal mark, and the only black-filled thing in the plot.
+                marker: { size: 7, color: MARK.focus, line: { color: INK.surface, width: 2 } },
                 hoverinfo: 'skip',
               },
             ]}
             layout={baseLayout({
               height: 220,
-              margin: { l: 52, r: 16, t: 12, b: 36 },
-              xaxis: axis('itération'),
-              yaxis: axis('pic σ_vM', { tickformat: '.2f' }),
+              margin: { l: 56, r: 16, t: 14, b: 38 },
+              xaxis: axisX('ESSAI'),
+              yaxis: axisY('PIC σ_vM', { tickformat: '.2f' }),
               hovermode: 'x unified',
               // One series: the card title already names it, so a legend box with a
               // single swatch would only restate the heading.
@@ -117,10 +134,14 @@ export function StressOptimizePanel({
             style={{ width: '100%' }}
           />
         ) : (
-          <div className="flex h-[220px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border">
-            <Sparkles className="size-5 text-muted-foreground" />
-            <p className="max-w-64 text-center text-xs text-muted-foreground">
-              Lance la recherche pour voir le pic de contrainte descendre au fil des essais.
+          // An invitation, not an excuse — and exactly where the background masses
+          // carry the panel.
+          <div className="flex h-[220px] flex-col items-center justify-center px-6 text-center">
+            <div className="cq-k mb-3">AUCUNE RECHERCHE LANCÉE</div>
+            <div className="cq-value max-w-[18ch] text-[22px]">Déplace les trous, abaisse le pic</div>
+            <p className="mt-3 max-w-[40ch] cq-muted text-body leading-[1.7]">
+              {N_ITERS} essais, à aire retirée constante — le pic de contrainte descend essai après
+              essai.
             </p>
           </div>
         )}
@@ -128,32 +149,35 @@ export function StressOptimizePanel({
         {finalPeak !== null && initialPeak !== null && (
           <>
             <Separator />
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex flex-wrap items-center gap-x-4 gap-y-2"
-            >
-              <div className="text-xs text-muted-foreground">pic σ_vM</div>
-              <div className="tnum font-mono text-sm text-muted-foreground line-through">
-                {initialPeak.toFixed(2)}
+            <motion.div className="flex flex-wrap items-end gap-x-8 gap-y-3" {...settle()}>
+              <div>
+                <div className="cq-k">PIC σ_vM APRÈS RECHERCHE</div>
+                <div className="mt-1.5 flex items-baseline gap-3">
+                  <span className="cq-value text-[26px]">
+                    <AnimatedNumber value={finalPeak} decimals={2} />
+                  </span>
+                  {/* Grey is a state, never a series: the superseded value is gone. */}
+                  <span className="cq-num text-band text-gone line-through">
+                    {initialPeak.toFixed(2)}
+                  </span>
+                </div>
               </div>
-              <div className="text-xl font-semibold tracking-tight">
-                <AnimatedNumber value={finalPeak} decimals={2} />
-              </div>
+
               {improvedPct !== null && (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'font-normal',
-                    improvedPct > 0
-                      ? 'border-good/40 bg-good/10 text-good'
-                      : 'border-warning/40 bg-warning/10 text-warning',
-                  )}
-                >
-                  {improvedPct > 0 ? '−' : '+'}
-                  {Math.abs(improvedPct).toFixed(1)}%
-                </Badge>
+                <div>
+                  <div className="cq-k">VARIATION</div>
+                  <div
+                    className={cn(
+                      'cq-num mt-2 text-[16px]',
+                      improvedPct > 0 ? 'text-or' : 'text-burnt',
+                    )}
+                  >
+                    {improvedPct > 0 ? '−' : '+'}
+                    {Math.abs(improvedPct).toFixed(1)} %
+                  </div>
+                </div>
               )}
+
               {finalHoles && (
                 <Button variant="secondary" size="sm" className="ml-auto" onClick={() => onApply(finalHoles)}>
                   Appliquer ce design

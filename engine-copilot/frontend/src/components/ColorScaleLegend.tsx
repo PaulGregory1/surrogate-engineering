@@ -10,6 +10,10 @@ import { cn } from '@/lib/utils'
  * (and the zero crossing, where there is one) is fully determined, always legible,
  * and costs the plot no width — which matters because these fields are aspect-locked,
  * so every pixel the key takes would shrink the image in both dimensions.
+ *
+ * Values always go through `toFixed`/`toExponential`: raw JS floats print
+ * `0.30000000000000004`, and a dirty number costs an engineering tool more
+ * credibility than a colour mistake ever will.
  */
 export function ColorScaleLegend({
   stops,
@@ -28,8 +32,8 @@ export function ColorScaleLegend({
 
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      <div className="h-1.5 w-full rounded-full" style={{ background: gradient }} />
-      <div className="relative flex justify-between text-[9px] text-muted-foreground tabular-nums">
+      <div className="h-[3px] w-full rounded-[2px]" style={{ background: gradient }} />
+      <div className="relative flex justify-between font-mono text-[9px] tracking-[0.08em] text-ink3 tabular-nums">
         <span>{formatValue(min)}</span>
         {diverging && <span className="absolute left-1/2 -translate-x-1/2">0</span>}
         <span>{formatValue(max)}</span>

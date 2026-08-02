@@ -1,9 +1,23 @@
 <!doctype html>
-<html lang="fr" class="dark">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#FBFAF9" />
+    <!-- Three faces: Instrument Sans (interface, and the two overview ratios at
+         700), Instrument Serif roman (the 40px panel value — no italic anywhere in
+         this app), IBM Plex Mono (every number and every micro-label). There is
+         deliberately NO display face — adding one is what pushes a screen into
+         poster register. 700 is loaded only for `.cq-hero`; the interface itself
+         never goes past 600. Each keeps a local fallback in src/index.css, so an
+         offline demo degrades to system faces instead of losing the layout. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:wght@400&display=swap"
+      rel="stylesheet"
+    />
     <title>Engine-Copilot</title>
   </head>
   <body>

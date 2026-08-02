@@ -1,80 +1,181 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* Single dark scheme — there is no light theme and no toggle. The `dark` class is
-   stamped once on <html> (index.html) purely so shadcn's `dark:` utilities resolve;
-   nothing ever removes it. */
+/* ═══════════════════════════════════════════════════════════════════════════
+   CALQUE — registre sobre et dense
+   ═══════════════════════════════════════════════════════════════════════════
+   One light scheme, no toggle.
+
+   THE constraint, ahead of every other: **the register is quiet.** Small, dense,
+   built out of one-pixel rules and tiny labels. Nothing shouts. No display face, no
+   flat that takes the whole width. The working type ceiling is 40px and there are
+   exactly three faces — see `--text-*` below.
+
+   Then: orange is a measuring scale, not a brand colour. It always encodes a
+   physical quantity (stress, error, drag, latency, load). An orange flat put there
+   "for colour" is a mistake — if you can't name the quantity, remove it.
+
+   And: panels are tracing paper laid over data. You see through them. An opaque
+   panel over a plot severs the link between the interface and what it describes,
+   and that link is what the charte is named after.
+
+   THREE OWNER-APPROVED DEVIATIONS from the published charte. They are deliberate;
+   do not "restore" them without asking:
+     1. Solver fields use the conventional blue↔red colormaps, not the orange ramp
+        (see `lib/chartTheme.ts`). Scoped to rasterised fields only.
+     2. The two overview ratios are set at `--text-hero` (76px, bold) — the charte
+        forbids both the size and the weight.
+     3. There is no Instrument Serif italic anywhere. The charte's "one serif moment
+        per screen" was dropped wholesale.
+
+   The `dark` variant is redefined to a class that is never stamped on <html>, so
+   the `dark:` utilities baked into the vendored shadcn primitives compile without
+   ever matching. Do not add `.dark` anywhere.
+
+   `src/lib/chartTheme.ts` mirrors the ramp and the ink values as literals, because
+   Plotly draws into its own SVG and never resolves CSS custom properties. Keep the
+   two in step. */
 @custom-variant dark (&:is(.dark *));
 
-/* Palette provenance: the chart slots below are the dataviz reference palette's dark
-   column, validated against this file's --card surface (#121419) — lightness band,
-   chroma floor, adjacent-pair CVD separation, normal-vision floor and 3:1 contrast all
-   pass. The UI primary is a deeper step of slot 1's own blue ramp, so the accent and
-   "series 1" are the same hue at two steps. Re-run the validator before changing any
-   of them. `src/lib/chartTheme.ts` mirrors these hexes for Plotly, which cannot read
-   CSS custom properties. */
 :root {
-  color-scheme: dark;
-  --radius: 0.625rem;
+  color-scheme: light;
+  /* Drives shadcn's radius scale: sm 8 · md 10 · lg 12 (bandeau) · xl 16 (carte) */
+  --radius: 0.75rem;
 
-  --background: #0a0b0e;
-  --foreground: #e9ecf2;
+  /* ── Surfaces ─────────────────────────────────────────────────────────── */
+  --paper: #fbfaf9; /* page — a barely warm white, never cream */
+  --white: #ffffff; /* cards, data zones */
 
-  --card: #121419;
-  --card-foreground: #e9ecf2;
-  --popover: #161a21;
-  --popover-foreground: #e9ecf2;
+  /* ── Ink — brown-black, never #000 ────────────────────────────────────── */
+  --ink: #0d0c0b;
+  --ink2: #57534e;
+  --ink3: #9c9691;
 
-  /* blue ramp step 500 — 5.3:1 against white, so button labels clear AA at 14px */
-  --primary: #256abf;
+  /* ── Hairlines ────────────────────────────────────────────────────────── */
+  --line: #e9e5e1;
+  --line2: #d6d0ca;
+
+  /* ── Orange ───────────────────────────────────────────────────────────── */
+  --or: #ff6a00; /* flats, rules, large figures */
+  --or2: #ff9040; /* hover */
+  --burnt: #b03e00; /* orange as *text*, and anything out of envelope */
+  --peach: #ffe3cc;
+
+  /* "Dominated / discarded / superseded" — a state, never a series. */
+  --gone: #b8b1aa;
+
+  /* ── Measure ramp, minimum → critical ─────────────────────────────────── */
+  --m0: #fff0e0;
+  --m1: #ffc68a;
+  --m2: #ff9436;
+  --m3: #ec6008;
+  --m4: #963705;
+  --m5: #1a1512;
+  --ramp: linear-gradient(90deg, var(--m0), var(--m1), var(--m2), var(--m3), var(--m4), var(--m5));
+
+  /* ── Shadows — always brown-orange. A grey shadow on this palette reads as
+        a rendering bug. ────────────────────────────────────────────────── */
+  --sh-card: 0 1px 2px rgba(40, 25, 15, 0.04), 0 22px 56px rgba(120, 60, 10, 0.08);
+  --sh-calque: 0 1px 0 rgba(13, 12, 11, 0.05), 0 24px 56px rgba(120, 60, 10, 0.12);
+  --sh-bar: 0 1px 0 rgba(13, 12, 11, 0.05), 0 12px 30px rgba(120, 60, 10, 0.08);
+  --focus: 0 0 0 3px rgba(255, 106, 0, 0.28);
+
+  --r-card: 16px;
+  --r-calque: 15px;
+  --r-bar: 12px;
+  --r-ctl: 8px;
+
+  /* The breathing of the charte. Same curve everywhere. */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 0.9s;
+
+  /* Three faces, not four. There is no display face in this charte, on purpose. */
+  --f-ui: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --f-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* ── shadcn's surface contract, expressed in Calque ───────────────────── */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--white);
+  --card-foreground: var(--ink);
+  --popover: var(--white);
+  --popover-foreground: var(--ink);
+  --primary: var(--or);
   --primary-foreground: #ffffff;
-
-  --secondary: #1b1f28;
-  --secondary-foreground: #e9ecf2;
-
-  --muted: #171b22;
-  --muted-foreground: #8b93a3;
-
-  --accent: #1e232d;
-  --accent-foreground: #e9ecf2;
-
-  --destructive: #d03b3b;
+  --secondary: var(--peach);
+  --secondary-foreground: var(--burnt);
+  --muted: #f2ede8;
+  --muted-foreground: var(--ink2);
+  --accent: #f6f2ee;
+  --accent-foreground: var(--ink);
+  --destructive: var(--burnt);
   --destructive-foreground: #ffffff;
+  --border: var(--line);
+  --input: var(--line2);
+  --ring: var(--or);
 
-  --border: #232833;
-  --input: #2a3040;
-  /* blue ramp step 400 — the same hue as --primary, one step up, for ink and marks */
-  --ring: #3987e5;
+  /* Categorical series are never separated by hue here — there aren't enough hues
+     in the charte, and two oranges side by side are unreadable. These slots stay
+     pinned to the ramp so a stray `chart-N` utility still lands inside it; real
+     charts pull `MARK` from lib/chartTheme.ts and separate series by value,
+     stroke and marker shape instead. */
+  --chart-1: var(--or);
+  --chart-2: var(--m4);
+  --chart-3: var(--ink);
+  --chart-4: var(--m1);
+  --chart-5: var(--gone);
 
-  --chart-1: #3987e5;
-  --chart-2: #d95926;
-  --chart-3: #199e70;
-  --chart-4: #c98500;
-  --chart-5: #d55181;
+  /* The charte has no red and no green. What deviates is `--burnt`; what is
+     nominal is simply ink. Status is always carried by an icon and a word too,
+     never by hue alone. */
+  --good: var(--ink2);
+  --warning: var(--burnt);
+  --critical: var(--burnt);
 
-  /* Reserved: status never doubles as a series color. */
-  --good: #0ca30c;
-  --warning: #fab219;
-  --critical: #d03b3b;
-
-  --sidebar: #0c0e12;
-  --sidebar-foreground: #e9ecf2;
-  --sidebar-primary: #256abf;
+  /* The rails are translucent paper: the masses still read through them, but only
+     just. Lower than this and a full-height rail transmits enough of the gradient
+     to become a coloured column, which is exactly the "you noticed it" failure. */
+  --sidebar: rgba(255, 255, 255, 0.82);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--or);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1a1f28;
-  --sidebar-accent-foreground: #e9ecf2;
-  --sidebar-border: #1e222b;
-  --sidebar-ring: #3987e5;
+  --sidebar-accent: var(--peach);
+  --sidebar-accent-foreground: var(--burnt);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--or);
 }
 
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --font-sans: var(--f-ui);
+  --font-mono: var(--f-mono);
+  --font-serif: var(--f-serif);
+
+  /* The whole type scale. It stops at `value` (40px) deliberately: there is no
+     `text-5xl` in this charte, and reaching for an arbitrary `text-[52px]` is
+     normally the signal that a screen has drifted into poster register.
+     `--text-hero` is the single owner-approved exception, used only by the two
+     overview ratios (see `.cq-hero`); everything else stays under 40. */
+  --text-k: 9px;
+  --text-k--letter-spacing: 0.18em;
+  --text-band: 11px;
+  --text-body: 12.5px;
+  --text-ctl: 13px;
+  --text-title: 14px;
+  --text-title--letter-spacing: -0.015em;
+  --text-value: 40px;
+  --text-value--line-height: 1;
+  --text-value--letter-spacing: -0.015em;
+  --text-hero: 76px;
+  --text-hero--line-height: 0.92;
+  --text-hero--letter-spacing: -0.04em;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --ease-calque: var(--ease);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -96,6 +197,25 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /* Calque's own names, so components can say what they mean. */
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink2);
+  --color-ink3: var(--ink3);
+  --color-line: var(--line);
+  --color-line2: var(--line2);
+  --color-or: var(--or);
+  --color-or2: var(--or2);
+  --color-burnt: var(--burnt);
+  --color-peach: var(--peach);
+  --color-gone: var(--gone);
+  --color-m0: var(--m0);
+  --color-m1: var(--m1);
+  --color-m2: var(--m2);
+  --color-m3: var(--m3);
+  --color-m4: var(--m4);
+  --color-m5: var(--m5);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -114,6 +234,10 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --shadow-card: var(--sh-card);
+  --shadow-calque: var(--sh-calque);
+  --shadow-bar: var(--sh-bar);
 }
 
 @layer base {
@@ -127,26 +251,409 @@
     height: 100%;
   }
 
+  /* 12.5px is the charte's body size, and setting it here rather than per component
+     is what keeps the register honest: anything that needs to be bigger has to say
+     so explicitly, against a scale that tops out at 40. */
   body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04";
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--f-ui);
+    font-size: 12.5px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
-  /* Numbers that sit in a column (axis ticks, table rows, metric readouts that update
-     in place) need equal digit widths so they don't jitter; large standalone figures
-     keep the font's proportional figures, which look tighter at display sizes. */
+  /* Numbers that sit in a column (axis ticks, table rows, readouts that update in
+     place) need equal digit widths so they don't jitter. */
   .tnum {
     font-variant-numeric: tabular-nums;
   }
 }
 
-/* Plotly renders its own SVG; these keep its chrome from fighting the app surface. */
+/* The Calque vocabulary lives in `@layer components`, one layer *below* Tailwind's
+   utilities, so a `text-burnt` or a `py-0` on the same element still wins. Written
+   unlayered — as the charte's own tokens.css is — `.cq-k`'s ink3 would quietly beat
+   every colour override placed next to it. */
+@layer components {
+  /* ═══ Fond — trois couches, dans cet ordre ═════════════════════════════════
+     1. drifting blurred gradient masses  2. hard-edged geometry  3. grain.
+     This is atmosphere, not a pattern: **if you notice it, it is too strong.**
+     Blur and edge still hold each other up — drop the edge and even these faint
+     gradients turn into wallpaper. */
+
+  .cq-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .cq-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(88px);
+  }
+  .cq-b1 {
+    width: 680px;
+    height: 680px;
+    top: -260px;
+    right: -180px;
+    background: radial-gradient(
+      circle at 35% 35%,
+      rgba(255, 106, 0, 0.22),
+      rgba(255, 144, 64, 0.07) 55%,
+      transparent 72%
+    );
+    animation: cq-d1 26s ease-in-out infinite alternate;
+  }
+  .cq-b2 {
+    width: 520px;
+    height: 520px;
+    bottom: -200px;
+    left: -160px;
+    background: radial-gradient(
+      circle at 60% 40%,
+      rgba(255, 177, 110, 0.16),
+      rgba(255, 227, 204, 0.06) 58%,
+      transparent 74%
+    );
+    animation: cq-d2 32s ease-in-out infinite alternate;
+  }
+  .cq-b3 {
+    width: 340px;
+    height: 340px;
+    top: 46%;
+    left: 52%;
+    background: radial-gradient(circle at 50% 50%, rgba(176, 62, 0, 0.11), transparent 68%);
+    animation: cq-d3 22s ease-in-out infinite alternate;
+  }
+
+
+  /* Three lines that take the plastic look off the white. */
+  .cq-grain {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 98;
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+  }
+
+  /* ═══ Calque — translucent paper laid over data ═══════════════════════════
+     The border is *whiter* than the fill: that is what catches the light and
+     gives the sheet its thickness. Below .70 the text drowns in a dense scatter;
+     above .88 it stops being a calque and becomes an opaque card. Padding is left
+     to the caller, since a band and a panel want different gutters. */
+  /* .88 rather than the charte's .80: at .80 the background contour lines read
+     straight through a panel carrying numbers. This is the charte's own stated
+     upper bound, so the sheet still reads as tracing paper over the page rather
+     than as an opaque card. */
+  .cq-calque {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    box-shadow: var(--sh-calque);
+    border-radius: var(--r-calque);
+  }
+  /* The thin band form: same idea, lighter, for something that runs the width of a
+     data zone rather than sitting in one of its corners. */
+  .cq-bar {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow: var(--sh-bar);
+    border-radius: var(--r-bar);
+  }
+
+  /* ═══ Typographie — plafond 40 px ═════════════════════════════════════════ */
+
+  /* The one figure a panel is allowed: Instrument Serif **roman**, 40px. Not
+     italic, not sans, never bold, never larger. Its elegance is its moderation —
+     it works because everything around it lives between 9 and 12.5px. */
+  .cq-value {
+    font-family: var(--f-serif);
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+  .cq-value i {
+    font-size: 16px;
+    font-style: italic;
+    color: var(--ink3);
+    letter-spacing: 0;
+  }
+  /* The hero ratio on the overview, and the one place the charte's ceiling is
+     lifted — owner's call. Sans rather than serif because it is set bold, and
+     Instrument Serif has no bold; a faux-bold serif at this size looks broken. */
+  .cq-hero {
+    font-family: var(--f-ui);
+    font-size: 76px;
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+  }
+  .cq-hero i {
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ink3);
+    letter-spacing: -0.02em;
+  }
+  /* Panel title. -0.015em is as tight as this charte tracks; anything tighter
+     belongs to the poster register. */
+  .cq-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  /* Micro-labels work because they are tiny and spaced, not because they shout. */
+  .cq-k {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    font-weight: 400;
+  }
+  /* Every number, everywhere — it is what aligns the columns and what tells a
+     measurement apart from a word. */
+  .cq-num {
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  /* The interval that rides under every predicted figure. */
+  .cq-band {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--or);
+  }
+  .cq-muted {
+    color: var(--ink2);
+  }
+
+  /* Key/value rows: the panel's supporting facts, under its one figure. Label in
+     ink2, value in mono — a measurement is never set in the same face as a word. */
+  .cq-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12.5px;
+    padding: 7px 0;
+    border-top: 1px solid var(--line);
+  }
+  .cq-row > :first-child {
+    color: var(--ink2);
+  }
+  .cq-row > :last-child {
+    font-family: var(--f-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Out of envelope. Burnt, never red — the charte has no red, and adding one
+     would break the reading of the ramp. */
+  .cq-warn {
+    color: var(--burnt);
+    font-weight: 500;
+  }
+
+  /* Loading is a rule filling along the measure ramp with the real cost printed
+     beside it — never a spinner. The product sells speed; show it. */
+  .cq-progress {
+    height: 3px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .cq-progress > div {
+    height: 100%;
+    background: var(--ramp);
+    background-size: 480px 100%;
+    transition: width 0.4s var(--ease);
+  }
+
+  /* Error: say what happened, then what to do. A left burnt rule, no coloured
+     fill, no apology, no "je". */
+  .cq-error {
+    border-left: 2px solid var(--burnt);
+    padding: 10px 0 10px 14px;
+  }
+}
+
+/* Deliberately mismatched durations, so the three masses never resynchronise. */
+@keyframes cq-d1 {
+  to {
+    transform: translate(-90px, 70px) scale(1.14);
+  }
+}
+@keyframes cq-d2 {
+  to {
+    transform: translate(80px, -60px) scale(1.1);
+  }
+}
+@keyframes cq-d3 {
+  to {
+    transform: translate(-120px, 90px) scale(0.86);
+  }
+}
+
+/* ═══ Overrides on the vendored shadcn primitives ═══════════════════════════
+   components/ui/* is generated by the shadcn CLI and must not be hand-edited, so
+   everything Calque changes about those primitives lives here, keyed on their
+   `data-slot` attributes. These rules are deliberately unlayered: unlayered CSS
+   outranks every Tailwind layer, so they win over the utilities baked into the
+   generated class strings without an `!important` anywhere. */
+
+[data-slot="card"] {
+  border-color: var(--line2);
+  border-radius: var(--r-card);
+  box-shadow: var(--sh-card);
+}
+
+[data-slot="button"] {
+  font-family: var(--f-ui);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--r-ctl);
+  transition: all 0.18s var(--ease);
+}
+[data-slot="button"][data-variant="outline"] {
+  background: var(--white);
+  border-color: var(--line2);
+  box-shadow: none;
+}
+[data-slot="button"][data-variant="outline"]:hover:not(:disabled) {
+  background: var(--white);
+  border-color: var(--ink3);
+  color: var(--ink);
+}
+[data-slot="button"][data-variant="ghost"]:hover:not(:disabled) {
+  background: var(--accent);
+}
+[data-slot="button"]:focus-visible {
+  box-shadow: var(--focus);
+}
+
+[data-slot="input"],
+[data-slot="select-trigger"] {
+  background: var(--white);
+  border-color: var(--line2);
+  border-radius: var(--r-ctl);
+  box-shadow: none;
+  font-size: 13px;
+}
+/* Inputs hold values, so they are mono; a select holds a name, so it stays in the
+   interface face. */
+[data-slot="input"] {
+  font-family: var(--f-mono);
+}
+[data-slot="input"]:focus-visible,
+[data-slot="select-trigger"]:focus-visible {
+  box-shadow: var(--focus);
+}
+
+[data-slot="popover-content"],
+[data-slot="select-content"] {
+  border-color: var(--line2);
+  border-radius: var(--r-calque);
+  box-shadow: var(--sh-calque);
+}
+
+/* The tooltip already resolves to ink-on-paper through `bg-foreground` /
+   `text-background`; only the face and the corner need saying. */
+[data-slot="tooltip-content"] {
+  font-family: var(--f-ui);
+  border-radius: var(--r-ctl);
+}
+
+/* A one-pixel track, in the same family as the table rules and the background
+   arcs — the charte's thinnest recurring line. */
+[data-slot="slider-track"] {
+  background: var(--line2);
+}
+[data-slot="slider-track"][data-orientation="horizontal"] {
+  height: 1px;
+}
+[data-slot="slider-range"] {
+  background: var(--or);
+}
+[data-slot="slider-thumb"] {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  background: var(--or);
+  box-shadow: 0 0 0 4px rgba(255, 106, 0, 0.14);
+  transition: box-shadow 0.18s var(--ease);
+  cursor: grab;
+}
+[data-slot="slider-thumb"]:hover,
+[data-slot="slider-thumb"]:focus-visible {
+  box-shadow: 0 0 0 6px rgba(255, 106, 0, 0.2);
+  outline: none;
+}
+[data-slot="slider-thumb"]:active {
+  cursor: grabbing;
+}
+
+[data-slot="tabs-list"] {
+  background: var(--muted);
+  border-radius: var(--r-ctl);
+}
+[data-slot="tabs-trigger"] {
+  border-radius: 6px;
+}
+[data-slot="tabs-trigger"][data-state="active"] {
+  background: var(--white);
+  box-shadow: 0 1px 2px rgba(40, 25, 15, 0.07);
+}
+
+[data-slot="badge"] {
+  font-family: var(--f-mono);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* Skeletons stay warm rather than grey — a neutral grey next to this orange
+   always reads dirty. */
+[data-slot="skeleton"] {
+  background: linear-gradient(90deg, #f4efea, #faf5f0, #f4efea);
+  border-radius: var(--r-ctl);
+}
+
+[data-slot="separator"] {
+  background: var(--line);
+}
+
+/* Plotly renders its own SVG; this keeps its chrome off the page. */
 .js-plotly-plot .plotly .modebar {
   display: none !important;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cq-blob {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @media print {
   .no-print {
+    display: none !important;
+  }
+  .cq-bg,
+  .cq-grain {
     display: none !important;
   }
 }

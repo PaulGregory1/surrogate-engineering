@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import Plot from 'react-plotly.js'
 import { motion } from 'framer-motion'
-import { LoaderCircle, Play, TriangleAlert } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { StreamlineOverlay } from './StreamlineOverlay'
 import { AnimatedNumber } from './AnimatedNumber'
 import { Button } from '@/components/ui/button'
@@ -67,16 +67,16 @@ export function FlowAnimation({
   )
 
   return (
-    <Card className="gap-4 py-4">
-      <CardHeader className="px-4">
-        <CardTitle className="text-sm">Écoulement</CardTitle>
+    <Card className="gap-4 py-5">
+      <CardHeader className="px-5">
+        <CardTitle className="cq-title">Écoulement</CardTitle>
         <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
           <Tabs value={mode} onValueChange={(v) => setMode(v as Mode)}>
             <TabsList className="h-8">
-              <TabsTrigger value="streamlines" className="text-xs">
+              <TabsTrigger value="streamlines" className="text-body">
                 Lignes de courant
               </TabsTrigger>
-              <TabsTrigger value="lbm" className="text-xs">
+              <TabsTrigger value="lbm" className="text-body">
                 Solveur LBM
               </TabsTrigger>
             </TabsList>
@@ -84,22 +84,19 @@ export function FlowAnimation({
         </div>
       </CardHeader>
 
-      <CardContent className="px-4">
+      <CardContent className="px-5">
         {mode === 'streamlines' ? (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             <div
-              className="relative w-full overflow-hidden rounded-lg border border-border bg-background"
+              className="relative w-full overflow-hidden rounded-[12px] border border-line bg-paper"
               style={{ aspectRatio: '2 / 1' }}
             >
               {grid ? (
                 <>
                   <svg viewBox={`0 0 ${grid.width} ${grid.height}`} className="absolute inset-0 h-full w-full">
-                    <path
-                      d={grid.path}
-                      fill="color-mix(in srgb, var(--foreground) 10%, transparent)"
-                      stroke="var(--muted-foreground)"
-                      strokeWidth={0.3}
-                    />
+                    {/* Cut paper under a hairline of ink, like every other body in
+                        this app — the traces flow around it, they don't tint it. */}
+                    <path d={grid.path} fill="var(--paper)" stroke="var(--ink)" strokeWidth={0.3} />
                   </svg>
                   <StreamlineOverlay
                     u={result!.fields.u}
@@ -112,50 +109,49 @@ export function FlowAnimation({
                 <Skeleton className="absolute inset-0" />
               )}
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="cq-muted text-band leading-[1.7]">
               Particules advectées (RK4) dans le champ prédit par le surrogate — instantané, aucune
               intégration en temps. La structure du sillage est réelle, la vitesse d’affichage ne
               l’est pas.
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <Button size="sm" onClick={runSimulation} disabled={running}>
-                {running ? <LoaderCircle className="animate-spin" /> : <Play />}
+          <div className="flex flex-col gap-3.5">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Outline, not filled: the screen's one orange flat is the optimiser's
+                  button, further down. */}
+              <Button variant="outline" size="sm" onClick={runSimulation} disabled={running}>
+                <Play />
                 {running ? 'Simulation…' : 'Lancer le solveur'}
               </Button>
               {frame && (
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-28 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary transition-[width] duration-200"
-                      style={{ width: `${progress * 100}%` }}
-                    />
+                <div className="min-w-[160px] flex-1">
+                  <div className="cq-k mb-1.5">
+                    ITÉRATIONS LBM · {frame.t_step} / {TOTAL_STEPS}
                   </div>
-                  <span className="tnum text-[11px] text-muted-foreground">
-                    {frame.t_step} / {TOTAL_STEPS}
-                  </span>
+                  <div className="cq-progress">
+                    <div style={{ width: `${progress * 100}%` }} />
+                  </div>
                 </div>
               )}
               {cdFinal !== null && (
-                <div className="ml-auto text-xs">
-                  <span className="text-muted-foreground">Cd (LBM, run court) </span>
-                  <span className="tnum font-mono font-medium text-good">
+                <div className="ml-auto text-right">
+                  <div className="cq-k">CD · LBM, RUN COURT</div>
+                  <div className="mt-1 cq-num text-[16px] text-or">
                     <AnimatedNumber value={cdFinal} decimals={3} />
-                  </span>
+                  </div>
                 </div>
               )}
             </div>
 
             {error && (
-              <div className="flex items-start gap-1.5 text-xs text-warning">
-                <TriangleAlert className="mt-px size-3 shrink-0" />
-                {error}
+              <div className="cq-error">
+                <div className="text-body font-medium">Le solveur s’est interrompu.</div>
+                <div className="mt-1 cq-num text-band cq-muted">{error}</div>
               </div>
             )}
 
-            <div className="overflow-hidden rounded-lg border border-border bg-background">
+            <div className="overflow-hidden rounded-[12px] border border-line bg-white">
               {frame ? (
                 <motion.div key="plot" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <Plot
@@ -164,7 +160,8 @@ export function FlowAnimation({
                         z: frame.vorticity,
                         type: 'heatmap',
                         // Vorticity is signed — the two counter-rotating shear layers
-                        // ARE the story — so: diverging, pinned neutral at zero.
+                        // ARE the story — so: the diverging blue↔red scale, one sign
+                        // of rotation per pole, neutral pinned at zero.
                         colorscale: DIVERGING,
                         zmid: 0,
                         zsmooth: 'best',
@@ -187,14 +184,14 @@ export function FlowAnimation({
                     min={vorticityRange[0]}
                     max={vorticityRange[1]}
                     diverging
-                    className="px-3 pb-2"
+                    className="px-4 pb-3"
                   />
                 </motion.div>
               ) : (
-                <Skeleton className="w-full" style={{ aspectRatio: '2 / 1' }} />
+                <Skeleton className="w-full rounded-none" style={{ aspectRatio: '2 / 1' }} />
               )}
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="cq-muted text-band leading-[1.7]">
               Vraies itérations du solveur Lattice-Boltzmann, diffusées image par image. C’est la
               référence que le surrogate approxime — et la raison pour laquelle il existe.
             </p>

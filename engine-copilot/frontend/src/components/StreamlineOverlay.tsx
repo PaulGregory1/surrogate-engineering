@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { STREAK, sampleScale } from '@/lib/chartTheme'
 import { rk4Step } from '@/geometry'
 
 const N_PARTICLES = 56
@@ -25,10 +26,15 @@ interface Particle {
 }
 
 // Client-side RK4 streamlines over the predicted (u, v) field — instantaneous,
-// no round trip. Particles are animated by mutating pre-allocated SVG <line>
-// elements directly via refs on every requestAnimationFrame tick instead of
-// going through React state, so 56 particles x 27 trail segments doesn't trigger
-// a re-render 60 times a second.
+// no round trip. Particles are animated by mutating pre-allocated SVG elements
+// directly via refs on every requestAnimationFrame tick instead of going through
+// React state, so 56 particles x 27 trail segments doesn't trigger a re-render 60
+// times a second.
+//
+// Each trace is coloured by the local flow speed on the same blue→red ramp as the
+// field panels above it: slow water blue, freestream red. Colour goes on the <g>
+// (one write per particle per frame) rather than on each <line>, and the segments
+// inherit it — the per-segment work stays the four coordinates plus opacity.
 export function StreamlineOverlay({
   u,
   v,
@@ -41,9 +47,34 @@ export function StreamlineOverlay({
   height: number
 }) {
   const lineRefs = useRef<(SVGLineElement | null)[][]>([])
+  const groupRefs = useRef<(SVGGElement | null)[]>([])
   const particlesRef = useRef<Particle[]>([])
   const fieldRef = useRef({ u, v })
   fieldRef.current = { u, v }
+
+  // Normalising speed against the field's own maximum keeps the ramp meaningful
+  // across Reynolds numbers, where the absolute inlet speed changes by an order of
+  // magnitude but the wake structure is what the reader is after.
+  const speedMax = useMemo(() => {
+    let m = 0
+    for (let j = 0; j < u.length; j++) {
+      for (let i = 0; i < u[j].length; i++) {
+        const s = Math.hypot(u[j][i], v[j][i])
+        if (s > m) m = s
+      }
+    }
+    return m || 1
+  }, [u, v])
+
+  const speedMaxRef = useRef(speedMax)
+  speedMaxRef.current = speedMax
+
+  // 24 pre-sampled steps: interpolating the ramp per particle per frame would be
+  // 56 string builds every 16ms for a difference no eye can resolve.
+  const swatches = useMemo(
+    () => Array.from({ length: 24 }, (_, i) => sampleScale(STREAK, i / 23)),
+    [],
+  )
 
   useEffect(() => {
     function spawn(seeded = false): Particle {
@@ -80,6 +111,14 @@ export function StreamlineOverlay({
         // Ramp in over the first FADE of the traversal and out over the last.
         const envelope = Math.min(1, p.life / FADE, (1 - p.life) / FADE)
 
+        const g = groupRefs.current[pi]
+        if (g) {
+          const j = Math.min(height - 1, Math.max(0, Math.round(p.y)))
+          const i = Math.min(width - 1, Math.max(0, Math.round(p.x)))
+          const speed = Math.hypot(uf[j]?.[i] ?? 0, vf[j]?.[i] ?? 0) / speedMaxRef.current
+          g.setAttribute('stroke', swatches[Math.min(swatches.length - 1, (speed * swatches.length) | 0)])
+        }
+
         const segs = lineRefs.current[pi]
         if (!segs) return
         for (let s = 0; s < TRAIL_LEN - 1; s++) {
@@ -92,8 +131,11 @@ export function StreamlineOverlay({
             el.setAttribute('y1', String(a.y))
             el.setAttribute('x2', String(b.x))
             el.setAttribute('y2', String(b.y))
-            // Brightest at the head of the trail, fading to nothing at the tail.
-            el.setAttribute('stroke-opacity', String(Math.max(0, envelope * 0.75 * (s / TRAIL_LEN) ** 1.6)))
+            // Linear fade from the head of the trail to nothing at the tail. Both
+            // the near-opaque ceiling and the linear (rather than eased) falloff are
+            // there because these are hairlines on white paper: anything gentler and
+            // the traces read as scattered flecks instead of continuous lines.
+            el.setAttribute('stroke-opacity', String(Math.max(0, envelope * 0.95 * (s / TRAIL_LEN))))
           } else {
             el.setAttribute('stroke-opacity', '0')
           }
@@ -104,12 +146,22 @@ export function StreamlineOverlay({
 
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [width, height])
+    // `swatches` is memoised on [] and never changes; listing it keeps the deps
+    // honest without ever re-seeding the particles.
+  }, [width, height, swatches])
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 h-full w-full" style={{ pointerEvents: 'none' }}>
+      {/* Stroke is set on the group each frame from the local speed; the segments
+          inherit it and only carry geometry plus their own trail-age opacity. */}
       {Array.from({ length: N_PARTICLES }).map((_, pi) => (
-        <g key={pi}>
+        <g
+          key={pi}
+          ref={(el) => {
+            groupRefs.current[pi] = el
+          }}
+          stroke={swatches[0]}
+        >
           {Array.from({ length: TRAIL_LEN - 1 }).map((_, s) => (
             <line
               key={s}
@@ -117,8 +169,7 @@ export function StreamlineOverlay({
                 if (!lineRefs.current[pi]) lineRefs.current[pi] = []
                 lineRefs.current[pi][s] = el
               }}
-              stroke="var(--ring)"
-              strokeWidth={0.35}
+              strokeWidth={0.55}
               strokeLinecap="round"
               strokeOpacity={0}
             />

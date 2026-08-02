@@ -1,4 +1,4 @@
-<!-- graph-baseline: eeeabf6 -->
+<!-- graph-baseline: 85f5ce3 -->
 # Knowledge Graph — Surrogate Engineering
 
 > **Purpose**: navigation map of this repo for Claude. Read **this file** instead of
@@ -130,24 +130,30 @@ the alias off the root `tsconfig.json` (which only holds project references), so
 `src/components/ui/` afterwards.
 
 ```
-App.tsx — <ChatProvider> + <TooltipProvider> wrapping a 3-column shell
+App.tsx — <ChatProvider> + <TooltipProvider> wrapping <Backdrop> + a 3-column shell
+├─ Backdrop (in App.tsx) — gradient masses + grain, viewport-fixed, shared by every page
+├─ components/ContourField.tsx — burnt iso-lines, scoped to the content column only
 ├─ components/AppSidebar.tsx — left nav (icon rail < md), health dot footer
 ├─ main — <Routes>, own scroll container
 │   ├─ pages/Home.tsx — hero, lab cards, principles
 │   ├─ pages/FlowLab.tsx — debounced predict-on-change (250ms)
 │   │   ├─ ShapeEditor.tsx — 6 Fourier sliders + Re; exports ShapePreview (reused read-only)
-│   │   ├─ FieldViewer.tsx — u (sequential) / v, p (diverging, zmid 0) small multiples
+│   │   ├─ FieldViewer.tsx — u (sequential blue→red) / v, p (diverging, zmid 0) small multiples
 │   │   ├─ FlowAnimation.tsx — Tabs: client-RK4 streamlines vs live LBM (SSE)
-│   │   │   └─ StreamlineOverlay.tsx — 56 particles, direct SVG mutation, no React state
+│   │   │   └─ StreamlineOverlay.tsx — 56 particles coloured by local speed (STREAK),
+│   │   │      direct SVG mutation, no React state
 │   │   ├─ OptimizerPanel.tsx — Adam optimize (SSE), verify-with-solver, apply-design
 │   │   │   └─ ConvergencePlot.tsx — live cd_best/cd_mean
 │   ├─ pages/StressLab.tsx — debounced predict (300ms)
 │   │   ├─ HoleEditor.tsx — click/drag/wheel hole placement + load-angle slider
-│   │   ├─ StressViewer.tsx — magma von-Mises heatmap + pulsing peak marker
+│   │   ├─ StressViewer.tsx — von-Mises heatmap on the measure ramp + pulsing peak marker
 │   │   ├─ StressOptimizePanel.tsx — randomized local-search optimize (SSE)
 └─ chat/ChatSidebar.tsx — right panel on EVERY page (overlay + backdrop < lg)
-Shared: PageHeader.tsx (sticky, per-page actions + copilot toggle), StatTile.tsx,
-MetricsBadge.tsx, ColorScaleLegend.tsx, AnimatedNumber.tsx, ToolCallCard.tsx
+Shared: PageHeader.tsx (sticky, per-page actions + copilot toggle), StatTile.tsx
+(the one 40px figure + its interval), ColorScaleLegend.tsx, AnimatedNumber.tsx,
+ToolCallCard.tsx
+Shared libs: lib/chartTheme.ts (Plotly), lib/motion.ts (the one entrance curve),
+lib/utils.ts (`cn`)
 ```
 
 **Chat is a sidebar, not a page.** `chat/ChatProvider.tsx` holds the transcript above the
@@ -164,19 +170,103 @@ bodies are needed): `streamFlowOptimize` (**query-string params** — inconsiste
 JSON-body convention used everywhere else), `streamFlowSimulate`, `streamStressOptimize`,
 `streamAgentChat`.
 
-**Design system — one dark scheme, no toggle.** `index.css` holds a single `:root` token set
-(shadcn names, plain hex) plus `@theme inline`; `<html class="dark">` is stamped statically in
-`index.html` only so shadcn's `dark:` utilities resolve. There is no light theme and no
-`ThemeToggle`. Chart tokens are the dataviz reference palette's dark column, validated against
-the `--card` surface (`#121419`); the UI `--primary` (`#256abf`) is a deeper step of chart
-slot 1's own blue ramp, so accent and "series 1" are one hue at two steps.
+**Design system — "Calque": registre sobre et dense.** One light scheme, no toggle. The full
+charte is installed as a Claude skill at `~/.claude/skills/calque/` (SKILL.md + `references/`
++ `assets/tokens.css`) — **read it before touching any UI**, it is the source of truth this
+implementation follows.
+
+Its governing rules, because they explain choices that otherwise look arbitrary:
+
+- **The register is quiet, and this outranks everything else.** Small, dense, one-pixel rules
+  and tiny labels. No display face, no full-width flat. A screen that looks like a landing page
+  is out of charte however correct its colours are.
+- **A 40px type ceiling and exactly three faces** (Instrument Sans / Instrument Serif / IBM Plex
+  Mono — there is **no** display face, and adding one is the classic drift). The whole scale is
+  declared in `index.css` as `--text-k` 9 · `--text-band` 11 · `--text-body` 12.5 · `--text-ctl`
+  13 · `--text-title` 14 · `--text-value` 40, and it stops there on purpose: reaching for
+  `text-[52px]` is normally the signal a screen has drifted. `.cq-value` (Serif **roman**, 40px,
+  weight 400) is the single figure a panel gets; outside the one exception below, weights never
+  pass 600 and tracking never goes tighter than -0.015em.
+- **Orange is a measuring scale, not a brand colour.** Every orange mark encodes a quantity
+  (drag, stress, error, latency, load). An orange flat with no quantity behind it is a bug —
+  which is why the nav's active item is a 2px rule rather than a filled pill, the chat's user
+  turns are white sheets rather than orange bubbles, and the "send" button is outlined.
+- **Two budgets to count before shipping**: **one** black-filled element outside text, and
+  **one** filled orange button — and they draw on the *same* budget, so each lab has exactly one
+  ("Optimiser").
+- **No red, no green in the chrome.** Nominal is plain ink; anything out of envelope is
+  `--burnt`. Status is always carried by a word and a mark as well as a colour. (This is why
+  `MetricsBadge` was deleted: its good/warning tint had no home here, and the model, its measured
+  error, the interval and the latency now sit as `.cq-row` key/value lines inside each lab's
+  panel.)
+- **The background is atmosphere: if you notice it, it is too strong.** `<Backdrop>` in
+  `App.tsx` lays down the viewport-wide layers (blurred gradient masses, then `feTurbulence`
+  grain) once for the whole app; pages never repeat them. The mass opacities sit under the
+  charte's own numbers (.22/.16/.11 against .30/.22/.16) because this shell is full-bleed rather
+  than the charte's 1160px centred column, and at the published values a 1500px viewport washes
+  orange.
+
+**Four owner-approved deviations from the published charte.** They are deliberate and were asked
+for explicitly; the same list is at the top of `index.css`. Do not "restore" any of them without
+asking:
+
+1. **Solver fields are blue↔red, not the orange ramp** (`SEQUENTIAL`/`DIVERGING` in
+   `lib/chartTheme.ts`, plus `STREAK` for the streamline hairlines). Scoped strictly to
+   rasterised fields — everywhere else orange is still the only quantity colour, which is what
+   keeps the exception legible as an exception.
+2. **The two overview ratios are `--text-hero`** (76px, weight 700, `.cq-hero`) — above both the
+   size ceiling and the weight cap. Instrument Sans, because Instrument Serif has no bold.
+3. **No Instrument Serif italic anywhere.** The charte's "one serif moment per screen" was
+   dropped wholesale; what those sentences carried is now plain data (Flow Lab's interval is an
+   `Intervalle` row, Stress Lab's coarse-FEM gap a `Manqué par le FEM` row).
+4. **`<ContourField>` replaces the charte's two large background arcs.** Marching-squares
+   iso-lines of a smooth scalar field, drawn in `--burnt` hairlines — sharper than the arcs, and
+   it earns its orange by genuinely being level sets of a field. It is mounted on the content
+   column's wrapper, **not** fixed to the viewport, so it never appears behind the nav rail or
+   the copilot panel; and `.cq-calque` was raised to .88 (the charte's own upper bound) so the
+   lines never read through a panel carrying numbers. Cards are opaque, so plots are unaffected.
+
+`index.css` holds the Calque token set (`--paper/--ink*/--or/--burnt/--peach/--gone`, the
+`--m0..--m5` measure ramp, brown-orange shadows, the three font stacks, the type scale), then
+**maps shadcn's names onto them** (`--primary: var(--or)`, `--good: var(--ink2)`, …) so the
+vendored primitives inherit the charte for free. `<html>` no longer carries `dark`; the `dark`
+custom variant is kept pointed at a class nothing stamps, purely so the `dark:` utilities baked
+into `components/ui/*` still compile. The `.cq-*` vocabulary lives in `@layer components`, one
+layer *below* Tailwind's utilities, so a `text-burnt` next to a `.cq-k` still wins — written
+unlayered, as the charte's own `tokens.css` is, `.cq-k`'s ink3 would silently beat every colour
+override. Everything Calque changes about the shadcn primitives is at the bottom of the file as
+**unlayered rules keyed on `data-slot`** (1px slider track, warm card shadow, paper-white
+outline buttons…) — unlayered CSS outranks every Tailwind layer, so the generated components
+restyle without being hand-edited, which keeps `shadcn add` regenerable.
+
+One deliberate deviation, stated so it isn't "fixed" by accident: the charte positions calque
+panels as 246–300px cards absolutely anchored in the corners of a data canvas. Each lab's
+headline panel keeps the recipe's width (298px) and translucency but sits in the document flow
+above the field plots, because floating it over them would cover the data the user is
+manipulating.
 
 `lib/chartTheme.ts` is the single source of truth for every Plotly plot (Plotly cannot read CSS
-custom properties, so the hexes are **mirrored** there — keep the two in step): `SERIES`,
-`MAGMA`/`DIVERGING`/`SEQUENTIAL` colorscales, `baseLayout()`, `axis()`, `FIELD_MARGIN`,
-`fieldRange`/`symmetricRange`. Field heatmaps carry **no Plotly colorbar** — `ColorScaleLegend`
-draws the key in the DOM instead, because Plotly's colorbar drops end labels on a short bar and
-costs width that aspect-locked (`scaleanchor`) fields can't spare.
+custom properties, so the hexes are **mirrored** there — keep the two in step): `MARK` (marks by
+*role* — `measure`/`focus`/`context`/`gone` — because the charte has no categorical palette and
+series separate by stroke and value, never by hue), the `SEQUENTIAL`/`DIVERGING`/`STREAK`
+colorscales, `sampleScale()`, `baseLayout()`, `axisX`/`axisY` (horizontal gridlines only, no
+frame, no ticks), `FIELD_MARGIN`, `fieldRange`/`symmetricRange`.
+
+The three field scales are the blue↔red deviation (#1 above) and differ by job: `SEQUENTIAL` for
+unsigned magnitude (axial velocity, von Mises), `DIVERGING` for signed fields **always with
+`zmid: 0`** — without that anchor Plotly centres the neutral on the data's own midpoint, the
+crossover drifts off zero and the sign stops meaning anything. `STREAK` exists because
+`SEQUENTIAL`'s crossover band is near-white: invisible as a 2px hairline, so the streamlines
+route through darker mid values instead. Everything that is *not* a rasterised field —
+convergence traces, intervals, progress rules — stays on orange. Field heatmaps carry **no
+Plotly colorbar**: `ColorScaleLegend` draws the key in the DOM instead, because Plotly's
+colorbar drops end labels on a short bar and costs width that aspect-locked (`scaleanchor`)
+fields can't spare.
+
+`lib/motion.ts` holds the charte's single entrance curve (`cubic-bezier(.2,.7,.2,1)`) as
+`reveal()` (block arrival, 22px rise), `settle()` (in-place state change) and `axisDelay()`
+(stagger by a datum's position on its axis, not by array index). Reduced motion is honoured
+globally in `index.css`.
 
 ---
 
@@ -184,7 +274,7 @@ costs width that aspect-locked (`scaleanchor`) fields can't spare.
 
 **Flow Lab predict** — slider change → debounce 250ms → `api.predictFlow` → `POST
 /api/flow/predict` → `flow_service.predict` (cached model, `flowsurrogate.data.Normalizer`
-decode) → `FieldViewer` + `MetricsBadge` re-render.
+decode) → `FieldViewer` + the headline calque panel (`StatTile` + its `.cq-row` lines) re-render.
 
 **Flow Lab optimize** — `OptimizerPanel` → `api.streamFlowOptimize` (query-string) → `POST
 /api/flow/optimize` SSE → `flow_service.optimise_streaming` (Adam through the frozen
@@ -231,16 +321,15 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 |---|---|---|
 | M0 | Scaffolding (health check, 4-tab shell) | done, committed |
 | M1 | Flow prediction end-to-end (static) | done, committed |
-| M2 | Animation (client streamlines + LBM SSE) | done, **uncommitted** (`lbm_frames.py`, `StreamlineOverlay.tsx`, `FlowAnimation.tsx`) |
-| M3 | Live optimizer (Adam streaming + verify) | done, **uncommitted** (`OptimizerPanel.tsx`, `ConvergencePlot.tsx`; `flow_service.py`/`main.py` modified) |
-| M4 | Stress Lab | done, **uncommitted** (`stress_service.py`, `HoleEditor.tsx`, `StressViewer.tsx`, `StressOptimizePanel.tsx`, `StressLab.tsx`, `stressGeometry.ts`; `ComingSoon.tsx` deleted in working tree) |
-| M5 | Claude Agent SDK chat | done, committed (`eeeabf6`), then **moved into a sidebar** (uncommitted). Only 2/8 planned tools implemented (`flow_predict`, `get_model_card`) — `flow_optimize`, `flow_verify`, `flow_simulate`, `stress_predict`, `stress_optimize`, `render_report` exist as HTTP endpoints but not as agent tools |
+| M2 | Animation (client streamlines + LBM SSE) | done, committed (`4ef16a8`) |
+| M3 | Live optimizer (Adam streaming + verify) | done, committed (`4ef16a8`) |
+| M4 | Stress Lab | done, committed (`4ef16a8`) |
+| M5 | Claude Agent SDK chat | done, committed (`eeeabf6`), then moved into a sidebar (`85f5ce3`). Only 2/8 planned tools implemented (`flow_predict`, `get_model_card`) — `flow_optimize`, `flow_verify`, `flow_simulate`, `stress_predict`, `stress_optimize`, `render_report` exist as HTTP endpoints but not as agent tools |
 | M6 | Report export + demo GIF + polish | **not started** — no `report.py`, no `/api/report/generate`, no `docs/demo.gif` |
-| — | UI rebuild on shadcn/ui | done, **uncommitted** — dark-only token set (light theme + `ThemeToggle` removed), left nav + right copilot sidebar shell, all panels on shadcn primitives, unified `lib/chartTheme.ts`. `ChatOrchestrator.tsx`, `ThemeToggle.tsx`, `Skeleton.tsx`, `colors.ts`, `ComingSoon.tsx` deleted |
+| — | UI rebuild on shadcn/ui | done, committed (`85f5ce3`) — left nav + right copilot sidebar shell, all panels on shadcn primitives, unified `lib/chartTheme.ts`. `ChatOrchestrator.tsx`, `ThemeToggle.tsx`, `Skeleton.tsx`, `colors.ts`, `ComingSoon.tsx` deleted |
+| — | Calque restyle | done, **uncommitted** — the shadcn/ui *structure* of `85f5ce3` kept, its dark blue/slate skin replaced by the Calque charte (see the design-system section above). Touches `index.html`, `index.css`, `lib/chartTheme.ts`, new `lib/motion.ts`, `App.tsx` and every page/component; `MetricsBadge.tsx` deleted, `ContourField.tsx` added. No route, service or data-flow change |
 
-Committed `engine-copilot/README.md` still says "M0, M1, most of M3 backend landed" — the
-working-tree version (uncommitted) claims M0–M5. **Trust `git status`, not the README**, until
-the M2–M4 work above is committed.
+`engine-copilot/README.md` claims M0–M5, which now matches the committed tree.
 
 ---
 
@@ -254,8 +343,11 @@ the M2–M4 work above is committed.
 | Add a new agent tool | `tools.py` (`@tool`-decorated function + add to `ALL_TOOLS`), `agent.py` (`SYSTEM_PROMPT` if it should mention the tool) |
 | Change the agent's behavior/persona | `agent.py` (`SYSTEM_PROMPT`), `agent.py` (`_options`, e.g. `max_turns`) |
 | Add a new frontend page | `App.tsx` (route), new file in `pages/`, `AppSidebar.tsx` (nav entry), `PageHeader` at the top of the page, `usePublishChatContext` so the copilot sees it |
-| Change the color theme | `frontend/src/index.css` (token set) **and** `lib/chartTheme.ts` (the mirrored hexes Plotly needs) — re-run the dataviz palette validator against the new `--card` surface |
-| Add/restyle a chart | `lib/chartTheme.ts` (scales + `baseLayout`/`axis`), the component; use `ColorScaleLegend` rather than a Plotly colorbar for field heatmaps |
+| Style / restyle anything visual | Read `~/.claude/skills/calque/SKILL.md` **first** (+ `references/components.md` for a screen with more than one block, `references/charts.md` once a number becomes a shape) |
+| Change the color theme or the type scale | `frontend/src/index.css` (Calque tokens → shadcn names, the `--text-*` scale, plus the `data-slot` overrides at the bottom) **and** `lib/chartTheme.ts` (the mirrored hexes Plotly needs) |
+| Restyle a shadcn primitive | **Not** `components/ui/*` (CLI-generated, regenerable) — add an unlayered `[data-slot="…"]` rule at the bottom of `index.css` |
+| Add/restyle a chart | `lib/chartTheme.ts` (`MARK`, scales, `baseLayout`/`axisX`/`axisY`), the component; one ramp only, series by stroke not hue, `ColorScaleLegend` rather than a Plotly colorbar for field heatmaps |
+| Change an entrance animation | `lib/motion.ts` — one curve for the whole app; don't hand-tune a `transition` in a component |
 | Add a shadcn primitive | `pnpm dlx shadcn@latest add <name>`, then move it out of the literal `@/` folder into `src/components/ui/` |
 | Change the copilot sidebar | `chat/ChatProvider.tsx` (state, context plumbing), `chat/ChatSidebar.tsx` (UI) |
 | Change SSE streaming behavior (backend) | the relevant `*_streaming` generator in `flow_service.py`/`stress_service.py`/`lbm_frames.py`, the route in `main.py` |
@@ -289,7 +381,7 @@ keep it current.
 
 **Every session where you change the repo's structure:**
 
-1. Read the baseline at the top of this file (`<!-- graph-baseline: eeeabf6 -->`).
+1. Read the baseline at the top of this file (`<!-- graph-baseline: 85f5ce3 -->`).
 2. List what moved:
    ```bash
    git diff --name-only <baseline>..HEAD ; git status --porcelain

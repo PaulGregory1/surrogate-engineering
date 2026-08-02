@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { TriangleAlert } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
@@ -80,15 +79,15 @@ export function HoleEditor({
   }
 
   return (
-    <Card className="gap-4 py-4">
-      <CardHeader className="px-4">
-        <CardTitle className="text-sm">Plaque perforée</CardTitle>
+    <Card className="gap-5 py-5">
+      <CardHeader className="px-5">
+        <CardTitle className="cq-title">Plaque perforée</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4 px-4">
+      <CardContent className="flex flex-col gap-5 px-5">
         <svg
           ref={svgRef}
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-          className="w-full rounded-lg border border-border bg-background"
+          className="w-full rounded-[12px] border border-line bg-paper"
           style={{ aspectRatio: `${WIDTH} / ${HEIGHT}`, touchAction: 'none' }}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -98,22 +97,31 @@ export function HoleEditor({
             y={0}
             width={WIDTH}
             height={HEIGHT}
-            fill="color-mix(in srgb, var(--foreground) 4%, transparent)"
-            stroke="var(--border)"
+            fill="var(--white)"
+            stroke="var(--line2)"
             strokeWidth={1}
             vectorEffect="non-scaling-stroke"
             className="cursor-crosshair"
             onClick={handleBackgroundClick}
           />
-          {/* encastrement (gauche) */}
-          <line x1={0.004} y1={0} x2={0.004} y2={HEIGHT} stroke="var(--good)" strokeWidth={2} vectorEffect="non-scaling-stroke" />
-          {/* bord chargé (droite) */}
+          {/* The two boundary conditions, told apart by what they are rather than by
+              a status hue: the clamp is structure, so it is ink; the load is an
+              applied quantity, so it is the one thing here allowed to be orange. */}
+          <line
+            x1={0.004}
+            y1={0}
+            x2={0.004}
+            y2={HEIGHT}
+            stroke="var(--ink)"
+            strokeWidth={2}
+            vectorEffect="non-scaling-stroke"
+          />
           <line
             x1={WIDTH - 0.004}
             y1={0}
             x2={WIDTH - 0.004}
             y2={HEIGHT}
-            stroke="var(--warning)"
+            stroke="var(--or)"
             strokeWidth={2}
             vectorEffect="non-scaling-stroke"
           />
@@ -121,9 +129,9 @@ export function HoleEditor({
           {holes.map(([x, y, r], i) => (
             <motion.circle
               key={i}
-              fill="color-mix(in srgb, var(--ring) 20%, transparent)"
-              stroke={dragIndex === i ? 'var(--good)' : 'var(--ring)'}
-              strokeWidth={1.5}
+              fill="var(--paper)"
+              stroke={dragIndex === i ? 'var(--or)' : 'var(--ink)'}
+              strokeWidth={dragIndex === i ? 2 : 1}
               vectorEffect="non-scaling-stroke"
               style={{ cursor: dragIndex === i ? 'grabbing' : 'grab' }}
               onPointerDown={(e) => handlePointerDown(i, e)}
@@ -136,26 +144,30 @@ export function HoleEditor({
           ))}
         </svg>
 
-        <div className="flex items-start gap-4 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-3 rounded-full bg-good" />
-            encastré
+        <div className="flex items-center gap-4">
+          <span className="cq-k flex items-center gap-1.5">
+            <span className="h-0.5 w-3 bg-ink" />
+            ENCASTRÉ
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-3 rounded-full bg-warning" />
-            chargé
+          <span className="cq-k flex items-center gap-1.5">
+            <span className="h-0.5 w-3 bg-or" />
+            CHARGÉ
           </span>
-          <span className="ml-auto tabular-nums">{holes.length}/4 trous</span>
+          <span className="cq-k ml-auto">{holes.length}/4 TROUS</span>
         </div>
 
-        <div className="min-h-[2.5em] text-[11px] leading-relaxed">
+        <div className="min-h-[3em] text-band leading-[1.7]">
           {invalid ? (
-            <span className="flex items-start gap-1.5 text-warning">
-              <TriangleAlert className="mt-px size-3 shrink-0" />
-              Position invalide : chevauchement, ou trop proche du bord ou d’un autre trou.
-            </span>
+            // An out-of-envelope state is burnt, never red: the charte has no red,
+            // and introducing one would break the reading of the ramp.
+            <div className="cq-error py-0">
+              <div className="text-body font-medium">Position invalide.</div>
+              <div className="cq-muted mt-0.5 text-band">
+                Chevauchement, ou trop proche du bord ou d’un autre trou.
+              </div>
+            </div>
           ) : (
-            <span className="text-muted-foreground">
+            <span className="text-ink2">
               Clic pour ajouter · glisser pour déplacer · molette pour redimensionner · double-clic
               pour retirer.
             </span>
@@ -164,12 +176,10 @@ export function HoleEditor({
 
         <Separator />
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           <div className="flex items-baseline justify-between">
-            <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-              Angle de charge
-            </span>
-            <span className="tnum font-mono text-sm">{loadAngleDeg.toFixed(0)}°</span>
+            <span className="cq-k">ANGLE DE CHARGE</span>
+            <span className="cq-num text-band">{loadAngleDeg.toFixed(0)}°</span>
           </div>
           <Slider
             value={[loadAngleDeg]}
@@ -178,9 +188,9 @@ export function HoleEditor({
             max={0}
             step={1}
           />
-          <div className="flex justify-between text-[10px] text-muted-foreground">
-            <span>−90° (cisaillement)</span>
-            <span>0° (traction)</span>
+          <div className="flex justify-between font-mono text-[9px] tracking-[0.1em] text-ink3">
+            <span>−90° CISAILLEMENT</span>
+            <span>0° TRACTION</span>
           </div>
         </div>
       </CardContent>

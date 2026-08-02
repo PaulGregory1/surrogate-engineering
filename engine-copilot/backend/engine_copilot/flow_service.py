@@ -142,7 +142,11 @@ class FlowService:
 
         history: dict[str, list[float]] = {"cd_mean": [], "cd_best": []}
         for it in range(iters):
-            with MPS_LOCK:
+            # enable_grad() is not redundant: grad mode is thread-local and this generator
+            # runs on whatever pool thread run_in_executor hands it, so it must not trust
+            # the ambient state. This is the only place in the backend that needs autograd
+            # switched ON, and it is the one that fails silently-then-loudly if it isn't.
+            with MPS_LOCK, torch.enable_grad():
                 opt.zero_grad(set_to_none=True)
                 x = render_inputs(coeffs, target_area, reynolds, self.domain, mask_eps=0.7)
                 _, cd_norm = model(x)

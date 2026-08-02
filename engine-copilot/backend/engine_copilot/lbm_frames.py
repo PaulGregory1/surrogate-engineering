@@ -92,24 +92,33 @@ def simulate_streaming(
     fx_hist: list[float] = []
     frame_index = 0
 
-    with torch.no_grad():
-        for step in range(steps):
+    # `torch.no_grad()` must NOT span the `yield` below. This generator is resumed from a
+    # thread pool (main.py drives it with run_in_executor), autograd's grad mode is
+    # thread-local, and a generator suspended inside no_grad() hands its pool thread back
+    # with autograd still switched off. Whatever runs on that thread next inherits it —
+    # concretely, the Adam loop in flow_service.optimise_streaming then dies on
+    # "element 0 of tensors does not require grad and does not have a grad_fn" as soon as
+    # a user plays the live animation before clicking Optimiser.
+    for step in range(steps):
+        with torch.no_grad():
             with MPS_LOCK:
                 f, ux, uy, rho, fx, fy = solver._step_fn(f, solid, fluid, tau, links, f_in)
             if step >= start_avg:
                 fx_hist.append(float(fx.item()))
-            if step % frame_every == 0 or step == steps - 1:
+            frame_due = step % frame_every == 0 or step == steps - 1
+            if frame_due:
                 u_np = ux[0].detach().float().cpu().numpy()
                 v_np = uy[0].detach().float().cpu().numpy()
-                omega = _vorticity(u_np, v_np)
-                yield {
-                    "t_step": step,
-                    "u": downscale(u_np, config.FIELD_DOWNSCALE).tolist(),
-                    "v": downscale(v_np, config.FIELD_DOWNSCALE).tolist(),
-                    "vorticity": downscale(omega, config.FIELD_DOWNSCALE).tolist(),
-                    "frame_index": frame_index,
-                }
-                frame_index += 1
+        if frame_due:
+            omega = _vorticity(u_np, v_np)
+            yield {
+                "t_step": step,
+                "u": downscale(u_np, config.FIELD_DOWNSCALE).tolist(),
+                "v": downscale(v_np, config.FIELD_DOWNSCALE).tolist(),
+                "vorticity": downscale(omega, config.FIELD_DOWNSCALE).tolist(),
+                "frame_index": frame_index,
+            }
+            frame_index += 1
 
     cd_final = float(np.mean(fx_hist) / cd_scale) if fx_hist else 0.0
     yield {"done": True, "cd_final": cd_final}

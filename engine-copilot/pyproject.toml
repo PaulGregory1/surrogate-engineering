@@ -15,3 +15,7 @@ dependencies = [
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
+# The package lives in backend/, but pytest only inserts the test dir (backend/tests) on
+# sys.path — so `import engine_copilot` fails unless backend/ is added explicitly. The package
+# is not pip-installed into the venv; it is imported from the source tree.
+pythonpath = ["backend"]

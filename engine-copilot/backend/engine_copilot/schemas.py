@@ -103,6 +103,19 @@ class StressPredictResponse(BaseModel):
     model: StressModelKey
 
 
+class ReportRequest(BaseModel):
+    project: Literal["flow", "stress"]
+    # Whatever the matching /optimize stream ended with, plus anything the caller wants
+    # to enrich it with (a `verify` block, the initial Cd). Deliberately unvalidated:
+    # report.py treats every field as optional, so a partial context degrades to "n/a"
+    # rows instead of a 422 in the middle of a chat turn.
+    context: dict = Field(default_factory=dict)
+
+
+class ReportResponse(BaseModel):
+    markdown: str
+
+
 class StressOptimizeRequest(BaseModel):
     holes: list[list[float]] = Field(..., min_length=2, max_length=4)
     load_angle_deg: float = Field(-90.0, ge=-180.0, le=180.0)

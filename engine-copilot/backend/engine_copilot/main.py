@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from .agent import agent_session
 from .flow_service import flow_service
 from .lbm_frames import simulate_streaming
+from .report import render_report
 from .schemas import (
     FlowOptimizeRequest,
     FlowPredictRequest,
@@ -19,6 +20,8 @@ from .schemas import (
     FlowSimulateRequest,
     FlowVerifyRequest,
     FlowVerifyResponse,
+    ReportRequest,
+    ReportResponse,
     StressOptimizeRequest,
     StressPredictRequest,
     StressPredictResponse,
@@ -158,6 +161,16 @@ async def stress_optimize(req: StressOptimizeRequest):
             yield {"event": event, "data": json.dumps(item)}
 
     return EventSourceResponse(event_stream())
+
+
+@app.post("/api/report/generate", response_model=ReportResponse)
+def report_generate(req: ReportRequest) -> dict:
+    # Synchronous and cheap: rendering is pure string formatting (see report.py on why
+    # this does not call Claude), so there is nothing to offload to a thread.
+    try:
+        return {"markdown": render_report(req.project, req.context)}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 class ChatRequest(BaseModel):

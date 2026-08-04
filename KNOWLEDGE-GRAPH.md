@@ -99,6 +99,7 @@ Science/results documented in `stress-gnn/README.md` and `stress-gnn/BACKGROUND.
 | `flow_service.py` | `FlowService` singleton (`flow_service`): caches models by key, decodes physical units, runs Adam shape optimization as a generator (`optimise_streaming`), runs true-LBM verification (`verify`) | `flowsurrogate.{data,geometry,lbm,optimize,train}` |
 | `lbm_frames.py` | `simulate_streaming()` — instrumented LBM run yielding intermediate frames for the live animation; duplicates `LBMSolver.run()`'s setup and drives `solver._step_fn` in a Python loop; module-level singleton solver shared with `flow_service.verify()` to pay `torch.compile` warmup once | `flowsurrogate.{geometry,lbm,optimize}` |
 | `stress_service.py` | `StressService` singleton (`stress_service`): mesh + coarse-FEM-solve + GNN-forward per request; gmsh is process-global/not thread-safe → its own `_GMSH_LOCK`, plus one-time `gmsh.initialize()` on the main thread at import time; hole-position optimization uses randomized local search ((1+1)-style), not gradient descent, because the GNN isn't differentiable w.r.t. mesh topology | `stressgnn.{dataset,fem,geometry,mesh,train}` |
+| `report.py` | `render_report(project, context)` → Markdown. **Deterministic template, no LLM**: `PLATFORM_PLAN.md` §3.3 describes the route as calling Claude but §5.3 requires the *tool* to use a fixed template to avoid recursion — the template wins for both callers, so a report is the same document whoever asked and costs no CLI subprocess. Every field is optional and degrades to `n/a`, because the agent passes a summarised (partial) context and a report with one blank row beats a 500 | `config.{FLOW,STRESS}_MODEL_QUALITY` |
 | `schemas.py` | Pydantic request/response models = the tool/route schemas (`FlowPredictRequest/Response`, `FlowVerifyRequest/Response`, `FlowSimulateRequest`, `StressPredictRequest/Response`, `StressOptimizeRequest`) | none |
 
 **Routes** (`main.py`):
@@ -112,9 +113,12 @@ Science/results documented in `stress-gnn/README.md` and `stress-gnn/BACKGROUND.
 | `/api/flow/simulate` | POST (SSE) | streaming LBM frames for the live-animation toggle |
 | `/api/stress/predict` | POST | one-shot peak-stress + field prediction |
 | `/api/stress/optimize` | POST (SSE) | streaming randomized hole-placement search |
+| `/api/report/generate` | POST | deterministic Markdown report from an optimisation result |
 | `/api/agent/chat` | POST (SSE) | Claude Agent SDK chat turn |
 
-Not built: `/api/report/generate` (planned M6).
+All planned routes exist. `/api/report/generate` is the only synchronous non-trivial one —
+rendering is pure string formatting, so it is a plain `def` with nothing offloaded to a
+thread.
 
 **Tests** (`backend/tests/`, fast, hit real singletons, no mocking): `test_flow_service.py`,
 `test_stress_service.py`, `test_tools.py` (tool JSON output + unknown-model error path). No
@@ -325,7 +329,7 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | M3 | Live optimizer (Adam streaming + verify) | done, committed (`4ef16a8`) |
 | M4 | Stress Lab | done, committed (`4ef16a8`) |
 | M5 | Claude Agent SDK chat | done, committed (`eeeabf6`), then moved into a sidebar (`85f5ce3`). Only 2/8 planned tools implemented (`flow_predict`, `get_model_card`) — `flow_optimize`, `flow_verify`, `flow_simulate`, `stress_predict`, `stress_optimize`, `render_report` exist as HTTP endpoints but not as agent tools |
-| M6 | Report export + demo GIF + polish | **not started** — no `report.py`, no `/api/report/generate`, no `docs/demo.gif` |
+| M6 | Report export + demo GIF + polish | **partly done** — `report.py` + `/api/report/generate` landed; still no `render_report` agent tool, no frontend entry point, no `docs/demo.gif` |
 | — | UI rebuild on shadcn/ui | done, committed (`85f5ce3`) — left nav + right copilot sidebar shell, all panels on shadcn primitives, unified `lib/chartTheme.ts`. `ChatOrchestrator.tsx`, `ThemeToggle.tsx`, `Skeleton.tsx`, `colors.ts`, `ComingSoon.tsx` deleted |
 | — | Calque restyle | done, **uncommitted** — the shadcn/ui *structure* of `85f5ce3` kept, its dark blue/slate skin replaced by the Calque charte (see the design-system section above). Touches `index.html`, `index.css`, `lib/chartTheme.ts`, new `lib/motion.ts`, `App.tsx` and every page/component; `MetricsBadge.tsx` deleted, `ContourField.tsx` added. No route, service or data-flow change |
 
@@ -340,6 +344,7 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Add/change a flow surrogate model | `flow-surrogate/flowsurrogate/models/*.py`, `train.py`, `run_all.py`; then `engine_copilot/config.py` (`FLOW_MODEL_QUALITY`), `flow_service.py` (model cache key) |
 | Add/change a stress surrogate model | `stress-gnn/stressgnn/models/*.py`, `train.py`; then `config.py` (`STRESS_MODEL_QUALITY`), `stress_service.py` |
 | Add a new FastAPI route | `main.py` (route), `schemas.py` (request/response models), matching `*_service.py`, `api.ts` (frontend client), `PLATFORM_PLAN.md` §3 (API contract source of truth) |
+| Change what a report says | `backend/engine_copilot/report.py` (one `_flow_report`/`_stress_report` template each — deterministic, never call a model from here) |
 | Add a new agent tool | `tools.py` (`@tool`-decorated function + add to `ALL_TOOLS`), `agent.py` (`SYSTEM_PROMPT` if it should mention the tool) |
 | Change the agent's behavior/persona | `agent.py` (`SYSTEM_PROMPT`), `agent.py` (`_options`, e.g. `max_turns`) |
 | Add a new frontend page | `App.tsx` (route), new file in `pages/`, `AppSidebar.tsx` (nav entry), `PageHeader` at the top of the page, `usePublishChatContext` so the copilot sees it |

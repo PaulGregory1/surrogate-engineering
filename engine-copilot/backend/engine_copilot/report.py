@@ -30,13 +30,18 @@ def _num(value: Any, digits: int = 4, suffix: str = "") -> str:
 
 
 def _pct_drop(initial: Any, final: Any) -> str:
+    """Signed relative change, so a reduction reads as a negative number.
+
+    The sentence around it is "ramène le Cd de 1.90 à 1.44, soit X" — an engineer reads
+    a drop there as -24 %, not +24 %.
+    """
     try:
         i, f = float(initial), float(final)
     except (TypeError, ValueError):
         return "n/a"
     if abs(i) < 1e-12:
         return "n/a"
-    return f"{100.0 * (i - f) / abs(i):+.2f} %"
+    return f"{100.0 * (f - i) / abs(i):+.2f} %"
 
 
 def _coeff_row(coeffs: Any) -> str:

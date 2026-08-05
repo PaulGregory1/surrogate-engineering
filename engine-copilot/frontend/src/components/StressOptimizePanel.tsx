@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Plot from 'react-plotly.js'
 import { motion } from 'framer-motion'
-import { Sparkles } from 'lucide-react'
+import { Download, Sparkles } from 'lucide-react'
 import { AnimatedNumber } from './AnimatedNumber'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +9,12 @@ import { Separator } from '@/components/ui/separator'
 import { INK, MARK, PLOT_CONFIG, axisX, axisY, baseLayout } from '@/lib/chartTheme'
 import { settle } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { streamStressOptimize, type StressOptimizeIteration } from '@/api'
+import {
+  downloadMarkdown,
+  generateReport,
+  streamStressOptimize,
+  type StressOptimizeIteration,
+} from '@/api'
 
 const N_ITERS = 30
 
@@ -30,6 +35,7 @@ export function StressOptimizePanel({
   const [initialPeak, setInitialPeak] = useState<number | null>(null)
   const [finalPeak, setFinalPeak] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [exporting, setExporting] = useState(false)
 
   async function run() {
     if (running) return
@@ -54,6 +60,30 @@ export function StressOptimizePanel({
       setError(String(e))
     } finally {
       setRunning(false)
+    }
+  }
+
+  async function runExport() {
+    if (!finalHoles || exporting) return
+    setExporting(true)
+    setError(null)
+    try {
+      const markdown = await generateReport({
+        project: 'stress',
+        context: {
+          peak_vm_initial: initialPeak,
+          peak_vm_final: finalPeak,
+          final_holes: finalHoles,
+          load_angle_deg: loadAngleDeg,
+          model,
+          n_iters: N_ITERS,
+        },
+      })
+      downloadMarkdown(`engine-copilot-stress-${finalHoles.length}trous.md`, markdown)
+    } catch (e) {
+      setError(String(e))
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -179,9 +209,15 @@ export function StressOptimizePanel({
               )}
 
               {finalHoles && (
-                <Button variant="secondary" size="sm" className="ml-auto" onClick={() => onApply(finalHoles)}>
-                  Appliquer ce design
-                </Button>
+                <div className="ml-auto flex flex-wrap items-center gap-3">
+                  <Button variant="outline" size="sm" onClick={runExport} disabled={exporting}>
+                    <Download />
+                    {exporting ? 'Rapport…' : 'Exporter le rapport'}
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => onApply(finalHoles)}>
+                    Appliquer ce design
+                  </Button>
+                </div>
               )}
             </motion.div>
           </>

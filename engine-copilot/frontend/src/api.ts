@@ -252,3 +252,33 @@ export async function streamStressOptimize(
   })
   await readSSEUntilDone(res, 'Optimisation', (data) => (data.done ? onDone(data) : onIteration(data)))
 }
+
+// `context` is deliberately untyped on the wire: the backend treats every field as
+// optional and renders "n/a" for whatever is missing, so each lab sends the shape of
+// result it happens to have rather than a schema both sides must agree on.
+export interface ReportRequest {
+  project: 'flow' | 'stress'
+  context: Record<string, unknown>
+}
+
+export async function generateReport(req: ReportRequest): Promise<string> {
+  const res = await fetch('/api/report/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  })
+  if (!res.ok) throw new Error(`generateReport failed: ${res.status}`)
+  const data: { markdown: string } = await res.json()
+  return data.markdown
+}
+
+/** Save text to the user's downloads as `filename`, via a transient object URL. */
+export function downloadMarkdown(filename: string, markdown: string): void {
+  const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  // Revoking synchronously can race the download in Safari; one frame is enough.
+  requestAnimationFrame(() => URL.revokeObjectURL(url))
+}

@@ -1,4 +1,4 @@
-<!-- graph-baseline: 85f5ce3 -->
+<!-- graph-baseline: c761bb6 -->
 # Knowledge Graph — Surrogate Engineering
 
 > **Purpose**: navigation map of this repo for Claude. Read **this file** instead of
@@ -93,7 +93,7 @@ Science/results documented in `stress-gnn/README.md` and `stress-gnn/BACKGROUND.
 |---|---|---|
 | `main.py` | FastAPI app, `lifespan` warmup (loads both services + JIT-warms the LBM solver before first request), all routes | `agent_session`, `flow_service`, `stress_service`, `simulate_streaming` |
 | `agent.py` | `AgentSession.chat()` — one `query()` call per browser turn (not a shared `ClaudeSDKClient`: a client left mid-response by a dropped HTTP connection corrupts the underlying CLI session for every future request); continuity via `options.resume = previous ResultMessage.session_id`; registers `ALL_TOOLS` as an in-process MCP server (`create_sdk_mcp_server`), `permission_mode="bypassPermissions"` because the tools are deterministic read-only wrappers | `tools.ALL_TOOLS` |
-| `tools.py` | `@tool`-decorated MCP tools exposed to the agent: **`flow_predict_tool`**, **`get_model_card_tool`** → `ALL_TOOLS`. Only 2 of the 8 tools envisioned in `PLATFORM_PLAN.md` §5.3 are implemented | `flow_service`, `config.FLOW_MODEL_QUALITY` |
+| `tools.py` | `@tool`-decorated MCP tools exposed to the agent → `ALL_TOOLS`. All 8 of `PLATFORM_PLAN.md` §5.3: `flow_predict`, `flow_optimize`, `flow_verify`, `flow_simulate`, `stress_predict`, `stress_optimize`, `get_model_card`, `render_report`. Two invariants: every service call goes through `anyio.to_thread.run_sync` (the MCP server shares the event loop with the SSE streams feeding the labs), and the streaming services are consumed to completion so only scalars reach the model — no fields, meshes or frames, and convergence curves are downsampled to ~20 points | `flow_service`, `stress_service`, `lbm_frames`, `report`, `config.{FLOW,STRESS}_MODEL_QUALITY` |
 | `config.py` | Sibling-repo paths (`FLOW_RUNS_DIR`, `STRESS_RUNS_DIR`, ...), `FIELD_DOWNSCALE`, and **hand-copied** `FLOW_MODEL_QUALITY` / `STRESS_MODEL_QUALITY` tables from each repo's `RESULTS.md`/`results/metrics.json` — re-copy these by hand if a model is retrained, nothing auto-syncs them | none |
 | `device_lock.py` | `MPS_LOCK`, a process-wide `threading.Lock` serializing all torch/MPS calls — Apple MPS is unsafe under concurrent multi-thread kernel submission; FastAPI's `run_in_executor` would otherwise let requests overlap | none |
 | `flow_service.py` | `FlowService` singleton (`flow_service`): caches models by key, decodes physical units, runs Adam shape optimization as a generator (`optimise_streaming`), runs true-LBM verification (`verify`) | `flowsurrogate.{data,geometry,lbm,optimize,train}` |
@@ -120,9 +120,14 @@ All planned routes exist. `/api/report/generate` is the only synchronous non-tri
 rendering is pure string formatting, so it is a plain `def` with nothing offloaded to a
 thread.
 
-**Tests** (`backend/tests/`, fast, hit real singletons, no mocking): `test_flow_service.py`,
-`test_stress_service.py`, `test_tools.py` (tool JSON output + unknown-model error path). No
-test exercises the actual SDK loop in `agent.py`, only the underlying tool functions.
+**Tests** (`backend/tests/`, hit real singletons, no mocking — ~40 s, model loading included):
+`test_flow_service.py`, `test_stress_service.py`, `test_tools.py` (the 8-tool roster, JSON
+output, payload-size guards, error paths), `test_report.py` (both templates, partial context,
+extrapolation warning). `pyproject.toml` sets `pythonpath = ["backend"]`; without it every
+module dies at import. Two gaps, both deliberate: no test exercises the SDK loop in
+`agent.py`, only the underlying tool functions; and `flow_verify`/`flow_simulate` have no
+tool-level test because both run the real LBM for tens of seconds — their service-layer
+counterparts are covered instead.
 
 ### `engine-copilot/frontend/src/` — React + TS + Vite UI
 
@@ -146,12 +151,14 @@ App.tsx — <ChatProvider> + <TooltipProvider> wrapping <Backdrop> + a 3-column 
 │   │   ├─ FlowAnimation.tsx — Tabs: client-RK4 streamlines vs live LBM (SSE)
 │   │   │   └─ StreamlineOverlay.tsx — 56 particles coloured by local speed (STREAK),
 │   │   │      direct SVG mutation, no React state
-│   │   ├─ OptimizerPanel.tsx — Adam optimize (SSE), verify-with-solver, apply-design
+│   │   ├─ OptimizerPanel.tsx — Adam optimize (SSE), verify-with-solver, apply-design,
+│   │   │      export-report (sends `verify` only once the LBM has run, so an
+│   │   │      unconfirmed optimum is reported as unconfirmed)
 │   │   │   └─ ConvergencePlot.tsx — live cd_best/cd_mean
 │   ├─ pages/StressLab.tsx — debounced predict (300ms)
 │   │   ├─ HoleEditor.tsx — click/drag/wheel hole placement + load-angle slider
 │   │   ├─ StressViewer.tsx — von-Mises heatmap on the measure ramp + pulsing peak marker
-│   │   ├─ StressOptimizePanel.tsx — randomized local-search optimize (SSE)
+│   │   ├─ StressOptimizePanel.tsx — randomized local-search optimize (SSE), export-report
 └─ chat/ChatSidebar.tsx — right panel on EVERY page (overlay + backdrop < lg)
 Shared: PageHeader.tsx (sticky, per-page actions + copilot toggle), StatTile.tsx
 (the one 40px figure + its interval), ColorScaleLegend.tsx, AnimatedNumber.tsx,
@@ -168,7 +175,10 @@ what the user typed) so "optimise cette forme" resolves against what is on scree
 are per-page. Toggle: ⌘/Ctrl-J, persisted in `localStorage` (`engine-copilot.chat.open`), defaulting
 open ≥1024px and closed below.
 
-`api.ts`: typed fetch client. JSON: `predictFlow`, `verifyFlow`, `predictStress`, `getHealth`.
+`api.ts`: typed fetch client. JSON: `predictFlow`, `verifyFlow`, `predictStress`, `getHealth`,
+`generateReport` (+ `downloadMarkdown`, a Blob/object-URL save helper — its `context` is
+deliberately `Record<string, unknown>`, since the backend renders `n/a` for whatever is missing
+rather than holding both sides to one schema).
 SSE via a custom `readSSE()` reader over `fetch`'s body stream (not `EventSource`, since POST
 bodies are needed): `streamFlowOptimize` (**query-string params** — inconsistent with the
 JSON-body convention used everywhere else), `streamFlowSimulate`, `streamStressOptimize`,
@@ -290,6 +300,12 @@ solver** on the optimized design for an honest comparison.
 /api/flow/simulate` SSE → `lbm_frames.simulate_streaming` (shares the warmed singleton
 solver with `flow_service.verify`) → frame-by-frame field updates.
 
+**Report export** — three entry points, one renderer. Either lab's *Exporter le rapport*
+button → `api.generateReport` → `POST /api/report/generate` → `report.render_report` →
+`downloadMarkdown` saves a `.md` via an object URL; or the copilot's `render_report` tool
+calls `render_report` directly, in-process. Nothing on this path touches a model, so a
+report is the same document and the same cost whoever asked for it.
+
 **Stress Lab predict/optimize** — mirrors the Flow Lab shape, through `stress_service`:
 `HoleEditor` → `predictStress` → mesh (gmsh, `_GMSH_LOCK`) + coarse FEM + GNN forward →
 `StressViewer`; `StressOptimizePanel` → `streamStressOptimize` → randomized local search
@@ -328,12 +344,12 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | M2 | Animation (client streamlines + LBM SSE) | done, committed (`4ef16a8`) |
 | M3 | Live optimizer (Adam streaming + verify) | done, committed (`4ef16a8`) |
 | M4 | Stress Lab | done, committed (`4ef16a8`) |
-| M5 | Claude Agent SDK chat | done, committed (`eeeabf6`), then moved into a sidebar (`85f5ce3`). Only 2/8 planned tools implemented (`flow_predict`, `get_model_card`) — `flow_optimize`, `flow_verify`, `flow_simulate`, `stress_predict`, `stress_optimize`, `render_report` exist as HTTP endpoints but not as agent tools |
-| M6 | Report export + demo GIF + polish | **partly done** — `report.py` + `/api/report/generate` landed; still no `render_report` agent tool, no frontend entry point, no `docs/demo.gif` |
+| M5 | Claude Agent SDK chat | **done** — chat committed (`eeeabf6`), moved into a sidebar (`85f5ce3`), all 8 tools wired (`035c78a`). The plan's acceptance criterion was checked live against a running backend: "Optimise ma forme à Re=100 et vérifie" calls `flow_optimize` then `flow_verify` and quotes both Cd |
+| M6 | Report export + demo GIF + polish | **done except the GIF** — `report.py` + `/api/report/generate` (`871dd9e`), `render_report` tool (`035c78a`), *Exporter le rapport* in both labs + README with a mermaid architecture. No `docs/demo.gif`: recording it needs a headless browser driver and `ffmpeg`, neither installed, and adding Playwright to the frontend deps for one animation is the repo owner's call |
 | — | UI rebuild on shadcn/ui | done, committed (`85f5ce3`) — left nav + right copilot sidebar shell, all panels on shadcn primitives, unified `lib/chartTheme.ts`. `ChatOrchestrator.tsx`, `ThemeToggle.tsx`, `Skeleton.tsx`, `colors.ts`, `ComingSoon.tsx` deleted |
-| — | Calque restyle | done, **uncommitted** — the shadcn/ui *structure* of `85f5ce3` kept, its dark blue/slate skin replaced by the Calque charte (see the design-system section above). Touches `index.html`, `index.css`, `lib/chartTheme.ts`, new `lib/motion.ts`, `App.tsx` and every page/component; `MetricsBadge.tsx` deleted, `ContourField.tsx` added. No route, service or data-flow change |
+| — | Calque restyle | done, committed (`d746eb8`) — the shadcn/ui *structure* of `85f5ce3` kept, its dark blue/slate skin replaced by the Calque charte (see the design-system section above). Touches `index.html`, `index.css`, `lib/chartTheme.ts`, new `lib/motion.ts`, `App.tsx` and every page/component; `MetricsBadge.tsx` deleted, `ContourField.tsx` added. No route, service or data-flow change |
 
-`engine-copilot/README.md` claims M0–M5, which now matches the committed tree.
+`engine-copilot/README.md` claims M0–M6 minus the GIF, which matches the committed tree.
 
 ---
 
@@ -345,6 +361,7 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Add/change a stress surrogate model | `stress-gnn/stressgnn/models/*.py`, `train.py`; then `config.py` (`STRESS_MODEL_QUALITY`), `stress_service.py` |
 | Add a new FastAPI route | `main.py` (route), `schemas.py` (request/response models), matching `*_service.py`, `api.ts` (frontend client), `PLATFORM_PLAN.md` §3 (API contract source of truth) |
 | Change what a report says | `backend/engine_copilot/report.py` (one `_flow_report`/`_stress_report` template each — deterministic, never call a model from here) |
+| Change what a report *receives* | the `runExport` context in `OptimizerPanel.tsx` / `StressOptimizePanel.tsx`, and `render_report_tool` in `tools.py` — three callers, one renderer |
 | Add a new agent tool | `tools.py` (`@tool`-decorated function + add to `ALL_TOOLS`), `agent.py` (`SYSTEM_PROMPT` if it should mention the tool) |
 | Change the agent's behavior/persona | `agent.py` (`SYSTEM_PROMPT`), `agent.py` (`_options`, e.g. `max_turns`) |
 | Add a new frontend page | `App.tsx` (route), new file in `pages/`, `AppSidebar.tsx` (nav entry), `PageHeader` at the top of the page, `usePublishChatContext` so the copilot sees it |

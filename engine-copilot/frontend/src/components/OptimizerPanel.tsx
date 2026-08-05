@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { ArrowRight, Download, Sparkles } from 'lucide-react'
 import { ShapePreview } from './ShapeEditor'
 import { ConvergencePlot, type ConvergencePoint } from './ConvergencePlot'
 import { AnimatedNumber } from './AnimatedNumber'
@@ -9,7 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator'
 import { settle } from '@/lib/motion'
 import { cn } from '@/lib/utils'
-import { streamFlowOptimize, verifyFlow, type FlowOptimizeIteration } from '@/api'
+import {
+  downloadMarkdown,
+  generateReport,
+  streamFlowOptimize,
+  verifyFlow,
+  type FlowOptimizeIteration,
+} from '@/api'
 
 const ITERS = 250
 // One start, seeded with the shape on screen. The Cd landscape at fixed area is
@@ -40,9 +46,13 @@ export function OptimizerPanel({
   const [error, setError] = useState<string | null>(null)
 
   const [verifying, setVerifying] = useState(false)
-  const [verifyResult, setVerifyResult] = useState<{ cd_lbm: number; cd_surrogate: number; gap_pct: number } | null>(
-    null,
-  )
+  const [verifyResult, setVerifyResult] = useState<{
+    cd_lbm: number
+    cd_surrogate: number
+    gap_pct: number
+    wall_time_s: number
+  } | null>(null)
+  const [exporting, setExporting] = useState(false)
 
   async function runOptimize() {
     if (running) return
@@ -78,11 +88,44 @@ export function OptimizerPanel({
     setError(null)
     try {
       const res = await verifyFlow({ coeffs: bestCoeffs, reynolds, target_area: targetArea })
-      setVerifyResult({ cd_lbm: res.cd_lbm, cd_surrogate: res.cd_surrogate, gap_pct: res.gap_pct })
+      setVerifyResult({
+        cd_lbm: res.cd_lbm,
+        cd_surrogate: res.cd_surrogate,
+        gap_pct: res.gap_pct,
+        wall_time_s: res.wall_time_s,
+      })
     } catch (e) {
       setError(String(e))
     } finally {
       setVerifying(false)
+    }
+  }
+
+  async function runExport() {
+    if (!bestCoeffs || exporting) return
+    setExporting(true)
+    setError(null)
+    try {
+      const markdown = await generateReport({
+        project: 'flow',
+        context: {
+          cd_surrogate_final: finalCd,
+          history: { cd_best: history.map((h) => h.cd_best) },
+          reynolds,
+          final_coeffs: bestCoeffs,
+          target_area: targetArea,
+          model,
+          // Only sent once the LBM has actually been run. Without it the report says
+          // in as many words that nothing confirmed the surrogate — which is the
+          // honest reading of an un-verified optimum.
+          ...(verifyResult ? { verify: verifyResult } : {}),
+        },
+      })
+      downloadMarkdown(`engine-copilot-flow-Re${reynolds.toFixed(0)}.md`, markdown)
+    } catch (e) {
+      setError(String(e))
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -178,6 +221,11 @@ export function OptimizerPanel({
               <div className="flex flex-1 flex-wrap items-center gap-4">
                 <Button variant="outline" size="sm" onClick={runVerify} disabled={running || verifying}>
                   {verifying ? 'Solveur LBM…' : 'Vérifier au solveur'}
+                </Button>
+
+                <Button variant="outline" size="sm" onClick={runExport} disabled={running || exporting}>
+                  <Download />
+                  {exporting ? 'Rapport…' : 'Exporter le rapport'}
                 </Button>
 
                 {verifyResult ? (

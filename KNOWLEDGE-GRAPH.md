@@ -1,4 +1,4 @@
-<!-- graph-baseline: c761bb6 -->
+<!-- graph-baseline: 86b0227 -->
 # Knowledge Graph — Surrogate Engineering
 
 > **Purpose**: navigation map of this repo for Claude. Read **this file** instead of

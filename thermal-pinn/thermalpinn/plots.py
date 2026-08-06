@@ -154,3 +154,91 @@ def illposedness(
 
     fig.savefig(path, dpi=130)
     plt.close(fig)
+
+
+#: One colour per method, kept identical across every act so the three act figures can be
+#: read side by side.  The PINN is the only one drawn with a spread, because it is the only
+#: one that has one.
+METHOD_COLOURS = {
+    "beck": "#f4a259",
+    "tikhonov": "#1f4e9c",
+    "alifanov": "#7b4ea3",
+    "pinn": "#c0392b",
+}
+
+
+def act1(results: dict, scenario: Scenario, path: Path, *, f_c: float) -> None:
+    """The draw, drawn: four methods on one flux history and one surface temperature.
+
+    Left is what was asked for -- the flux, over the braking phase, against the part of the
+    truth that survived the depth of the sensor.  The pale line behind it is the raw truth
+    including the 8 Hz ripple, and the gap between the two is the information the
+    measurement destroyed before any method ran: nobody is scored on it, and nobody should
+    appear to be recovering it.
+
+    Right is what the question was actually about -- a surface nobody can instrument, and
+    the peak every method has to land on.  The PINN carries a band across its five seeds and
+    the three classical methods do not.  That is not a courtesy: they are deterministic given
+    the data, and the asymmetry is part of what the comparison is measuring.
+    """
+    t_q = np.asarray(results["t_q"])
+    t_s = np.asarray(results["t_surface"])
+    seeds_q = np.asarray(results["pinn_q_seeds"])
+    seeds_T = np.asarray(results["pinn_surface_seeds"])
+
+    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.6), constrained_layout=True)
+
+    # ---------------------------------------------------------------------------- the flux
+    ax = axes[0]
+    window = t_q <= min(scenario.t_brake + 1.0, scenario.t_end)
+    ax.plot(t_q[window], 1e-6 * np.asarray(results["q_true"])[window], color="0.78", lw=1.0,
+            label="truth, as it was")
+    ax.plot(t_q[window], 1e-6 * np.asarray(results["q_band"])[window], color=TRUTH, lw=2.0,
+            label=f"truth below {f_c:.1f} Hz -- what is scored")
+    ax.fill_between(t_q[window], 1e-6 * seeds_q.min(axis=0)[window], 1e-6 * seeds_q.max(axis=0)[window],
+                    color=METHOD_COLOURS["pinn"], alpha=0.18, lw=0)
+    for name, q in results["q_est"].items():
+        ax.plot(t_q[window], 1e-6 * np.asarray(q)[window], color=METHOD_COLOURS[name], lw=1.1,
+                alpha=0.9, label=name)
+    ax.set_xlabel("t [s]")
+    ax.set_ylabel("q [MW/m^2]")
+    ax.set_title("the surface heat flux, recovered", fontsize=10)
+    ax.legend(fontsize=8, loc="upper right")
+    ax.grid(alpha=0.25)
+    ax.text(0.03, 0.06,
+            "shaded: the five PINN seeds\n"
+            f"out of band, unrecoverable by anyone: {1e-6 * results['out_of_band_rms']:.2f} MW/m^2 rms",
+            transform=ax.transAxes, fontsize=8)
+
+    # ------------------------------------------------------------------------- the surface
+    ax = axes[1]
+    T_true = np.asarray(results["T_surface_true"])
+    ax.plot(t_s, to_celsius(T_true), color=TRUTH, lw=2.0, label="truth (never measured)")
+    ax.fill_between(t_s, to_celsius(seeds_T.min(axis=0)), to_celsius(seeds_T.max(axis=0)),
+                    color=METHOD_COLOURS["pinn"], alpha=0.18, lw=0)
+    for name, T in results["T_surface_est"].items():
+        ax.plot(t_s, to_celsius(np.asarray(T)), color=METHOD_COLOURS[name], lw=1.1, alpha=0.9, label=name)
+    ax.plot(np.asarray(results["t_sensor"]), to_celsius(np.asarray(results["T_sensor_true"])),
+            color=DATA, lw=0.9, ls="--", label=f"the thermocouple, {1e3 * scenario.x_s:.0f} mm down")
+    ax.set_xlabel("t [s]")
+    ax.set_ylabel("T [degC]")
+    ax.set_title("the temperature nobody can measure", fontsize=10)
+    ax.legend(fontsize=8, loc="upper right")
+    ax.grid(alpha=0.25)
+
+    # The peak is the headline number, so it gets an inset rather than a caption.
+    i_peak = int(np.argmax(T_true))
+    span = max(2, int(round(0.4 / (t_s[1] - t_s[0]))))
+    lo, hi = max(0, i_peak - span), min(t_s.size, i_peak + span)
+    inset = ax.inset_axes((0.44, 0.13, 0.52, 0.36))
+    inset.fill_between(t_s[lo:hi], to_celsius(seeds_T.min(axis=0)[lo:hi]), to_celsius(seeds_T.max(axis=0)[lo:hi]),
+                       color=METHOD_COLOURS["pinn"], alpha=0.18, lw=0)
+    inset.plot(t_s[lo:hi], to_celsius(T_true[lo:hi]), color=TRUTH, lw=2.0)
+    for name, T in results["T_surface_est"].items():
+        inset.plot(t_s[lo:hi], to_celsius(np.asarray(T)[lo:hi]), color=METHOD_COLOURS[name], lw=1.1)
+    inset.set_title(f"the peak: {to_celsius(T_true.max()):.0f} degC", fontsize=8)
+    inset.tick_params(labelsize=7)
+    inset.grid(alpha=0.25)
+
+    fig.savefig(path, dpi=130)
+    plt.close(fig)

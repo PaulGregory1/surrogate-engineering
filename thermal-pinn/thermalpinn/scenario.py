@@ -94,6 +94,27 @@ class Scenario:
 #: The one scenario the figures are drawn from.
 SHOWCASE = Scenario()
 
+#: The only scenario a tunable is allowed to be set on.
+#:
+#: Every weight, bandwidth and schedule of the PINN is chosen here and then frozen, because
+#: a loss weight picked on `SHOWCASE` would be a hyperparameter fitted to the figure it is
+#: about to draw, and one picked on a member of `sample_scenarios` would be fitted to the
+#: table (see the plan, 8.3).  It is a deliberately *different* stop -- longer, hotter at
+#: the start, weaker peak flux, an earlier and shallower pedal release -- so that a setting
+#: which only works on the showcase does not survive being moved here.
+TUNING = Scenario(
+    name="tuning",
+    t_brake=4.6,
+    T0=to_kelvin(55.0),
+    q_peak=4.2e6,
+    dip_t=1.4,
+    dip_width=0.35,
+    dip_depth=0.50,
+    abs_amp=0.12,
+    abs_freq=9.0,
+    noise_seed=20250806,
+)
+
 
 def sample_scenarios(rng: np.random.Generator, n: int = 24) -> list[Scenario]:
     """The population the tables average over.

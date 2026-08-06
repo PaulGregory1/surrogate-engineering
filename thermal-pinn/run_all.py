@@ -4,7 +4,12 @@
     python run_all.py --quick    # reduced sweeps, for checking it works
 
 Each stage is skipped if its output already exists; pass --force to redo everything.
-Stages are added as milestones land; today the repo stops after the ill-posedness study.
+Stages are added as milestones land; today the repo stops after act 1.
+
+The act 1 stage is the expensive one by a wide margin -- eleven trainings, and a training is
+minutes rather than the seconds every solver stage before it costs.  `--quick` cuts its
+iteration counts by a factor of ten, which is enough to check that the pipeline runs and not
+nearly enough to produce a number worth quoting.
 
 Script numbers follow the repo layout rather than the running order -- 06 owns
 figs/illposed.png and runs second, because the fact that the problem is ill posed is what
@@ -50,6 +55,18 @@ def main() -> None:
         "ill-posedness",
         ["scripts/06_explainer_figures.py", *quick],
         ROOT / "results" / "illposedness.json",
+        args.force,
+    )
+    run(
+        "classical baselines",
+        ["scripts/02_run_methods.py", *quick],
+        ROOT / "results" / "baseline_validation.json",
+        args.force,
+    )
+    run(
+        "act 1 -- the PINN against the baselines",
+        ["scripts/03_act1.py", *quick],
+        ROOT / "results" / "act1.json",
         args.force,
     )
     subprocess.run([sys.executable, "-m", "pytest", "tests", "-q"], cwd=ROOT, check=False)

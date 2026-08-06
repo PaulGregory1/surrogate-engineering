@@ -50,8 +50,8 @@ information lost.  Both are measured in `figs/illposed.png`, not assumed.
 | M0 skeleton | done |
 | M1 truth solver + verification | done — `results/solver_validation.json` |
 | M2 the ill-posedness, demonstrated | done — `results/illposedness.json`, `figs/illposed.png` |
-| M3 classical baselines (Beck, Tikhonov, Alifanov) | not started |
-| M4 the PINN, act 1 | not started |
+| M3 classical baselines (Beck, Tikhonov, Alifanov) | done — `results/baseline_validation.json` |
+| M4 the PINN, act 1 | code, tests and script done — the numbers are being regenerated, see *What is left* |
 | M5 acts 2 and 3 | not started |
 | M6 studies, tables, writing | not started |
 
@@ -63,8 +63,13 @@ thermalpinn/scenario.py   geometry, the braking event, the true flux, the sensor
 thermalpinn/solver.py     Crank-Nicolson finite volume + Newton, the truth generator
 thermalpinn/verify.py     manufactured solutions, the erfc reference, the energy balance
 thermalpinn/naive.py      space marching, the depth attenuation, the recoverable band
+thermalpinn/classical.py  the inverse model + its adjoint; Beck, Tikhonov, Alifanov
+thermalpinn/metrics.py    the recoverable-band scores, and what is deliberately not scored
+thermalpinn/pinn.py       the reduced variables, the two networks, the residual, the training
 thermalpinn/plots.py      figures
 scripts/01_validate_solver.py
+scripts/02_run_methods.py
+scripts/03_act1.py
 scripts/06_explainer_figures.py
 ```
 
@@ -131,6 +136,109 @@ the verdict for that reason — it passes ±20 % anyway.
 At 2 mm, then: 8 % of the 8 Hz ABS ripple reaches the sensor, and it sits outside the
 recoverable band.  Every later metric on `q(t)` is computed below 6.6 Hz, for the truth and
 the estimate alike.
+
+## What M3 establishes: the baselines are real, and they are good
+
+Numbers from `results/baseline_validation.json`.  All three methods estimate the same object
+— a flux staircase on the 100 Hz measurement grid — from the same coarse model
+(`nx = 201, dt = 1e-3`), which tracks the truth at the sensor to **0.017 K**: the floor no
+inverse method can beat, thirty times below the measurement noise.
+
+| check | result |
+|---|---|
+| inverse crime, zero noise (< 1 %) | Beck 0.094 %, Tikhonov 0.005 %, Alifanov 0.041 % |
+| adjoint gradient vs central differences (< 1e-4) | law A **3e-12**, laws B and C **3e-8** |
+| the three within a factor 2 on real noise | spread **1.24×** |
+
+The gradient check is the one that cannot be waived, since every act 2 and act 3 result is a
+descent of it.  It passes by four orders of magnitude because the adjoint is **discrete** —
+it differentiates the scheme that is actually solved, transposed step by step, rather than
+the PDE the scheme approximates.  On the linear law the model is exactly linear in the flux,
+so the central difference is exact and only round-off separates them; on laws B and C the
+limit is the finite difference's own truncation, not the adjoint.
+
+On the showcase event with 0.5 K of noise, all three read a surface they cannot see to
+**within 0.14 %** of its 600 K rise (Beck −0.016 %, Tikhonov −0.112 %, Alifanov −0.135 %),
+at 3.2–4.0 % RMSE on the flux in band. **Act 1 is not going to be a fight the PINN wins** —
+that was always the expectation, and the bar is now measured rather than assumed.
+
+Three things had to be got right for that to be true, and each was found by measuring:
+
+- **Beck was being handicapped by its flux step.** Estimating one flux value per measurement
+  gives a dimensionless step `alpha dt / x_s^2` of 0.039, five times finer than the
+  classical guidance, and Beck came out three times worse than Tikhonov — which would have
+  failed the factor-2 check and made the comparison a straw man. Holding the flux over five
+  measurements (0.196, mid-range) puts it level with Tikhonov. Beck's unregularised limit
+  does not exist in practice: after 10 ms the sensor at 2 mm has barely heard of the flux
+  (step response 1.6e-9 K per W/m²), so the recursion amplifies round-off by ~10⁹ per step
+  and diverges to 10²⁵ % on noise-free data.
+- **The band metric was contaminated by its own filter.** Band-limiting a *finite* record
+  cannot suppress out-of-band content near its ends, and 40–60 % of every method's reported
+  error was coming from 15 % of the samples. Scores are now taken on the interior, excluding
+  one filter transient at each end, with the full-record number reported beside them. This
+  also corrected a finding: the L-curve's flux looked twenty times worse than the
+  discrepancy principle's, and most of that was the boundary.
+- **The L-curve does not work on this problem.** There is no corner to find — the penalty
+  axis spans five decades while the residual spans under two — so it settles several decades
+  low and returns a flux 1.8× worse in band and far rougher. Reported rather than dropped:
+  the honest reading is that the classical route needs a tuning parameter, and here the usual
+  way of setting it *without* knowing the noise level does measurably worse than knowing σ.
+
+## What M4 built, and what it found out about building it
+
+`thermalpinn/pinn.py` is the PINN: the field is a network `T(x, t)`, the flux is a second
+network `q(t)`, the heat equation is scored at collocation points by automatic
+differentiation rather than solved, and the initial condition is satisfied by construction.
+`scripts/03_act1.py` runs it against Beck, Tikhonov and Alifanov on the same record, five
+seeds, with the residual weight chosen on a scenario (`scenario.TUNING`) that is neither the
+showcase nor any case the M6 table will average over.
+
+Three things had to be corrected before any of it meant anything, and all three were found by
+measuring rather than by reading. Each is written up where it lives in the code, and each has
+a test; none of them is a hyperparameter that happened to work.
+
+- **The residual, unweighted, is not a well-defined objective on this problem.** Switch a
+  flux on at t = 0 and the surface obeys the heat kernel, `T_t ~ t^(-1/2)`. Square that and
+  average it over collocation points drawn uniformly in time and the integral is one of
+  `1/t`: logarithmically divergent, so the mean squared residual has no limit and simply
+  climbs with the number of points. Worse than the divergence sounds, a logarithm weights
+  every *decade* equally, so a thousandth of the points carried as much of the objective as
+  the last decade did. Weighting the residual by `sqrt(t)` cancels it exactly and cannot
+  change which fields solve the equation.
+- **Adaptive gradient-norm balancing of the loss weights diverges here.** The textbook scheme
+  re-measures the weights as training proceeds; the better the residual is satisfied the
+  smaller its gradient, the rule reads a small gradient as *weight this more*, and it feeds
+  back. Left running it took the residual weight to four million times its initial value and
+  arrived at the trivial solution — uniform `T0`, zero flux, exactly zero residual, and a
+  sensor error of 517 K that by then weighed nothing. The balance is now measured once and
+  frozen, and the weight is swept explicitly.
+- **The obvious hard initial condition is the wrong one.** Writing `T = T0 + t N(x, t)`
+  satisfies `T(x, 0) = T0` identically, which is why it is the standard choice — but it also
+  asserts that the surface leaves `T0` *linearly* in time, and a switched-on flux makes it
+  leave as `sqrt(t)`. For `t N` to produce that, `N` would have to diverge at the origin, and
+  a tanh network cannot, so the flux it can express is pinned near zero at t = 0 and has to
+  climb to meet the truth. `T = T0 + sqrt(t) N(x, t)` is the same statement as the residual's
+  own weight, applied to the ansatz instead of to the norm, and the two cancel.
+
+The last one is the reason the act-1 numbers are being regenerated: it changes the answer, so
+every training that produced the earlier result has to be redone rather than patched.
+
+## What is left
+
+- **M4's numbers.** `scripts/03_act1.py` runs end to end and has produced a complete result
+  once; the initial-condition correction above invalidated it. Eleven trainings, about two
+  hours, resumable — each one is cached under `data/act1_cache/` against a key that includes
+  the whole configuration, so an interrupted run continues instead of starting over. It
+  writes `results/act1.json` and `figs/act1_linear.png`, and neither is committed until it
+  comes from the current code.
+- **The act-1 section of this README**, written from that JSON. On the evidence so far it
+  will be reporting a loss on the flux and something close to a draw on the surface peak,
+  which is what the plan expected and what the honesty rules say goes in the headline rather
+  than in a footnote.
+- **The ansatz comparison belongs in the script, not in prose.** The `sqrt(t)`-against-`t`
+  measurement was made on a scratch script; it should be a row of the act-1 ablation next to
+  `lambda_r = 0`, so the claim above is regenerated rather than quoted.
+- **M5 and M6**, as planned: acts 2 and 3, then the studies, tables and the eight figures.
 
 ## Running it
 

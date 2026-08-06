@@ -83,8 +83,13 @@ class InverseModel:
     grid: Grid = INVERSE_GRID
     theta: float = 0.5
     #: Backward-Euler steps before Crank-Nicolson takes over.  5 MW/m^2 switching on at
-    #: t = 0 makes CN ring; damping the first 10 ms costs O(dt) over 1 % of the event.
-    n_startup: int = 10
+    #: t = 0 makes CN ring, and two damped steps remove 3.8 K of that from the surface
+    #: trace.  Two rather than more because a startup makes the scheme *not* time invariant,
+    #: which is the one assumption the Duhamel sum needs: at two steps the sum reproduces
+    #: the model to 2e-3 K, 250 times below the measurement noise, and the error grows
+    #: linearly with the number of startup steps.  The surface peak itself is unaffected
+    #: either way -- it happens seconds after the startup is over.
+    n_startup: int = 2
     newton_tol: float = 1e-11
     newton_max: int = 30
 
@@ -391,28 +396,51 @@ def beck(
     recursion that divides by it amplifies round-off by 10^9 per step.  The unregularised
     version of this method does not merely become inaccurate, it fails to run.
 
-    Near the end of the record fewer than `r` measurements remain, so the window shrinks;
-    extrapolating the data instead would invent the part of the answer least constrained
-    by it.
+    The march stops when fewer than `r` measurements remain, because the last blocks are
+    exactly the ones the look-ahead was protecting: shrinking the window towards one future
+    measurement walks straight back into the unregularised step above, and it visibly does
+    -- the largest error in the record lands on the final interval.  The unresolved tail is
+    held at the last estimated value and its length is returned, so a caller can see how
+    much of the record Beck declined to answer for.  It is `r` intervals, `r / f_sample`
+    seconds, and no method can do better there: the data simply stop.
     """
     S, baseline = model.step_response() if duhamel is None else duhamel
     r = 2 * stride if r is None else r
+    if r < stride:
+        raise ValueError(f"look-ahead r = {r} is shorter than the flux step {stride}: the step is unconstrained")
     n = model.n_control
     base = baseline.copy()
     q = np.zeros(n)
 
-    for start in range(0, n, stride):
-        block = min(stride, n - start)
-        ahead = min(r, n - start)
-        psi = S[1 : ahead + 1]
-        value = float((Y[start + 1 : start + ahead + 1] - base[start + 1 : start + ahead + 1]) @ psi / (psi @ psi))
-        q[start : start + block] = value
+    def add_block_response(start: int, block: int, value: float) -> None:
         # The block's own response, by telescoping the step response: `block` intervals of
         # unit flux starting now contribute S_L - S_{L-block} at lag L.
         lags = np.arange(1, n - start + 1)
         base[start + 1 :] += value * (S[lags] - S[np.maximum(lags - block, 0)])
 
-    return {"q": q, "obs": base, "residual": base[1:] - Y[1:], "stride": stride, "r": r}
+    value, filled = 0.0, 0
+    for start in range(0, n, stride):
+        if start + r > n:
+            break
+        psi = S[1 : r + 1]
+        value = float((Y[start + 1 : start + r + 1] - base[start + 1 : start + r + 1]) @ psi / (psi @ psi))
+        block = min(stride, n - start)
+        q[start : start + block] = value
+        add_block_response(start, block, value)
+        filled = start + block
+
+    if filled < n:
+        q[filled:] = value
+        add_block_response(filled, n - filled, value)
+
+    return {
+        "q": q,
+        "obs": base,
+        "residual": base[1:] - Y[1:],
+        "stride": stride,
+        "r": r,
+        "unresolved_tail": int(n - filled),
+    }
 
 
 def beck_by_discrepancy(
@@ -434,8 +462,13 @@ def beck_by_discrepancy(
     duhamel = model.step_response() if duhamel is None else duhamel
     sweep, chosen = [], None
     for stride in strides:
-        out = beck(model, Y, stride=stride, r=look_ahead_ratio * stride, duhamel=duhamel)
-        rms = float(np.sqrt(np.mean(out["residual"] ** 2)))
+        # The finest strides do not merely fit badly, they overflow: the sequential recursion
+        # is exponentially unstable when the look-ahead is short (see `beck`).  That is a
+        # result of the sweep, so it is recorded as a non-finite residual and skipped rather
+        # than raised -- and the warning is silenced because it is expected, not ignored.
+        with np.errstate(over="ignore", invalid="ignore"):
+            out = beck(model, Y, stride=stride, r=look_ahead_ratio * stride, duhamel=duhamel)
+            rms = float(np.sqrt(np.mean(out["residual"] ** 2)))
         sweep.append({"stride": stride, "r": out["r"], "residual_rms": rms})
         if np.isfinite(rms) and rms <= sigma:
             chosen = out  # keep overwriting: the last one that fits is the smoothest one
@@ -457,19 +490,30 @@ def _second_difference(n: int) -> np.ndarray:
     return D
 
 
-def _menger_curvature(x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """Curvature of the polyline through consecutive triples, for the L-curve corner.
+def _l_curve_corner(residual: np.ndarray, penalty: np.ndarray) -> int:
+    """Index of the corner of the L-curve: the point farthest from the chord across it.
 
-    Menger's formula rather than a fitted derivative: the L-curve is sampled coarsely in
-    log-log and a spline through it invents inflections between the samples.
+    Local curvature is the textbook definition of the corner and the wrong estimator for it
+    here.  The curve is sampled a couple of points per decade, and on a coarse sample the
+    largest local curvature is wherever consecutive points happen to be closest together --
+    at the small-lambda end, where the penalty axis runs almost vertically.  It picks the
+    endpoint, not the corner.
+
+    The chord distance is global and has no such failure mode: normalise both axes, draw the
+    straight line between the two ends of the sweep, and take the point that stands off it
+    furthest.  On an L the answer is the bend, by construction.
     """
-    k = np.zeros(x.size)
-    for i in range(1, x.size - 1):
-        p, c, q = np.array([x[i - 1], y[i - 1]]), np.array([x[i], y[i]]), np.array([x[i + 1], y[i + 1]])
-        area = 0.5 * ((c[0] - p[0]) * (q[1] - p[1]) - (q[0] - p[0]) * (c[1] - p[1]))
-        lengths = np.linalg.norm(c - p) * np.linalg.norm(q - c) * np.linalg.norm(q - p)
-        k[i] = 4.0 * area / lengths if lengths > 0 else 0.0
-    return k
+    x, y = np.log(residual), np.log(np.maximum(penalty, 1e-300))
+    span_x, span_y = x.max() - x.min(), y.max() - y.min()
+    x = (x - x.min()) / (span_x if span_x > 0 else 1.0)
+    y = (y - y.min()) / (span_y if span_y > 0 else 1.0)
+    chord = np.array([x[-1] - x[0], y[-1] - y[0]])
+    norm = np.linalg.norm(chord)
+    if norm == 0.0:
+        return 0
+    chord /= norm
+    offset = np.column_stack([x - x[0], y - y[0]])
+    return int(np.argmax(np.abs(offset[:, 0] * chord[1] - offset[:, 1] * chord[0])))
 
 
 def tikhonov(
@@ -488,17 +532,30 @@ def tikhonov(
     sequential approximation, no look-ahead window.  It is the strongest thing available
     for law A and the natural yardstick for everything else.
 
-    `lambda` is chosen two ways and both are returned, because they answer different
-    questions and disagreeing is informative:
+    `lambda` is chosen two ways and both are returned:
 
         discrepancy   the largest lambda whose residual still explains the data to within
-                      the known noise level.  Uses sigma, which is a real advantage a
-                      real experiment would also have.
+                      the known noise level.  Uses sigma, which a real experiment also has.
         l_curve       the corner of log||residual|| against log||D2 q||, where buying more
                       smoothness starts costing fit.  Uses no knowledge of sigma.
 
-    The headline uses the discrepancy choice; the L-curve is reported next to it so the
-    reader can see how much the choice was worth.
+    They do not agree here.  The corner lands several decades of lambda below the discrepancy
+    choice and returns a visibly rougher, under-regularised flux -- about half again as much
+    error in band.  The reason is visible in the sweep: the curve is not L-shaped.  Its
+    penalty axis runs over five decades while the residual moves through less than two, so
+    there is no sharp bend, and any corner-finding rule is reading noise off a curve that has
+    no corner.
+
+    Worth stating precisely, because the first look was wrong: scored over the whole record
+    the L-curve solution appears twenty times worse, which would be a far more dramatic
+    finding.  Almost all of that is the metric's edge behaviour reacting to the extra
+    out-of-band content this lambda leaves in, not a real difference -- see `metrics.band_error`
+    on why the score is taken away from the boundary.
+
+    The headline therefore uses the discrepancy choice, and the L-curve is reported beside it
+    rather than quietly dropped: "the classical method needs a tuning parameter" is the
+    honest version, and on this problem the usual way of setting that parameter without
+    knowing the noise level does measurably worse than knowing sigma.
     """
     S, baseline = model.step_response() if duhamel is None else duhamel
     n = model.n_control
@@ -522,8 +579,9 @@ def tikhonov(
         _, res, pen = solve(float(lam))
         sweep.append({"lambda": float(lam), "residual": res, "penalty": pen})
 
-    corner = int(np.argmax(_menger_curvature(np.log(np.array([s["residual"] for s in sweep])),
-                                             np.log(np.array([s["penalty"] for s in sweep]) + 1e-300))))
+    corner = _l_curve_corner(
+        np.array([s["residual"] for s in sweep]), np.array([s["penalty"] for s in sweep])
+    )
     lam_lcurve = float(sweep[corner]["lambda"])
 
     # Discrepancy: the residual norm grows monotonically with lambda, so bisect on log.
@@ -553,6 +611,10 @@ def tikhonov(
         "q_l_curve": q_lcurve,
         "residual_rms": res / np.sqrt(n),
         "residual_rms_l_curve": res_l / np.sqrt(n),
+        # Roughness of each choice, which is the thing the two selectors actually disagree
+        # about: the corner leaves the flux far less smooth than the noise level warrants.
+        "penalty": pen,
+        "penalty_l_curve": pen_l,
         "sweep": sweep,
     }
 
@@ -594,7 +656,7 @@ def alifanov(
 
     history = []
     g_prev_sq, d = None, np.zeros(n)
-    stop = "max_iter"
+    stop, restarts = "max_iter", 0
     t0 = time.perf_counter()
 
     for it in range(max_iter):
@@ -622,12 +684,21 @@ def alifanov(
             stop = "flat_direction"
             break
         alpha = -float(residual @ dobs) / denom
-        if alpha <= 0.0:  # conjugacy lost on the nonlinear problem: restart on steepest descent
+        if alpha <= 0.0:
+            # The conjugate direction stopped being a descent direction, which the nonlinear
+            # laws can do.  Restart on steepest descent for this step only: `g_prev_sq` is
+            # already this iteration's gradient, so the next step resumes conjugacy from here
+            # rather than throwing away another one.
+            #
+            # This fallback cannot fail.  Along -g the step length is g.g / |tangent(-g)|^2,
+            # positive whenever the tangent and the adjoint are transposes of each other --
+            # which is precisely what the gradient and tangent tests check.  So the two
+            # verification tests are also what makes the line search safe.
+            restarts += 1
             d = -g
             dobs = model.tangent(run.field, d)[1:]
             denom = float(dobs @ dobs)
             alpha = -float(residual @ dobs) / max(denom, 1e-300)
-            g_prev_sq = None
         q = q + alpha * d
 
     return {
@@ -635,6 +706,7 @@ def alifanov(
         "residual": residual,
         "iterations": len(history),
         "stop": stop,
+        "restarts": restarts,
         "sigma": sigma,
         "history": history,
         "seconds": time.perf_counter() - t0,

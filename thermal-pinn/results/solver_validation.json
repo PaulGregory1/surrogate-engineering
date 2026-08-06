@@ -396,7 +396,7 @@
       "residual_scheme": 3.88244560148242e-15,
       "residual_trapezoid": 1.8777000852968584e-08,
       "T_surface_max": 913.3453255698759,
-      "seconds": 23.82580575000611
+      "seconds": 19.937660917028552
     },
     {
       "law": "B",
@@ -409,7 +409,7 @@
       "residual_scheme": 4.357450138726895e-09,
       "residual_trapezoid": 2.3505547203414833e-08,
       "T_surface_max": 837.1954162611514,
-      "seconds": 282.84163541701855
+      "seconds": 26.1081667499966
     },
     {
       "law": "C",
@@ -422,7 +422,7 @@
       "residual_scheme": 4.325625458431003e-09,
       "residual_trapezoid": 2.3477966829556132e-08,
       "T_surface_max": 844.809198890953,
-      "seconds": 28.345112749986583
+      "seconds": 30.35990008400404
     },
     {
       "law": "A",
@@ -435,7 +435,7 @@
       "residual_scheme": 5.31281217993904e-15,
       "residual_trapezoid": 1.957755731371779e-06,
       "T_surface_max": 913.3462227474045,
-      "seconds": 1.2802077909873333
+      "seconds": 1.6565844170108903
     }
   ],
   "quick": false

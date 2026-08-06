@@ -19,8 +19,11 @@ If you change the repo's structure, apply the *Update protocol* at the end of th
 - **`main` carries the Flow Lab only.** The other labs live on their own branches —
   `stress-lab`, `bridge-lab`, `thermal-pinn` — and none of their files exist here. Don't
   re-add one to `main` without being asked; build on its branch instead.
-- `engine-copilot` backend: `cd engine-copilot && uvicorn engine_copilot.main:app --reload`. Frontend:
-  `cd engine-copilot/frontend && pnpm dev`.
+- `engine-copilot` backend: `cd engine-copilot/backend && ../.venv/bin/python -m uvicorn
+  engine_copilot.main:app --reload --port 8000`. It **must** run from `backend/`: the package is
+  not pip-installed into the venv, it's imported from the source tree, so any other cwd gives
+  `ModuleNotFoundError: No module named 'engine_copilot'`. Frontend:
+  `cd engine-copilot/frontend && pnpm dev` (Vite on :5173, proxies `/api` to the backend).
 - No API key anywhere: the Claude Agent SDK chat (`engine-copilot/backend/engine_copilot/agent.py`)
   drives the local `claude` CLI via `claude login`, not `ANTHROPIC_API_KEY`.
 - Nothing here is committed automatically — the user commits.

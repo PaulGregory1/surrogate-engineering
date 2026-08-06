@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Grid2x2, Wind } from 'lucide-react'
+import { ArrowRight, Wind } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { usePublishChatContext } from '@/chat/ChatProvider'
 import { reveal } from '@/lib/motion'
@@ -17,18 +17,6 @@ const LABS = [
     description:
       'Dessine un corps immergé, lis son coefficient de traînée en temps réel, puis laisse une descente de gradient à travers le surrogate chercher la forme la moins traînante — et vérifie le résultat dans le vrai solveur.',
     method: 'U-Net + contrainte de continuité',
-  },
-  {
-    to: '/stress',
-    icon: Grid2x2,
-    title: 'Stress Lab',
-    domain: 'MÉCANIQUE DES STRUCTURES',
-    stat: '6.0',
-    statUnit: '%',
-    statLabel: 'ERREUR ATTENDUE SUR LE PIC',
-    description:
-      'Place les perçages d’une plaque sous charge, vois la carte de von Mises se recalculer à chaque déplacement, et fais chercher au modèle un placement qui abaisse le pic de contrainte.',
-    method: 'MeshGraphNet, 10 passes de message',
   },
 ]
 
@@ -52,7 +40,7 @@ export function Home() {
     label: 'Accueil',
     lines: [],
     suggestions: [
-      'Quelle est la différence entre les deux labs ?',
+      'Que fait le Flow Lab, et sur quel solveur son modèle a-t-il été entraîné ?',
       'Quels modèles sont disponibles et quelle est leur erreur mesurée ?',
       'Prédis le Cd d’une forme à a2=0.05, b2=-0.02, a3=0.03, b3=0.01, a4=-0.04, b4=0, Re=80',
     ],
@@ -62,7 +50,7 @@ export function Home() {
     <>
       <PageHeader
         title="Vue d’ensemble"
-        subtitle="Deux workflows d’ingénierie pilotés par des surrogates entraînés"
+        subtitle="Un workflow d’ingénierie piloté par des surrogates entraînés"
       />
 
       {/* This is an index of instruments, not a landing page — which is why nothing
@@ -75,13 +63,16 @@ export function Home() {
             Des surrogates ML, mis entre les mains d’un ingénieur.
           </h2>
           <p className="cq-muted mt-5 max-w-[62ch] text-body leading-[1.7]">
-            Écoulement externe et plaque perforée, résolus en millisecondes par des modèles entraînés
-            sur un solveur de référence — toujours contextualisés par leur erreur connue, et
-            vérifiables face à ce solveur en un clic.
+            Écoulement externe autour d’un corps immergé, résolu en millisecondes par un modèle
+            entraîné sur un solveur de référence — toujours contextualisé par son erreur connue, et
+            vérifiable face à ce solveur en un clic.
           </p>
         </motion.div>
 
-        <div className="mt-11 grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* One lab, one card — and the card keeps the width it had when there were two.
+            Stretched across the full column it would read as a landing-page banner, which
+            is the one register this interface refuses. */}
+        <div className="mt-11 grid grid-cols-1 gap-4 md:max-w-[calc(50%-0.5rem)]">
           {LABS.map((lab, i) => (
             <motion.div key={lab.to} {...reveal(0.08 * (i + 1))}>
               <Link

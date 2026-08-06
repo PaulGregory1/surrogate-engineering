@@ -8,7 +8,6 @@ from engine_copilot.tools import (
     flow_predict_tool,
     get_model_card_tool,
     render_report_tool,
-    stress_predict_tool,
 )
 
 # @tool wraps each function into an SdkMcpTool dataclass; .handler is the
@@ -23,14 +22,12 @@ def _payload(result: dict) -> dict:
     return json.loads(result["content"][0]["text"])
 
 
-def test_all_eight_tools_are_wired():
+def test_all_six_tools_are_wired():
     assert {t.name for t in ALL_TOOLS} == {
         "flow_predict",
         "flow_optimize",
         "flow_verify",
         "flow_simulate",
-        "stress_predict",
-        "stress_optimize",
         "get_model_card",
         "render_report",
     }
@@ -63,34 +60,9 @@ def test_flow_optimize_tool_reduces_cd_and_stays_compact():
     assert "fields" not in payload and "boundary_xy" not in payload
 
 
-def test_stress_predict_tool_returns_peak_without_the_mesh():
-    result = anyio.run(
-        stress_predict_tool.handler,
-        {"holes": [[0.25, 0.25, 0.05], [0.75, 0.25, 0.05]], "load_angle_deg": -90.0},
-    )
-    payload = _payload(result)
-    assert payload["peak_vm_surrogate"] > 0
-    assert payload["peak_error_pct_expected"] == 6.56
-    assert "mesh" not in payload and "field" not in payload
-
-
-def test_stress_predict_tool_reports_invalid_layout_as_error():
-    # Two identical holes overlap, which stress_service rejects.
-    result = anyio.run(
-        stress_predict_tool.handler,
-        {"holes": [[0.5, 0.5, 0.05], [0.5, 0.5, 0.05]], "load_angle_deg": -90.0},
-    )
-    assert result.get("is_error") is True
-
-
 def test_get_model_card_tool_known_model():
     result = anyio.run(get_model_card_tool.handler, {"model": "unet-phys"})
     assert "cd_mape_pct" in result["content"][0]["text"]
-
-
-def test_get_model_card_tool_covers_stress_models_too():
-    result = anyio.run(get_model_card_tool.handler, {"model": "gnn-mp10-glob"})
-    assert "peak_err_pct" in result["content"][0]["text"]
 
 
 def test_get_model_card_tool_unknown_model_is_error():

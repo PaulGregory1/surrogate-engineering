@@ -55,7 +55,7 @@ def _history_table(history: Any, n_points: int = 10) -> str:
     """Downsample a convergence history to a small Markdown table."""
     if not isinstance(history, dict):
         return "_Historique de convergence non fourni._"
-    best = history.get("cd_best") or history.get("peak_vm") or []
+    best = history.get("cd_best") or []
     if not best:
         return "_Historique de convergence non fourni._"
 
@@ -148,66 +148,9 @@ d'un modèle de langage : les chiffres proviennent directement du solveur et du 
 """
 
 
-def _stress_report(ctx: dict) -> str:
-    model = ctx.get("model", "gnn-mp10-glob")
-    quality = config.STRESS_MODEL_QUALITY.get(model, {})
-    peak_initial = ctx.get("peak_vm_initial")
-    peak_final = ctx.get("peak_vm_final")
-    holes = ctx.get("final_holes") or []
-
-    if isinstance(holes, list) and holes:
-        hole_rows = "\n".join(
-            f"| {i + 1} | {_num(h[0], 4)} | {_num(h[1], 4)} | {_num(h[2], 4)} |"
-            for i, h in enumerate(holes)
-            if isinstance(h, (list, tuple)) and len(h) == 3
-        )
-        hole_table = "| Trou | x | y | r |\n| --- | --- | --- | --- |\n" + hole_rows
-    else:
-        hole_table = "_Disposition finale non fournie._"
-
-    return f"""# Rapport d'optimisation — contrainte de von Mises
-
-## Résumé exécutif
-
-Le repositionnement des perçages fait passer le pic de contrainte de von Mises de
-**{_num(peak_initial)}** à **{_num(peak_final)}**, soit **{_pct_drop(peak_initial, peak_final)}**,
-à aire retirée constante et sous le même cas de charge.
-
-## Conditions
-
-| Paramètre | Valeur |
-| --- | --- |
-| Angle de charge | {_num(ctx.get('load_angle_deg'), 1, '°')} |
-| Modèle surrogate | `{model}` |
-| Erreur sur le pic attendue (test) | {_num(quality.get('peak_err_pct'), 2, ' %')} |
-| Erreur $L_2$ relative sur le champ | {_num(quality.get('field_rel_l2'), 3)} |
-| Itérations de recherche | {_num(ctx.get('n_iters'), 0)} |
-
-## Disposition retenue
-
-{hole_table}
-
-## Réserves
-
-- La recherche est une exploration locale randomisée sur le surrogate, pas une descente
-  de gradient : le maillage change à chaque déplacement de trou, il n'existe pas de
-  gradient du pic par rapport aux positions.
-- Le pic de von Mises est la grandeur la plus difficile à prédire pour ce modèle (c'est
-  un extremum, pas une moyenne). Confronter le design retenu à un calcul EF fin avant
-  toute décision.
-- L'aire retirée est conservée ; aucune contrainte de fabrication n'est imposée.
-
----
-_Rapport généré par Engine-Copilot à partir du résultat d'optimisation, sans intervention
-d'un modèle de langage : les chiffres proviennent directement du solveur et du surrogate._
-"""
-
-
 def render_report(project: str, context: dict | None) -> str:
-    """Render a Markdown report for a flow or stress optimisation result."""
+    """Render a Markdown report for a flow optimisation result."""
     ctx = context or {}
     if project == "flow":
         return _flow_report(ctx)
-    if project == "stress":
-        return _stress_report(ctx)
-    raise ValueError(f"unknown project '{project}' — expected 'flow' or 'stress'")
+    raise ValueError(f"unknown project '{project}' — expected 'flow'")

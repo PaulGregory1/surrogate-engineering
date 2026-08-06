@@ -47,7 +47,7 @@ export const MARK = {
 //
 // Calque says the orange measure ramp is the only ramp. These two scales are the
 // documented exception, and they are scoped strictly to *rasterised solver
-// fields*: velocity, pressure, vorticity, von Mises. Everywhere else — convergence
+// fields*: velocity, pressure, vorticity. Everywhere else — convergence
 // traces, intervals, progress rules, gauges, table encodings — orange remains the
 // only quantity colour, so the exception stays legible as an exception.
 //
@@ -61,7 +61,7 @@ export const MARK = {
 // off pure white — a cold #f7f7f7 next to this paper reads grey and dirty.
 
 /**
- * Unsigned magnitude, low → high (axial velocity, von Mises stress).
+ * Unsigned magnitude, low → high (axial velocity).
  *
  * Read as a ramp rather than as a divergence: there is no meaningful zero here, so
  * the pale band around 0.5 is just the crossover, not a neutral. It carries less

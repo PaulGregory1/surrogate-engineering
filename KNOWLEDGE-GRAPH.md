@@ -7,10 +7,22 @@
 
 ## In one sentence
 
-Two independent, laptop-reproducible ML research repos — `flow-surrogate` (LBM flow +
-learned surrogates + differentiable shape optimization) and `stress-gnn` (FEM elasticity +
-GNN surrogates + design ranking) — plus `engine-copilot`, a FastAPI + React platform that turns
-both into an interactive demo with a Claude Agent SDK chat layered on top.
+One laptop-reproducible ML research repo — `flow-surrogate` (LBM flow + learned surrogates +
+differentiable shape optimization) — plus `engine-copilot`, a FastAPI + React platform that
+turns it into an interactive demo with a Claude Agent SDK chat layered on top.
+
+**`main` carries the Flow Lab only.** The other labs are deliberately absent from this
+branch and live on their own, each branched off `01282b2` (the last commit where `main`
+still carried the Stress Lab):
+
+| Branch | Lab |
+|---|---|
+| `stress-lab` | Stress Lab — `stress-gnn/` (FEM elasticity + GNN surrogates + design ranking), `stress_service.py`, `StressLab.tsx` |
+| `bridge-lab` | Bridge Lab (WIP) — `stress-gnn/stressgnn/bridge/`, `bridge_service.py`, `BridgeLab.tsx`; branched off `stress-lab`'s content, so it carries the Stress Lab too |
+| `thermal-pinn` | Thermal PINN (WIP) — `thermal-pinn/`, research repo only, no platform wiring yet |
+
+Nothing below describes those branches; this graph maps `main`. When you merge a lab back,
+re-read its branch and extend the catalogue rather than trusting this file for it.
 
 ## How to use this graph
 
@@ -26,27 +38,24 @@ both into an interactive demo with a Claude Agent SDK chat layered on top.
 
 ```mermaid
 graph TD
-  subgraph Research["flow-surrogate/ and stress-gnn/ (independent repos, own .venv each)"]
+  subgraph Research["flow-surrogate/ (independent repo, own .venv)"]
     FS["flowsurrogate/<br/>LBM solver, geometry, data, optimize, train, models/{unet,fno,pod}"]
-    SG["stressgnn/<br/>FEM solver, mesh (gmsh), dataset, train, models/{gnn,cnn_grid}"]
   end
-  subgraph Platform["engine-copilot/ (single app, git subtree-imports the two repos above)"]
+  subgraph Platform["engine-copilot/ (single app, git subtree-imports the repo above)"]
     BE["backend/engine_copilot/<br/>FastAPI app (main.py) + service layer"]
-    FE["frontend/src/<br/>React + TS + Vite, 4 pages"]
+    FE["frontend/src/<br/>React + TS + Vite, 2 pages"]
   end
   SDK["claude-agent-sdk<br/>drives local `claude` CLI subprocess, no API key"]
 
   BE -->|"pip install -e ../flow-surrogate<br/>from flowsurrogate.* import ..."| FS
-  BE -->|"pip install -e ../stress-gnn<br/>from stressgnn.* import ..."| SG
   BE -->|"agent.py: query() via MCP tools"| SDK
   FE -->|"fetch() REST + SSE, api.ts"| BE
 ```
 
-**Integration model**: `engine-copilot` treats both research repos strictly as **read-only
-libraries** (editable-installed, never modified from platform code — see
+**Integration model**: `engine-copilot` treats the research repo strictly as a **read-only
+library** (editable-installed, never modified from platform code — see
 `PLATFORM_PLAN.md`'s "INTOUCHABLES" directive). All physics/ML logic stays in
-`flowsurrogate`/`stressgnn`; `engine-copilot/backend` only adapts their outputs to JSON and
-streams them.
+`flowsurrogate`; `engine-copilot/backend` only adapts its outputs to JSON and streams them.
 
 **Two servers, one browser tab**: `uvicorn` (backend, port 8000 by convention) and Vite dev
 server (frontend, port 5173, CORS-allowed origin in `main.py`). No database, no persisted
@@ -70,37 +79,24 @@ platform state — every request recomputes from the trained checkpoints in `run
 Science/results are documented in `flow-surrogate/README.md` and `flow-surrogate/BACKGROUND.md`
 (from-scratch explainer) — don't re-derive them here, cite them.
 
-### `stress-gnn/stressgnn/` — elasticity physics + surrogates (library)
-| Module | Role |
-|---|---|
-| `geometry.py` | `Design`, `is_valid`, `sample_design(s)` — perforated-plate design vector |
-| `mesh.py` | `build_mesh` → `Mesh`, gmsh-backed (variable topology per design) |
-| `fem.py` | `solve` → `FEMSolution`, `von_mises` — the ground-truth P1 FEM solver |
-| `dataset.py` | `GraphDataset`, `build_graph`, `collate`, `Graph` |
-| `train.py` | `load_model`, `pick_device` |
-| `models/{gnn.py,cnn_grid.py}` | `MeshGraphNet`, `GridUNet` |
-| `runs/*.pt` | checkpoints: `gnn-mp10`, `gnn-mp10-glob`, `gnn-mp10-glob-corr` |
-
-Science/results documented in `stress-gnn/README.md` and `stress-gnn/BACKGROUND.md`.
-
-**Shared repo layout** (both research repos): `<pkg>/` (library), `scripts/00-06_*.py`
-(pipeline stages), `run_all.py` (orchestrates generate → train → optimize; `--quick`/`--force`),
-`data/*.npz` (train/test/ood splits, not committed), `runs/` (checkpoints, committed),
-`results/*.json` (metrics feeding README tables, committed), `tests/`.
+**Repo layout**: `flowsurrogate/` (library), `scripts/00-06_*.py` (pipeline stages),
+`run_all.py` (orchestrates generate → train → optimize; `--quick`/`--force`), `data/*.npz`
+(train/test/ood splits, not committed), `runs/` (checkpoints, committed), `results/*.json`
+(metrics feeding README tables, committed), `tests/`. The lab repos on the other branches
+follow the same layout.
 
 ### `engine-copilot/backend/engine_copilot/` — FastAPI service layer
 | File | Role | Depends on |
 |---|---|---|
-| `main.py` | FastAPI app, `lifespan` warmup (loads both services + JIT-warms the LBM solver before first request), all routes | `agent_session`, `flow_service`, `stress_service`, `simulate_streaming` |
+| `main.py` | FastAPI app, `lifespan` warmup (loads the service + JIT-warms the LBM solver before first request), all routes | `agent_session`, `flow_service`, `simulate_streaming` |
 | `agent.py` | `AgentSession.chat()` — one `query()` call per browser turn (not a shared `ClaudeSDKClient`: a client left mid-response by a dropped HTTP connection corrupts the underlying CLI session for every future request); continuity via `options.resume = previous ResultMessage.session_id`; registers `ALL_TOOLS` as an in-process MCP server (`create_sdk_mcp_server`), `permission_mode="bypassPermissions"` because the tools are deterministic read-only wrappers | `tools.ALL_TOOLS` |
-| `tools.py` | `@tool`-decorated MCP tools exposed to the agent → `ALL_TOOLS`. All 8 of `PLATFORM_PLAN.md` §5.3: `flow_predict`, `flow_optimize`, `flow_verify`, `flow_simulate`, `stress_predict`, `stress_optimize`, `get_model_card`, `render_report`. Two invariants: every service call goes through `anyio.to_thread.run_sync` (the MCP server shares the event loop with the SSE streams feeding the labs), and the streaming services are consumed to completion so only scalars reach the model — no fields, meshes or frames, and convergence curves are downsampled to ~20 points | `flow_service`, `stress_service`, `lbm_frames`, `report`, `config.{FLOW,STRESS}_MODEL_QUALITY` |
-| `config.py` | Sibling-repo paths (`FLOW_RUNS_DIR`, `STRESS_RUNS_DIR`, ...), `FIELD_DOWNSCALE`, and **hand-copied** `FLOW_MODEL_QUALITY` / `STRESS_MODEL_QUALITY` tables from each repo's `RESULTS.md`/`results/metrics.json` — re-copy these by hand if a model is retrained, nothing auto-syncs them | none |
+| `tools.py` | `@tool`-decorated MCP tools exposed to the agent → `ALL_TOOLS`. Six of the eight in `PLATFORM_PLAN.md` §5.3: `flow_predict`, `flow_optimize`, `flow_verify`, `flow_simulate`, `get_model_card`, `render_report` (`stress_predict`/`stress_optimize` left with the Stress Lab on its branch). Two invariants: every service call goes through `anyio.to_thread.run_sync` (the MCP server shares the event loop with the SSE streams feeding the lab), and the streaming services are consumed to completion so only scalars reach the model — no fields or frames, and convergence curves are downsampled to ~20 points | `flow_service`, `lbm_frames`, `report`, `config.FLOW_MODEL_QUALITY` |
+| `config.py` | Sibling-repo paths (`FLOW_RUNS_DIR`, ...), `FIELD_DOWNSCALE`, and the **hand-copied** `FLOW_MODEL_QUALITY` table from the repo's `RESULTS.md`/`results/metrics.json` — re-copy it by hand if a model is retrained, nothing auto-syncs it | none |
 | `device_lock.py` | `MPS_LOCK`, a process-wide `threading.Lock` serializing all torch/MPS calls — Apple MPS is unsafe under concurrent multi-thread kernel submission; FastAPI's `run_in_executor` would otherwise let requests overlap | none |
 | `flow_service.py` | `FlowService` singleton (`flow_service`): caches models by key, decodes physical units, runs Adam shape optimization as a generator (`optimise_streaming`), runs true-LBM verification (`verify`) | `flowsurrogate.{data,geometry,lbm,optimize,train}` |
 | `lbm_frames.py` | `simulate_streaming()` — instrumented LBM run yielding intermediate frames for the live animation; duplicates `LBMSolver.run()`'s setup and drives `solver._step_fn` in a Python loop; module-level singleton solver shared with `flow_service.verify()` to pay `torch.compile` warmup once | `flowsurrogate.{geometry,lbm,optimize}` |
-| `stress_service.py` | `StressService` singleton (`stress_service`): mesh + coarse-FEM-solve + GNN-forward per request; gmsh is process-global/not thread-safe → its own `_GMSH_LOCK`, plus one-time `gmsh.initialize()` on the main thread at import time; hole-position optimization uses randomized local search ((1+1)-style), not gradient descent, because the GNN isn't differentiable w.r.t. mesh topology | `stressgnn.{dataset,fem,geometry,mesh,train}` |
-| `report.py` | `render_report(project, context)` → Markdown. **Deterministic template, no LLM**: `PLATFORM_PLAN.md` §3.3 describes the route as calling Claude but §5.3 requires the *tool* to use a fixed template to avoid recursion — the template wins for both callers, so a report is the same document whoever asked and costs no CLI subprocess. Every field is optional and degrades to `n/a`, because the agent passes a summarised (partial) context and a report with one blank row beats a 500 | `config.{FLOW,STRESS}_MODEL_QUALITY` |
-| `schemas.py` | Pydantic request/response models = the tool/route schemas (`FlowPredictRequest/Response`, `FlowVerifyRequest/Response`, `FlowSimulateRequest`, `StressPredictRequest/Response`, `StressOptimizeRequest`) | none |
+| `report.py` | `render_report(project, context)` → Markdown; `project` is `"flow"` only on this branch. **Deterministic template, no LLM**: `PLATFORM_PLAN.md` §3.3 describes the route as calling Claude but §5.3 requires the *tool* to use a fixed template to avoid recursion — the template wins for both callers, so a report is the same document whoever asked and costs no CLI subprocess. Every field is optional and degrades to `n/a`, because the agent passes a summarised (partial) context and a report with one blank row beats a 500 | `config.FLOW_MODEL_QUALITY` |
+| `schemas.py` | Pydantic request/response models = the tool/route schemas (`FlowPredictRequest/Response`, `FlowVerifyRequest/Response`, `FlowSimulateRequest`, `FlowOptimizeRequest`, `ReportRequest/Response`) | none |
 
 **Routes** (`main.py`):
 
@@ -111,19 +107,18 @@ Science/results documented in `stress-gnn/README.md` and `stress-gnn/BACKGROUND.
 | `/api/flow/optimize` | POST (SSE) | streaming Adam shape optimization |
 | `/api/flow/verify` | POST | re-run the true LBM solver on a design, for comparison against the surrogate |
 | `/api/flow/simulate` | POST (SSE) | streaming LBM frames for the live-animation toggle |
-| `/api/stress/predict` | POST | one-shot peak-stress + field prediction |
-| `/api/stress/optimize` | POST (SSE) | streaming randomized hole-placement search |
 | `/api/report/generate` | POST | deterministic Markdown report from an optimisation result |
 | `/api/agent/chat` | POST (SSE) | Claude Agent SDK chat turn |
 
-All planned routes exist. `/api/report/generate` is the only synchronous non-trivial one —
+Every planned route that concerns the Flow Lab exists; `/api/stress/*` left with the Stress
+Lab (branch `stress-lab`). `/api/report/generate` is the only synchronous non-trivial one —
 rendering is pure string formatting, so it is a plain `def` with nothing offloaded to a
 thread.
 
 **Tests** (`backend/tests/`, hit real singletons, no mocking — ~40 s, model loading included):
-`test_flow_service.py`, `test_stress_service.py`, `test_tools.py` (the 8-tool roster, JSON
-output, payload-size guards, error paths), `test_report.py` (both templates, partial context,
-extrapolation warning). `pyproject.toml` sets `pythonpath = ["backend"]`; without it every
+`test_flow_service.py`, `test_tools.py` (the 6-tool roster, JSON output, payload-size guards,
+error paths), `test_report.py` (the flow template, partial context, extrapolation warning,
+unknown-project rejection). `pyproject.toml` sets `pythonpath = ["backend"]`; without it every
 module dies at import. Two gaps, both deliberate: no test exercises the SDK loop in
 `agent.py`, only the underlying tool functions; and `flow_verify`/`flow_simulate` have no
 tool-level test because both run the real LBM for tens of seconds — their service-layer
@@ -155,10 +150,6 @@ App.tsx — <ChatProvider> + <TooltipProvider> wrapping <Backdrop> + a 3-column 
 │   │   │      export-report (sends `verify` only once the LBM has run, so an
 │   │   │      unconfirmed optimum is reported as unconfirmed)
 │   │   │   └─ ConvergencePlot.tsx — live cd_best/cd_mean
-│   ├─ pages/StressLab.tsx — debounced predict (300ms)
-│   │   ├─ HoleEditor.tsx — click/drag/wheel hole placement + load-angle slider
-│   │   ├─ StressViewer.tsx — von-Mises heatmap on the measure ramp + pulsing peak marker
-│   │   ├─ StressOptimizePanel.tsx — randomized local-search optimize (SSE), export-report
 └─ chat/ChatSidebar.tsx — right panel on EVERY page (overlay + backdrop < lg)
 Shared: PageHeader.tsx (sticky, per-page actions + copilot toggle), StatTile.tsx
 (the one 40px figure + its interval), ColorScaleLegend.tsx, AnimatedNumber.tsx,
@@ -175,14 +166,13 @@ what the user typed) so "optimise cette forme" resolves against what is on scree
 are per-page. Toggle: ⌘/Ctrl-J, persisted in `localStorage` (`engine-copilot.chat.open`), defaulting
 open ≥1024px and closed below.
 
-`api.ts`: typed fetch client. JSON: `predictFlow`, `verifyFlow`, `predictStress`, `getHealth`,
+`api.ts`: typed fetch client. JSON: `predictFlow`, `verifyFlow`, `getHealth`,
 `generateReport` (+ `downloadMarkdown`, a Blob/object-URL save helper — its `context` is
 deliberately `Record<string, unknown>`, since the backend renders `n/a` for whatever is missing
 rather than holding both sides to one schema).
 SSE via a custom `readSSE()` reader over `fetch`'s body stream (not `EventSource`, since POST
 bodies are needed): `streamFlowOptimize` (**query-string params** — inconsistent with the
-JSON-body convention used everywhere else), `streamFlowSimulate`, `streamStressOptimize`,
-`streamAgentChat`.
+JSON-body convention used everywhere else), `streamFlowSimulate`, `streamAgentChat`.
 
 **Design system — "Calque": registre sobre et dense.** One light scheme, no toggle. The full
 charte is installed as a Claude skill at `~/.claude/skills/calque/` (SKILL.md + `references/`
@@ -228,11 +218,13 @@ asking:
    `lib/chartTheme.ts`, plus `STREAK` for the streamline hairlines). Scoped strictly to
    rasterised fields — everywhere else orange is still the only quantity colour, which is what
    keeps the exception legible as an exception.
-2. **The two overview ratios are `--text-hero`** (76px, weight 700, `.cq-hero`) — above both the
+2. **The overview ratio is `--text-hero`** (76px, weight 700, `.cq-hero`) — above both the
    size ceiling and the weight cap. Instrument Sans, because Instrument Serif has no bold.
+   (The charte says "ratios", plural, because the overview carried one card per lab; on this
+   branch there is one lab, so one ratio. The exception is the same one.)
 3. **No Instrument Serif italic anywhere.** The charte's "one serif moment per screen" was
    dropped wholesale; what those sentences carried is now plain data (Flow Lab's interval is an
-   `Intervalle` row, Stress Lab's coarse-FEM gap a `Manqué par le FEM` row).
+   `Intervalle` row).
 4. **`<ContourField>` replaces the charte's two large background arcs.** Marching-squares
    iso-lines of a smooth scalar field, drawn in `--burnt` hairlines — sharper than the arcs, and
    it earns its orange by genuinely being level sets of a field. It is mounted on the content
@@ -267,7 +259,7 @@ colorscales, `sampleScale()`, `baseLayout()`, `axisX`/`axisY` (horizontal gridli
 frame, no ticks), `FIELD_MARGIN`, `fieldRange`/`symmetricRange`.
 
 The three field scales are the blue↔red deviation (#1 above) and differ by job: `SEQUENTIAL` for
-unsigned magnitude (axial velocity, von Mises), `DIVERGING` for signed fields **always with
+unsigned magnitude (axial velocity), `DIVERGING` for signed fields **always with
 `zmid: 0`** — without that anchor Plotly centres the neutral on the data's own midpoint, the
 crossover drifts off zero and the sign stops meaning anything. `STREAK` exists because
 `SEQUENTIAL`'s crossover band is near-white: invisible as a 2px hairline, so the streamlines
@@ -300,16 +292,11 @@ solver** on the optimized design for an honest comparison.
 /api/flow/simulate` SSE → `lbm_frames.simulate_streaming` (shares the warmed singleton
 solver with `flow_service.verify`) → frame-by-frame field updates.
 
-**Report export** — three entry points, one renderer. Either lab's *Exporter le rapport*
+**Report export** — two entry points, one renderer. The lab's *Exporter le rapport*
 button → `api.generateReport` → `POST /api/report/generate` → `report.render_report` →
 `downloadMarkdown` saves a `.md` via an object URL; or the copilot's `render_report` tool
 calls `render_report` directly, in-process. Nothing on this path touches a model, so a
 report is the same document and the same cost whoever asked for it.
-
-**Stress Lab predict/optimize** — mirrors the Flow Lab shape, through `stress_service`:
-`HoleEditor` → `predictStress` → mesh (gmsh, `_GMSH_LOCK`) + coarse FEM + GNN forward →
-`StressViewer`; `StressOptimizePanel` → `streamStressOptimize` → randomized local search
-over hole positions (no gradient — GNN isn't differentiable w.r.t. mesh topology).
 
 **Agent chat** — `ChatSidebar` composer → `ChatProvider.send()` (prepends the active page's
 published context lines) → `streamAgentChat` → `POST /api/agent/chat` SSE →
@@ -322,13 +309,17 @@ State lives in the provider above `<Routes>`, so switching labs mid-conversation
 
 ## Data & file model on disk
 
-Both research repos: `data/*.npz` (generated, not committed — hundreds of MB), `runs/*.pt` +
+`flow-surrogate/`: `data/*.npz` (generated, not committed — hundreds of MB), `runs/*.pt` +
 `*_history.json` (checkpoints, committed), `results/*.json` (metrics behind the README
 tables, committed). `engine-copilot` has **no persistent state of its own** — no database, no
 uploaded files; every request is computed fresh from the loaded checkpoints plus whatever the
-browser sent in the request body. `engine_copilot/config.py`'s `FLOW_MODEL_QUALITY` /
-`STRESS_MODEL_QUALITY` are the one place platform code duplicates a fact that lives elsewhere
-(the two `results/metrics.json` files) — keep them in sync by hand after retraining.
+browser sent in the request body. `engine_copilot/config.py`'s `FLOW_MODEL_QUALITY` is the one
+place platform code duplicates a fact that lives elsewhere (`results/metrics.json`) — keep it
+in sync by hand after retraining.
+
+The `data/` and `runs/` of a lab that lives on another branch are **not** carried by git
+(both are gitignored), so checking that branch out gives you its code but not its trained
+checkpoints — regenerate them with that repo's `run_all.py`.
 
 ---
 
@@ -343,9 +334,10 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | M1 | Flow prediction end-to-end (static) | done, committed |
 | M2 | Animation (client streamlines + LBM SSE) | done, committed (`4ef16a8`) |
 | M3 | Live optimizer (Adam streaming + verify) | done, committed (`4ef16a8`) |
-| M4 | Stress Lab | done, committed (`4ef16a8`) |
-| M5 | Claude Agent SDK chat | **done** — chat committed (`eeeabf6`), moved into a sidebar (`85f5ce3`), all 8 tools wired (`035c78a`). The plan's acceptance criterion was checked live against a running backend: "Optimise ma forme à Re=100 et vérifie" calls `flow_optimize` then `flow_verify` and quotes both Cd |
-| M6 | Report export + demo GIF + polish | **done except the GIF** — `report.py` + `/api/report/generate` (`871dd9e`), `render_report` tool (`035c78a`), *Exporter le rapport* in both labs + README with a mermaid architecture. No `docs/demo.gif`: recording it needs a headless browser driver and `ffmpeg`, neither installed, and adding Playwright to the frontend deps for one animation is the repo owner's call |
+| M4 | Stress Lab | done, but **not on this branch** — built in `4ef16a8`, moved off `main` onto `stress-lab` |
+| M5 | Claude Agent SDK chat | **done** — chat committed (`eeeabf6`), moved into a sidebar (`85f5ce3`), all 8 tools wired (`035c78a`); 6 remain here, the 2 stress tools left with M4. The plan's acceptance criterion was checked live against a running backend: "Optimise ma forme à Re=100 et vérifie" calls `flow_optimize` then `flow_verify` and quotes both Cd |
+| M6 | Report export + demo GIF + polish | **done except the GIF** — `report.py` + `/api/report/generate` (`871dd9e`), `render_report` tool (`035c78a`), *Exporter le rapport* in the lab + README with a mermaid architecture. No `docs/demo.gif`: recording it needs a headless browser driver and `ffmpeg`, neither installed, and adding Playwright to the frontend deps for one animation is the repo owner's call |
+| — | `main` reduced to the Flow Lab | the Stress Lab was removed from `main` and preserved on `stress-lab`; `bridge-lab` and `thermal-pinn` hold the two labs that were never merged. Deliberate scoping, not an abandonment |
 | — | UI rebuild on shadcn/ui | done, committed (`85f5ce3`) — left nav + right copilot sidebar shell, all panels on shadcn primitives, unified `lib/chartTheme.ts`. `ChatOrchestrator.tsx`, `ThemeToggle.tsx`, `Skeleton.tsx`, `colors.ts`, `ComingSoon.tsx` deleted |
 | — | Calque restyle | done, committed (`d746eb8`) — the shadcn/ui *structure* of `85f5ce3` kept, its dark blue/slate skin replaced by the Calque charte (see the design-system section above). Touches `index.html`, `index.css`, `lib/chartTheme.ts`, new `lib/motion.ts`, `App.tsx` and every page/component; `MetricsBadge.tsx` deleted, `ContourField.tsx` added. No route, service or data-flow change |
 
@@ -358,10 +350,10 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Task | Files |
 |---|---|
 | Add/change a flow surrogate model | `flow-surrogate/flowsurrogate/models/*.py`, `train.py`, `run_all.py`; then `engine_copilot/config.py` (`FLOW_MODEL_QUALITY`), `flow_service.py` (model cache key) |
-| Add/change a stress surrogate model | `stress-gnn/stressgnn/models/*.py`, `train.py`; then `config.py` (`STRESS_MODEL_QUALITY`), `stress_service.py` |
+| Work on a lab that isn't the Flow Lab | `git checkout stress-lab` / `bridge-lab` / `thermal-pinn` — none of their files exist on `main`, so searching here for them will always come up empty |
 | Add a new FastAPI route | `main.py` (route), `schemas.py` (request/response models), matching `*_service.py`, `api.ts` (frontend client), `PLATFORM_PLAN.md` §3 (API contract source of truth) |
-| Change what a report says | `backend/engine_copilot/report.py` (one `_flow_report`/`_stress_report` template each — deterministic, never call a model from here) |
-| Change what a report *receives* | the `runExport` context in `OptimizerPanel.tsx` / `StressOptimizePanel.tsx`, and `render_report_tool` in `tools.py` — three callers, one renderer |
+| Change what a report says | `backend/engine_copilot/report.py` (`_flow_report` — deterministic, never call a model from here) |
+| Change what a report *receives* | the `runExport` context in `OptimizerPanel.tsx`, and `render_report_tool` in `tools.py` — two callers, one renderer |
 | Add a new agent tool | `tools.py` (`@tool`-decorated function + add to `ALL_TOOLS`), `agent.py` (`SYSTEM_PROMPT` if it should mention the tool) |
 | Change the agent's behavior/persona | `agent.py` (`SYSTEM_PROMPT`), `agent.py` (`_options`, e.g. `max_turns`) |
 | Add a new frontend page | `App.tsx` (route), new file in `pages/`, `AppSidebar.tsx` (nav entry), `PageHeader` at the top of the page, `usePublishChatContext` so the copilot sees it |
@@ -372,11 +364,11 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Change an entrance animation | `lib/motion.ts` — one curve for the whole app; don't hand-tune a `transition` in a component |
 | Add a shadcn primitive | `pnpm dlx shadcn@latest add <name>`, then move it out of the literal `@/` folder into `src/components/ui/` |
 | Change the copilot sidebar | `chat/ChatProvider.tsx` (state, context plumbing), `chat/ChatSidebar.tsx` (UI) |
-| Change SSE streaming behavior (backend) | the relevant `*_streaming` generator in `flow_service.py`/`stress_service.py`/`lbm_frames.py`, the route in `main.py` |
+| Change SSE streaming behavior (backend) | the relevant `*_streaming` generator in `flow_service.py`/`lbm_frames.py`, the route in `main.py` |
 | Change SSE streaming behavior (frontend) | `api.ts` (`readSSE`, `stream*` functions), the consuming page/component |
-| Debug an MPS/gmsh threading issue | `device_lock.py` (`MPS_LOCK`), `stress_service.py` (`_GMSH_LOCK`, `gmsh.initialize()` call site) |
+| Debug an MPS threading issue | `device_lock.py` (`MPS_LOCK`) |
 | Touch the LBM solver ground truth | `flow-surrogate/flowsurrogate/lbm.py`; mirrored/instrumented copy in `engine-copilot/backend/engine_copilot/lbm_frames.py` — **keep both in sync by hand** |
-| Understand the science behind a result | `flow-surrogate/README.md` + `BACKGROUND.md`, or `stress-gnn/README.md` + `BACKGROUND.md` — don't re-derive from code |
+| Understand the science behind a result | `flow-surrogate/README.md` + `BACKGROUND.md` — don't re-derive from code |
 
 ---
 
@@ -389,10 +381,9 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Claude auth | `claude-agent-sdk` drives the local `claude` CLI subprocess — reuses `claude login`, **no `ANTHROPIC_API_KEY`, no `.env` secret**, ever |
 | Agent permission mode | `bypassPermissions` — justified because the only tools exposed are deterministic, read-only wrappers with no shell/filesystem access |
 | Device | Apple MPS; all torch calls serialized behind `device_lock.MPS_LOCK` (MPS is not safe under concurrent multi-thread kernel submission) |
-| Mesh backend | `gmsh`, process-global — serialized behind `stress_service._GMSH_LOCK`, initialized once on the main thread at import time |
-| Python deps | `engine-copilot/pyproject.toml`: `fastapi>=0.115`, `uvicorn[standard]>=0.30`, `pydantic>=2.7`, `numpy`, `torch`, `sse-starlette>=2.1`, `claude-agent-sdk`, `anyio`. `flowsurrogate`/`stressgnn` installed separately, editable (`pip install -e ../flow-surrogate -e ../stress-gnn -e .`) |
-| Environments | Each of `flow-surrogate/`, `stress-gnn/`, `engine-copilot/` has its **own** `.venv` — always run `./.venv/bin/python` from inside the relevant directory |
-| Git history | `engine-copilot/` was merged into this repo via subtree-style imports (`git log`: "Add 'flow-surrogate/' from commit ...", "Add 'stress-gnn/' from commit ...") — the two research repos' own histories are preserved, then squashed into this monorepo going forward |
+| Python deps | `engine-copilot/pyproject.toml`: `fastapi>=0.115`, `uvicorn[standard]>=0.30`, `pydantic>=2.7`, `numpy`, `torch`, `sse-starlette>=2.1`, `claude-agent-sdk`, `anyio`. `flowsurrogate` installed separately, editable (`pip install -e ../flow-surrogate -e .`) |
+| Environments | Each of `flow-surrogate/`, `engine-copilot/` has its **own** `.venv` — always run `./.venv/bin/python` from inside the relevant directory. A venv created while a lab branch was checked out may still hold an editable install pointing at a directory that no longer exists on `main`; harmless, since nothing imports it |
+| Git history | `engine-copilot/` was merged into this repo via subtree-style imports (`git log`: "Add 'flow-surrogate/' from commit ...", "Add 'stress-gnn/' from commit ...") — the research repos' own histories are preserved, then squashed into this monorepo going forward. `stress-gnn/` is still reachable in history and on `stress-lab`, just not in `main`'s tree |
 
 ---
 

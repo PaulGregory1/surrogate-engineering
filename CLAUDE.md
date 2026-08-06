@@ -12,10 +12,13 @@ If you change the repo's structure, apply the *Update protocol* at the end of th
 
 ## Quick pointers
 
-- Three independent parts, each with its **own** `.venv`: `flow-surrogate/`, `stress-gnn/`
-  (ML research repos, read-only libraries from the platform's point of view), `engine-copilot/`
-  (FastAPI + React platform on top). Always run `./.venv/bin/python` from inside the relevant
+- Two independent parts, each with its **own** `.venv`: `flow-surrogate/` (ML research repo,
+  a read-only library from the platform's point of view) and `engine-copilot/` (FastAPI +
+  React platform on top). Always run `./.venv/bin/python` from inside the relevant
   directory, never a shared interpreter.
+- **`main` carries the Flow Lab only.** The other labs live on their own branches —
+  `stress-lab`, `bridge-lab`, `thermal-pinn` — and none of their files exist here. Don't
+  re-add one to `main` without being asked; build on its branch instead.
 - `engine-copilot` backend: `cd engine-copilot && uvicorn engine_copilot.main:app --reload`. Frontend:
   `cd engine-copilot/frontend && pnpm dev`.
 - No API key anywhere: the Claude Agent SDK chat (`engine-copilot/backend/engine_copilot/agent.py`)

@@ -1,9 +1,8 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 FlowModelKey = Literal["unet-phys", "unet", "fno"]
-StressModelKey = Literal["gnn-mp10-glob", "gnn-mp10-glob-corr", "gnn-mp10"]
 
 
 class FlowPredictRequest(BaseModel):
@@ -67,44 +66,8 @@ class FlowSimulateRequest(BaseModel):
     steps: int = Field(6000, ge=200, le=20000)
 
 
-class StressPredictRequest(BaseModel):
-    holes: list[list[float]] = Field(..., min_length=2, max_length=4, description="(x, y, r) per hole")
-    load_angle_deg: float = Field(-90.0, ge=-180.0, le=180.0)
-    model: StressModelKey = "gnn-mp10-glob"
-
-    @field_validator("holes")
-    @classmethod
-    def _holes_are_triples(cls, v: list[list[float]]) -> list[list[float]]:
-        if any(len(h) != 3 for h in v):
-            raise ValueError("each hole must be [x, y, r]")
-        return v
-
-
-class StressField(BaseModel):
-    vm: list[list[float | None]]
-    extent: list[float]
-
-
-class StressMesh(BaseModel):
-    nodes: list[list[float]]
-    triangles: list[list[int]]
-    vm_nodal: list[float]
-
-
-class StressPredictResponse(BaseModel):
-    peak_vm_surrogate: float
-    peak_error_pct_expected: float
-    field: StressField
-    mesh: StressMesh
-    peak_location: list[float]
-    vm_coarse_fem: list[list[float | None]]
-    peak_vm_coarse_fem: float
-    latency_ms: float
-    model: StressModelKey
-
-
 class ReportRequest(BaseModel):
-    project: Literal["flow", "stress"]
+    project: Literal["flow"]
     # Whatever the matching /optimize stream ended with, plus anything the caller wants
     # to enrich it with (a `verify` block, the initial Cd). Deliberately unvalidated:
     # report.py treats every field as optional, so a partial context degrades to "n/a"
@@ -114,18 +77,3 @@ class ReportRequest(BaseModel):
 
 class ReportResponse(BaseModel):
     markdown: str
-
-
-class StressOptimizeRequest(BaseModel):
-    holes: list[list[float]] = Field(..., min_length=2, max_length=4)
-    load_angle_deg: float = Field(-90.0, ge=-180.0, le=180.0)
-    model: StressModelKey = "gnn-mp10-glob"
-    n_iters: int = Field(30, ge=5, le=150)
-    seed: int = 0
-
-    @field_validator("holes")
-    @classmethod
-    def _holes_are_triples(cls, v: list[list[float]]) -> list[list[float]]:
-        if any(len(h) != 3 for h in v):
-            raise ValueError("each hole must be [x, y, r]")
-        return v

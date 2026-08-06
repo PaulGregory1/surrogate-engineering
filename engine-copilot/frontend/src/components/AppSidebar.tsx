@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Grid2x2, LayoutDashboard, Wind } from 'lucide-react'
+import { LayoutDashboard, Wind } from 'lucide-react'
 import { getHealth } from '@/api'
 import { cn } from '@/lib/utils'
 
 const NAV = [
   { to: '/', label: 'Vue d’ensemble', icon: LayoutDashboard, end: true },
   { to: '/flow', label: 'Flow Lab', icon: Wind, end: false },
-  { to: '/stress', label: 'Stress Lab', icon: Grid2x2, end: false },
 ]
 
 /** Backend reachability + whether the local `claude` CLI the agent drives is present.
@@ -51,8 +50,8 @@ function HealthDot() {
 export function AppSidebar() {
   return (
     // Narrow viewports collapse this to an icon rail rather than hiding it: a demo
-    // where the two labs become unreachable below a breakpoint is worse than a
-    // cramped one. Labels and the health caption drop out, the targets stay.
+    // where the lab becomes unreachable below a breakpoint is worse than a cramped
+    // one. Labels and the health caption drop out, the targets stay.
     <aside className="no-print flex w-14 shrink-0 flex-col border-r border-line bg-sidebar backdrop-blur-xl backdrop-saturate-150 md:w-[228px]">
       <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-line px-3.5 md:px-4">
         {/* No logotype: the wordmark is set in the interface face at title size,

@@ -1,9 +1,9 @@
 """Wraps flowsurrogate.* so the rest of the backend never touches torch directly.
 
 Loads the training-set normaliser once (needed to decode physical units — the
-checkpoints don't carry it) and caches models by key. flowsurrogate/ and
-stress-gnn/ are treated as libraries: nothing here reimplements their logic,
-it only renders inputs, calls the model, and reshapes outputs for JSON.
+checkpoints don't carry it) and caches models by key. flowsurrogate/ is treated
+as a library: nothing here reimplements its logic, it only renders inputs, calls
+the model, and reshapes outputs for JSON.
 """
 
 from __future__ import annotations
@@ -114,8 +114,7 @@ class FlowService:
         Mirrors flowsurrogate.optimize.optimise() but as a generator so /api/flow/optimize
         can stream it over SSE instead of only returning the final result.
 
-        `init_coeffs` (the design currently on screen) seeds start #0, mirroring how
-        stress_service.optimise_streaming starts from the user's `holes`. Without it every
+        `init_coeffs` (the design currently on screen) seeds start #0. Without it every
         start comes from `sample_shapes`, so the run is identical for every user design at
         a given seed and the UI ends up showing "Départ: your shape" beside a result it had
         no part in. Any remaining starts stay random, which is what `n_starts > 1` is for.

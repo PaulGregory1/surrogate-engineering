@@ -188,76 +188,11 @@ export async function streamAgentChat(message: string, onEvent: (e: AgentEvent) 
   await readSSE(res, (data) => onEvent(data as AgentEvent))
 }
 
-export interface StressPredictRequest {
-  holes: number[][]
-  load_angle_deg: number
-  model: 'gnn-mp10-glob' | 'gnn-mp10-glob-corr' | 'gnn-mp10'
-}
-
-export interface StressPredictResponse {
-  peak_vm_surrogate: number
-  peak_error_pct_expected: number
-  field: { vm: (number | null)[][]; extent: number[] }
-  mesh: { nodes: number[][]; triangles: number[][]; vm_nodal: number[] }
-  peak_location: number[]
-  vm_coarse_fem: (number | null)[][]
-  peak_vm_coarse_fem: number
-  latency_ms: number
-  model: string
-}
-
-export async function predictStress(req: StressPredictRequest): Promise<StressPredictResponse> {
-  const res = await fetch('/api/stress/predict', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(req),
-  })
-  if (!res.ok) {
-    const body = await res.json().catch(() => null)
-    throw new Error(body?.detail ?? `predictStress failed: ${res.status}`)
-  }
-  return res.json()
-}
-
-export interface StressOptimizeRequest {
-  holes: number[][]
-  load_angle_deg: number
-  model: string
-  n_iters?: number
-  seed?: number
-}
-
-export interface StressOptimizeIteration {
-  it: number
-  peak_vm_current: number
-  best_holes: number[][]
-}
-
-export interface StressOptimizeDone {
-  done: true
-  final_holes: number[][]
-  peak_vm_initial: number
-  peak_vm_final: number
-}
-
-export async function streamStressOptimize(
-  req: StressOptimizeRequest,
-  onIteration: (it: StressOptimizeIteration) => void,
-  onDone: (d: StressOptimizeDone) => void,
-): Promise<void> {
-  const res = await fetch('/api/stress/optimize', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(req),
-  })
-  await readSSEUntilDone(res, 'Optimisation', (data) => (data.done ? onDone(data) : onIteration(data)))
-}
-
 // `context` is deliberately untyped on the wire: the backend treats every field as
-// optional and renders "n/a" for whatever is missing, so each lab sends the shape of
+// optional and renders "n/a" for whatever is missing, so the lab sends the shape of
 // result it happens to have rather than a schema both sides must agree on.
 export interface ReportRequest {
-  project: 'flow' | 'stress'
+  project: 'flow'
   context: Record<string, unknown>
 }
 

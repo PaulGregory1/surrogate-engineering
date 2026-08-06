@@ -1,0 +1,22 @@
+[project]
+name = "thermalpinn"
+version = "0.1.0"
+description = "Physics-informed inversion of a brake-disc surface heat flux from a single buried thermocouple, against the best classical inverse-heat-conduction baselines."
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.2",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["thermalpinn"]

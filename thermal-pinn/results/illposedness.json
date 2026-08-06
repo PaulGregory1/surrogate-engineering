@@ -1,0 +1,1158 @@
+{
+  "verdict": {
+    "space_march_diverges": {
+      "pass": true,
+      "threshold_K": 100000.0,
+      "at_rate_Hz": 1000.0,
+      "n_march": 20,
+      "excursion_K": 106984.67002913418,
+      "clean_control_tol_pct": 0.1,
+      "clean_control_failures": 0
+    },
+    "cutoff_frequency": {
+      "pass": true,
+      "tol": 0.2,
+      "eta": 0.1,
+      "worst_ratio": 0.0014277556767721133,
+      "n_scored": 2
+    },
+    "all_pass": true
+  },
+  "scenario": {
+    "x_s": 0.002,
+    "L": 0.005,
+    "f_sample": 100.0,
+    "sigma_noise": 0.5,
+    "abs_freq": 8.0
+  },
+  "alpha0": 1.570048309178744e-05,
+  "space_march": {
+    "law": "A",
+    "grid": {
+      "nx": 801,
+      "dt": 0.0001
+    },
+    "n_marches": [
+      10,
+      20,
+      40
+    ],
+    "x_s": 0.002,
+    "sigma_K": 0.5,
+    "seed": 0,
+    "T_surface_max": 913.3453255698759,
+    "T_sensor_max": 898.3204083702066,
+    "rows": [
+      {
+        "f_sample": 100.0,
+        "n_march": 10,
+        "n_samples": 2001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1586582941462,
+          "max_abs_error_K": 17.136649789307967,
+          "T_surface_max_error_pct": -0.0061092238089059695
+        },
+        "noisy": {
+          "excursion_K": 632.8855088382934,
+          "max_abs_error_K": 52.72851771125454,
+          "T_surface_max_error_pct": 5.446590780656065
+        }
+      },
+      {
+        "f_sample": 100.0,
+        "n_march": 20,
+        "n_samples": 2001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1460455509331,
+          "max_abs_error_K": 17.553928573713108,
+          "T_surface_max_error_pct": -0.00821066356956458
+        },
+        "noisy": {
+          "excursion_K": 636.3862598617416,
+          "max_abs_error_K": 56.36914562211564,
+          "T_surface_max_error_pct": 6.029859405769775
+        }
+      },
+      {
+        "f_sample": 100.0,
+        "n_march": 40,
+        "n_samples": 2001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1434492238927,
+          "max_abs_error_K": 17.64648640991919,
+          "T_surface_max_error_pct": -0.008643243919617401
+        },
+        "noisy": {
+          "excursion_K": 640.4401423048602,
+          "max_abs_error_K": 58.31177251149472,
+          "T_surface_max_error_pct": 6.705286599287069
+        }
+      },
+      {
+        "f_sample": 200.0,
+        "n_march": 10,
+        "n_samples": 4001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1991512828556,
+          "max_abs_error_K": 11.456631016277242,
+          "T_surface_max_error_pct": 0.0006374113254048663
+        },
+        "noisy": {
+          "excursion_K": 832.6606080788953,
+          "max_abs_error_K": 283.28596034467466,
+          "T_surface_max_error_pct": 38.73160496348374
+        }
+      },
+      {
+        "f_sample": 200.0,
+        "n_march": 20,
+        "n_samples": 4001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1828950834416,
+          "max_abs_error_K": 12.271511833222121,
+          "T_surface_max_error_pct": -0.002071073516351076
+        },
+        "noisy": {
+          "excursion_K": 878.6073997406644,
+          "max_abs_error_K": 329.2429564609323,
+          "T_surface_max_error_pct": 46.3869114452767
+        }
+      },
+      {
+        "f_sample": 200.0,
+        "n_march": 40,
+        "n_samples": 4001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.179044382683,
+          "max_abs_error_K": 12.465869148054082,
+          "T_surface_max_error_pct": -0.0027126481162564825
+        },
+        "noisy": {
+          "excursion_K": 972.1582742995453,
+          "max_abs_error_K": 422.7938310198132,
+          "T_surface_max_error_pct": 61.973649724195454
+        }
+      },
+      {
+        "f_sample": 500.0,
+        "n_march": 10,
+        "n_samples": 10001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2176601390656,
+          "max_abs_error_K": 8.192995103577914,
+          "T_surface_max_error_pct": 0.0037212167836438506
+        },
+        "noisy": {
+          "excursion_K": 4271.584755918625,
+          "max_abs_error_K": 3741.3634118277323,
+          "T_surface_max_error_pct": 611.6991042645697
+        }
+      },
+      {
+        "f_sample": 500.0,
+        "n_march": 20,
+        "n_samples": 10001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.19971719991,
+          "max_abs_error_K": 7.569347998341527,
+          "T_surface_max_error_pct": 0.0007317001394375579
+        },
+        "noisy": {
+          "excursion_K": 3817.0102010393043,
+          "max_abs_error_K": 3313.3753894239153,
+          "T_surface_max_error_pct": 535.9613343231413
+        }
+      },
+      {
+        "f_sample": 500.0,
+        "n_march": 40,
+        "n_samples": 10001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1952162919808,
+          "max_abs_error_K": 8.020184156291236,
+          "T_surface_max_error_pct": -1.8207055333422113e-05
+        },
+        "noisy": {
+          "excursion_K": 3811.6825933369905,
+          "max_abs_error_K": 3910.7786112557683,
+          "T_surface_max_error_pct": 535.0736886725765
+        }
+      },
+      {
+        "f_sample": 1000.0,
+        "n_march": 10,
+        "n_samples": 20001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2190398572769,
+          "max_abs_error_K": 8.95375250006191,
+          "T_surface_max_error_pct": 0.003951094983709247
+        },
+        "noisy": {
+          "excursion_K": 159212.2419363014,
+          "max_abs_error_K": 158661.33248248437,
+          "T_surface_max_error_pct": 26426.73807233202
+        }
+      },
+      {
+        "f_sample": 1000.0,
+        "n_march": 20,
+        "n_samples": 20001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2009700713089,
+          "max_abs_error_K": 5.011375726592689,
+          "T_surface_max_error_pct": 0.000940444084212074
+        },
+        "noisy": {
+          "excursion_K": 106984.67002913418,
+          "max_abs_error_K": 107546.3780631779,
+          "T_surface_max_error_pct": 16443.25533629707
+        }
+      },
+      {
+        "f_sample": 1000.0,
+        "n_march": 40,
+        "n_samples": 20001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1964217573893,
+          "max_abs_error_K": 5.742428028092263,
+          "T_surface_max_error_pct": 0.00018263846230376083
+        },
+        "noisy": {
+          "excursion_K": 87453.2429384543,
+          "max_abs_error_K": 88014.95097249802,
+          "T_surface_max_error_pct": 13534.289853316022
+        }
+      },
+      {
+        "f_sample": 2000.0,
+        "n_march": 10,
+        "n_samples": 40001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2193845946216,
+          "max_abs_error_K": 12.100294717658016,
+          "T_surface_max_error_pct": 0.004008532509459516
+        },
+        "noisy": {
+          "excursion_K": 28313121.804546513,
+          "max_abs_error_K": 28313682.070171893,
+          "T_surface_max_error_pct": 4611834.507850332
+        }
+      },
+      {
+        "f_sample": 2000.0,
+        "n_march": 20,
+        "n_samples": 40001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2012830573748,
+          "max_abs_error_K": 4.906060584886632,
+          "T_surface_max_error_pct": 0.0009925914523321825
+        },
+        "noisy": {
+          "excursion_K": 16856283.589750405,
+          "max_abs_error_K": 16856843.853295498,
+          "T_surface_max_error_pct": 2631778.713281277
+        }
+      },
+      {
+        "f_sample": 2000.0,
+        "n_march": 40,
+        "n_samples": 40001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.1967234704675,
+          "max_abs_error_K": 4.0018036263290355,
+          "T_surface_max_error_pct": 0.00023290761058961248
+        },
+        "noisy": {
+          "excursion_K": 10444602.419564838,
+          "max_abs_error_K": 10445178.929619355,
+          "T_surface_max_error_pct": 1691427.276687571
+        }
+      },
+      {
+        "f_sample": 5000.0,
+        "n_march": 10,
+        "n_samples": 100001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2213656437715,
+          "max_abs_error_K": 15.362343907376783,
+          "T_surface_max_error_pct": 0.004338599916767161
+        },
+        "noisy": {
+          "excursion_K": 116657423794.0555,
+          "max_abs_error_K": 116657423238.68939,
+          "T_surface_max_error_pct": 19436576431.696766
+        }
+      },
+      {
+        "f_sample": 5000.0,
+        "n_march": 20,
+        "n_samples": 100001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2206942248464,
+          "max_abs_error_K": 7.0768765226785035,
+          "T_surface_max_error_pct": 0.004226733179974974
+        },
+        "noisy": {
+          "excursion_K": 521045541674.81085,
+          "max_abs_error_K": 521045542253.7318,
+          "T_surface_max_error_pct": 85648904696.23193
+        }
+      },
+      {
+        "f_sample": 5000.0,
+        "n_march": 40,
+        "n_samples": 100001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 600.2030393442631,
+          "max_abs_error_K": 2.9283818716133965,
+          "T_surface_max_error_pct": 0.0012852106736853295
+        },
+        "noisy": {
+          "excursion_K": 163475558580.7989,
+          "max_abs_error_K": 163475558004.48773,
+          "T_surface_max_error_pct": 27237059506.48418
+        }
+      },
+      {
+        "f_sample": 10000.0,
+        "n_march": 10,
+        "n_samples": 200001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 741.0416153408675,
+          "max_abs_error_K": 215.3657677277905,
+          "T_surface_max_error_pct": 23.46674220384177
+        },
+        "noisy": {
+          "excursion_K": 112522584011678.23,
+          "max_abs_error_K": 112522584012238.5,
+          "T_surface_max_error_pct": 18659287593434.656
+        }
+      },
+      {
+        "f_sample": 10000.0,
+        "n_march": 20,
+        "n_samples": 200001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 50492.0592122498,
+          "max_abs_error_K": 49942.693952620495,
+          "T_surface_max_error_pct": 8312.604540748196
+        },
+        "noisy": {
+          "excursion_K": 3.3597346160836044e+16,
+          "max_abs_error_K": 3.3597346160836596e+16,
+          "T_surface_max_error_pct": 5492306183689300.0
+        }
+      },
+      {
+        "f_sample": 10000.0,
+        "n_march": 40,
+        "n_samples": 200001,
+        "sigma_K": 0.5,
+        "clean": {
+          "excursion_K": 15006.110412284686,
+          "max_abs_error_K": 15555.47628417694,
+          "T_surface_max_error_pct": 2392.29426406126
+        },
+        "noisy": {
+          "excursion_K": 1.6732189648105422e+16,
+          "max_abs_error_K": 1.6732189648105982e+16,
+          "T_surface_max_error_pct": 2652800116105783.5
+        }
+      }
+    ]
+  },
+  "attenuation": {
+    "law": "A",
+    "grid": {
+      "nx": 801,
+      "dt": 0.0001
+    },
+    "eta": 0.1,
+    "settle": 4.0,
+    "window": 4.0,
+    "frequencies": [
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+      2.5,
+      3.0,
+      3.5,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      10.0,
+      12.0,
+      14.0,
+      16.0,
+      20.0,
+      24.0,
+      28.0,
+      32.0,
+      36.0,
+      40.0
+    ],
+    "q_bias": 1000000.0,
+    "q_tone": 100000.0,
+    "rows": [
+      {
+        "depth": 0.001,
+        "f": 0.25,
+        "amplitude_surface_K": 5.322183454035189,
+        "measured": 0.8334314289814965,
+        "analytic": 0.7995869014527681,
+        "phase_lag_measured": 0.30161445246334617,
+        "phase_lag_analytic": 0.2236600578647954
+      },
+      {
+        "depth": 0.001,
+        "f": 0.5,
+        "amplitude_surface_K": 3.943611005408313,
+        "measured": 0.7122386130932558,
+        "analytic": 0.7288385150679362,
+        "phase_lag_measured": 0.36609024280165225,
+        "phase_lag_analytic": 0.3163030871935449
+      },
+      {
+        "depth": 0.001,
+        "f": 0.75,
+        "amplitude_surface_K": 3.39835327417594,
+        "measured": 0.6583527237086731,
+        "analytic": 0.6788259047081325,
+        "phase_lag_measured": 0.4035039016562513,
+        "phase_lag_analytic": 0.38739058384562064
+      },
+      {
+        "depth": 0.001,
+        "f": 1.0,
+        "amplitude_surface_K": 3.0195711997366006,
+        "measured": 0.6248634847341972,
+        "analytic": 0.6393392129748388,
+        "phase_lag_measured": 0.4463159744391555,
+        "phase_lag_analytic": 0.4473201157295908
+      },
+      {
+        "depth": 0.001,
+        "f": 1.25,
+        "amplitude_surface_K": 2.726233300622847,
+        "measured": 0.5981117295128566,
+        "analytic": 0.6064584303139974,
+        "phase_lag_measured": 0.49253178112216656,
+        "phase_lag_analytic": 0.500119093237219
+      },
+      {
+        "depth": 0.001,
+        "f": 1.5,
+        "amplitude_surface_K": 2.493842347579543,
+        "measured": 0.5742270501518756,
+        "analytic": 0.5781898421500804,
+        "phase_lag_measured": 0.5389878144114708,
+        "phase_lag_analytic": 0.5478530176101084
+      },
+      {
+        "depth": 0.001,
+        "f": 1.75,
+        "amplitude_surface_K": 2.307283871996081,
+        "measured": 0.5520958347892996,
+        "analytic": 0.5533586737975668,
+        "phase_lag_measured": 0.5839215625262192,
+        "phase_lag_analytic": 0.5917488913285646
+      },
+      {
+        "depth": 0.001,
+        "f": 2.0,
+        "amplitude_surface_K": 2.1552765807160466,
+        "measured": 0.5314140462610044,
+        "analytic": 0.5312055810464341,
+        "phase_lag_measured": 0.6265830952067405,
+        "phase_lag_analytic": 0.6326061743870898
+      },
+      {
+        "depth": 0.001,
+        "f": 2.5,
+        "amplitude_surface_K": 1.923345523855831,
+        "measured": 0.4940853317620969,
+        "analytic": 0.4929856541461769,
+        "phase_lag_measured": 0.7046373499252153,
+        "phase_lag_analytic": 0.7072752044578096
+      },
+      {
+        "depth": 0.001,
+        "f": 3.0,
+        "amplitude_surface_K": 1.7539571492952586,
+        "measured": 0.4617157635317279,
+        "analytic": 0.46080460890281477,
+        "phase_lag_measured": 0.7741787598838522,
+        "phase_lag_analytic": 0.7747811676912413
+      },
+      {
+        "depth": 0.001,
+        "f": 3.5,
+        "amplitude_surface_K": 1.6234188665718126,
+        "measured": 0.4336079350556354,
+        "analytic": 0.43306852478940927,
+        "phase_lag_measured": 0.8371504077199132,
+        "phase_lag_analytic": 0.8368593076360988
+      },
+      {
+        "depth": 0.001,
+        "f": 4.0,
+        "amplitude_surface_K": 1.5186323925815302,
+        "measured": 0.4090051293505177,
+        "analytic": 0.4087546292472863,
+        "phase_lag_measured": 0.8951758126895208,
+        "phase_lag_analytic": 0.8946402314591816
+      },
+      {
+        "depth": 0.001,
+        "f": 5.0,
+        "amplitude_surface_K": 1.3586091380635419,
+        "measured": 0.3677861322324776,
+        "analytic": 0.3677918276989178,
+        "phase_lag_measured": 1.0005915579857996,
+        "phase_lag_analytic": 1.000238186474438
+      },
+      {
+        "depth": 0.001,
+        "f": 6.0,
+        "amplitude_surface_K": 1.240389361555017,
+        "measured": 0.33426071379347067,
+        "analytic": 0.33430349356553496,
+        "phase_lag_measured": 1.0958156740488687,
+        "phase_lag_analytic": 1.0957060352202168
+      },
+      {
+        "depth": 0.001,
+        "f": 7.0,
+        "amplitude_surface_K": 1.1484359809286786,
+        "measured": 0.3061784799275799,
+        "analytic": 0.30620582186700196,
+        "phase_lag_measured": 1.1834951353489171,
+        "phase_lag_analytic": 1.1834977826571291
+      },
+      {
+        "depth": 0.001,
+        "f": 8.0,
+        "amplitude_surface_K": 1.0742923433457823,
+        "measured": 0.28216745266605514,
+        "analytic": 0.28217936933487964,
+        "phase_lag_measured": 1.2651812972803727,
+        "phase_lag_analytic": 1.2652123487741795
+      },
+      {
+        "depth": 0.001,
+        "f": 10.0,
+        "amplitude_surface_K": 0.9609158591122812,
+        "measured": 0.24303292935592094,
+        "analytic": 0.243034855193934,
+        "phase_lag_measured": 1.4145315240361716,
+        "phase_lag_analytic": 1.4145504089156191
+      },
+      {
+        "depth": 0.001,
+        "f": 12.0,
+        "amplitude_surface_K": 0.8772223941972865,
+        "measured": 0.21233840213906247,
+        "analytic": 0.2123408875860761,
+        "phase_lag_measured": 1.5495534173985783,
+        "phase_lag_analytic": 1.5495623353824826
+      },
+      {
+        "depth": 0.001,
+        "f": 14.0,
+        "amplitude_surface_K": 0.8121721191582747,
+        "measured": 0.18754464682363764,
+        "analytic": 0.18754834716327526,
+        "phase_lag_measured": 1.6737101717236693,
+        "phase_lag_analytic": 1.6737186152721977
+      },
+      {
+        "depth": 0.001,
+        "f": 16.0,
+        "amplitude_surface_K": 0.7597336782546616,
+        "measured": 0.16707593490264752,
+        "analytic": 0.16708034693108648,
+        "phase_lag_measured": 1.789270209911418,
+        "phase_lag_analytic": 1.7892804629183632
+      },
+      {
+        "depth": 0.001,
+        "f": 20.0,
+        "amplitude_surface_K": 0.6795479760790247,
+        "measured": 0.1352655004130511,
+        "analytic": 0.1352708285221104,
+        "phase_lag_measured": 2.000463677786387,
+        "phase_lag_analytic": 2.000476372948876
+      },
+      {
+        "depth": 0.001,
+        "f": 24.0,
+        "amplitude_surface_K": 0.620353386409694,
+        "measured": 0.11175267562090187,
+        "analytic": 0.11175882581012161,
+        "phase_lag_measured": 2.191398779858017,
+        "phase_lag_analytic": 2.1914120704404336
+      },
+      {
+        "depth": 0.001,
+        "f": 28.0,
+        "amplitude_surface_K": 0.5743448879934989,
+        "measured": 0.09375509786189389,
+        "analytic": 0.09376200534524609,
+        "phase_lag_measured": 2.3669831389811082,
+        "phase_lag_analytic": 2.3669955653142583
+      },
+      {
+        "depth": 0.001,
+        "f": 32.0,
+        "amplitude_surface_K": 0.5372567860986691,
+        "measured": 0.07961760697619068,
+        "analytic": 0.07962519647823041,
+        "phase_lag_measured": 2.5304147852200494,
+        "phase_lag_analytic": 2.530424697548359
+      },
+      {
+        "depth": 0.001,
+        "f": 36.0,
+        "amplitude_surface_K": 0.50653489504512,
+        "measured": 0.06828666490650354,
+        "analytic": 0.0682948652643242,
+        "phase_lag_measured": 2.683915170640472,
+        "phase_lag_analytic": 2.683920694377545
+      },
+      {
+        "depth": 0.001,
+        "f": 40.0,
+        "amplitude_surface_K": 0.48054409323296265,
+        "measured": 0.05905719540418823,
+        "analytic": 0.059065940839136466,
+        "phase_lag_measured": 2.8291017476028824,
+        "phase_lag_analytic": 2.8291008178312382
+      },
+      {
+        "depth": 0.002,
+        "f": 0.25,
+        "amplitude_surface_K": 5.322183454035189,
+        "measured": 0.7427120553298545,
+        "analytic": 0.6393392129748388,
+        "phase_lag_measured": 0.5934403023880452,
+        "phase_lag_analytic": 0.4473201157295908
+      },
+      {
+        "depth": 0.002,
+        "f": 0.5,
+        "amplitude_surface_K": 3.943611005408313,
+        "measured": 0.5337870424130614,
+        "analytic": 0.5312055810464341,
+        "phase_lag_measured": 0.7815993493475156,
+        "phase_lag_analytic": 0.6326061743870898
+      },
+      {
+        "depth": 0.002,
+        "f": 0.75,
+        "amplitude_surface_K": 3.39835327417594,
+        "measured": 0.43792933340344287,
+        "analytic": 0.46080460890281477,
+        "phase_lag_measured": 0.8652213925712714,
+        "phase_lag_analytic": 0.7747811676912413
+      },
+      {
+        "depth": 0.002,
+        "f": 1.0,
+        "amplitude_surface_K": 3.0195711997366006,
+        "measured": 0.3849247296437589,
+        "analytic": 0.4087546292472863,
+        "phase_lag_measured": 0.9378932790591531,
+        "phase_lag_analytic": 0.8946402314591816
+      },
+      {
+        "depth": 0.002,
+        "f": 1.25,
+        "amplitude_surface_K": 2.726233300622847,
+        "measured": 0.3490064971781316,
+        "analytic": 0.3677918276989178,
+        "phase_lag_measured": 1.0140263806319088,
+        "phase_lag_analytic": 1.000238186474438
+      },
+      {
+        "depth": 0.002,
+        "f": 1.5,
+        "amplitude_surface_K": 2.493842347579543,
+        "measured": 0.3210183546363195,
+        "analytic": 0.33430349356553496,
+        "phase_lag_measured": 1.0930818921927794,
+        "phase_lag_analytic": 1.0957060352202168
+      },
+      {
+        "depth": 0.002,
+        "f": 1.75,
+        "amplitude_surface_K": 2.307283871996081,
+        "measured": 0.2974107203128818,
+        "analytic": 0.30620582186700196,
+        "phase_lag_measured": 1.172735562620829,
+        "phase_lag_analytic": 1.1834977826571291
+      },
+      {
+        "depth": 0.002,
+        "f": 2.0,
+        "amplitude_surface_K": 2.1552765807160466,
+        "measured": 0.2766787806019739,
+        "analytic": 0.28217936933487964,
+        "phase_lag_measured": 1.2512194428569128,
+        "phase_lag_analytic": 1.2652123487741795
+      },
+      {
+        "depth": 0.002,
+        "f": 2.5,
+        "amplitude_surface_K": 1.923345523855831,
+        "measured": 0.2413336426415595,
+        "analytic": 0.243034855193934,
+        "phase_lag_measured": 1.401059234573271,
+        "phase_lag_analytic": 1.4145504089156191
+      },
+      {
+        "depth": 0.002,
+        "f": 3.0,
+        "amplitude_surface_K": 1.7539571492952586,
+        "measured": 0.21221042896925219,
+        "analytic": 0.2123408875860761,
+        "phase_lag_measured": 1.5395721875946164,
+        "phase_lag_analytic": 1.5495623353824826
+      },
+      {
+        "depth": 0.002,
+        "f": 3.5,
+        "amplitude_surface_K": 1.6234188665718126,
+        "measured": 0.1879484741664379,
+        "analytic": 0.18754834716327526,
+        "phase_lag_measured": 1.667242920178971,
+        "phase_lag_analytic": 1.6737186152721977
+      },
+      {
+        "depth": 0.002,
+        "f": 4.0,
+        "amplitude_surface_K": 1.5186323925815302,
+        "measured": 0.16757482939330076,
+        "analytic": 0.16708034693108648,
+        "phase_lag_measured": 1.7855311580444369,
+        "phase_lag_analytic": 1.7892804629183632
+      },
+      {
+        "depth": 0.002,
+        "f": 5.0,
+        "amplitude_surface_K": 1.3586091380635419,
+        "measured": 0.13559656138028467,
+        "analytic": 0.1352708285221104,
+        "phase_lag_measured": 1.9998106592059721,
+        "phase_lag_analytic": 2.000476372948876
+      },
+      {
+        "depth": 0.002,
+        "f": 6.0,
+        "amplitude_surface_K": 1.240389361555017,
+        "measured": 0.11190722703354067,
+        "analytic": 0.11175882581012161,
+        "phase_lag_measured": 2.191823974628141,
+        "phase_lag_analytic": 2.1914120704404336
+      },
+      {
+        "depth": 0.002,
+        "f": 7.0,
+        "amplitude_surface_K": 1.1484359809286786,
+        "measured": 0.09381318685487175,
+        "analytic": 0.09376200534524609,
+        "phase_lag_measured": 2.3675942592818218,
+        "phase_lag_analytic": 2.3669955653142583
+      },
+      {
+        "depth": 0.002,
+        "f": 8.0,
+        "amplitude_surface_K": 1.0742923433457823,
+        "measured": 0.07963415748753726,
+        "analytic": 0.07962519647823041,
+        "phase_lag_measured": 2.530902906809499,
+        "phase_lag_analytic": 2.530424697548359
+      },
+      {
+        "depth": 0.002,
+        "f": 10.0,
+        "amplitude_surface_K": 0.9609158591122812,
+        "measured": 0.059057419367545924,
+        "analytic": 0.059065940839136466,
+        "phase_lag_measured": 2.8292538114278067,
+        "phase_lag_analytic": 2.8291008178312382
+      },
+      {
+        "depth": 0.002,
+        "f": 12.0,
+        "amplitude_surface_K": 0.8772223941972865,
+        "measured": 0.045083185391718274,
+        "analytic": 0.04508865254084261,
+        "phase_lag_measured": 3.0991205271936235,
+        "phase_lag_analytic": 3.099124670764965
+      },
+      {
+        "depth": 0.002,
+        "f": 14.0,
+        "amplitude_surface_K": 0.8121721191582747,
+        "measured": 0.035171727682708966,
+        "analytic": 0.03517438252367642,
+        "phase_lag_measured": 3.347393206599055,
+        "phase_lag_analytic": 3.3474372305443953
+      },
+      {
+        "depth": 0.002,
+        "f": 16.0,
+        "amplitude_surface_K": 0.7597336782546616,
+        "measured": 0.02791426576031108,
+        "analytic": 0.027915842330612214,
+        "phase_lag_measured": 3.578518253659892,
+        "phase_lag_analytic": 3.5785609258367264
+      },
+      {
+        "depth": 0.002,
+        "f": 20.0,
+        "amplitude_surface_K": 0.6795479760790247,
+        "measured": 0.018296887982286052,
+        "analytic": 0.018298197049058194,
+        "phase_lag_measured": 4.000923571480705,
+        "phase_lag_analytic": 4.000952745897752
+      },
+      {
+        "depth": 0.002,
+        "f": 24.0,
+        "amplitude_surface_K": 0.620353386409694,
+        "measured": 0.012488702940273778,
+        "analytic": 0.012490035146457107,
+        "phase_lag_measured": 4.382797391370568,
+        "phase_lag_analytic": 4.382824140880867
+      },
+      {
+        "depth": 0.002,
+        "f": 28.0,
+        "amplitude_surface_K": 0.5743448879934989,
+        "measured": 0.008790031113808917,
+        "analytic": 0.008791313646361957,
+        "phase_lag_measured": 4.733964942937595,
+        "phase_lag_analytic": 4.7339911306285165
+      },
+      {
+        "depth": 0.002,
+        "f": 32.0,
+        "amplitude_surface_K": 0.5372567860986691,
+        "measured": 0.006338968242602774,
+        "analytic": 0.006340171914196797,
+        "phase_lag_measured": 5.060826992893028,
+        "phase_lag_analytic": 5.060849395096718
+      },
+      {
+        "depth": 0.002,
+        "f": 36.0,
+        "amplitude_surface_K": 0.50653489504512,
+        "measured": 0.004663069319881167,
+        "analytic": 0.004664188621472197,
+        "phase_lag_measured": 5.367827003436847,
+        "phase_lag_analytic": 5.36784138875509
+      },
+      {
+        "depth": 0.002,
+        "f": 40.0,
+        "amplitude_surface_K": 0.48054409323296265,
+        "measured": 0.0034877497347454594,
+        "analytic": 0.0034887853672123698,
+        "phase_lag_measured": 5.65819971863903,
+        "phase_lag_analytic": 5.6582016356624765
+      },
+      {
+        "depth": 0.004,
+        "f": 0.25,
+        "amplitude_surface_K": 5.322183454035189,
+        "measured": 0.6976056245624448,
+        "analytic": 0.4087546292472863,
+        "phase_lag_measured": 0.978626139411662,
+        "phase_lag_analytic": 0.8946402314591816
+      },
+      {
+        "depth": 0.004,
+        "f": 0.5,
+        "amplitude_surface_K": 3.943611005408313,
+        "measured": 0.4309148640811432,
+        "analytic": 0.28217936933487964,
+        "phase_lag_measured": 1.4826097362160904,
+        "phase_lag_analytic": 1.2652123487741795
+      },
+      {
+        "depth": 0.004,
+        "f": 0.75,
+        "amplitude_surface_K": 3.39835327417594,
+        "measured": 0.2949683462140789,
+        "analytic": 0.2123408875860761,
+        "phase_lag_measured": 1.8015998937020692,
+        "phase_lag_analytic": 1.5495623353824826
+      },
+      {
+        "depth": 0.004,
+        "f": 1.0,
+        "amplitude_surface_K": 3.0195711997366006,
+        "measured": 0.21704825250040957,
+        "analytic": 0.16708034693108648,
+        "phase_lag_measured": 2.0490354778592152,
+        "phase_lag_analytic": 1.7892804629183632
+      },
+      {
+        "depth": 0.004,
+        "f": 1.25,
+        "amplitude_surface_K": 2.726233300622847,
+        "measured": 0.16713665608185188,
+        "analytic": 0.1352708285221104,
+        "phase_lag_measured": 2.2596413464092646,
+        "phase_lag_analytic": 2.000476372948876
+      },
+      {
+        "depth": 0.004,
+        "f": 1.5,
+        "amplitude_surface_K": 2.493842347579543,
+        "measured": 0.1326783094842633,
+        "analytic": 0.11175882581012161,
+        "phase_lag_measured": 2.4467752039720088,
+        "phase_lag_analytic": 2.1914120704404336
+      },
+      {
+        "depth": 0.004,
+        "f": 1.75,
+        "amplitude_surface_K": 2.307283871996081,
+        "measured": 0.10766012232190446,
+        "analytic": 0.09376200534524609,
+        "phase_lag_measured": 2.6168308527022512,
+        "phase_lag_analytic": 2.3669955653142583
+      },
+      {
+        "depth": 0.004,
+        "f": 2.0,
+        "amplitude_surface_K": 2.1552765807160466,
+        "measured": 0.08884410735840116,
+        "analytic": 0.07962519647823041,
+        "phase_lag_measured": 2.7734962617371446,
+        "phase_lag_analytic": 2.530424697548359
+      },
+      {
+        "depth": 0.004,
+        "f": 2.5,
+        "amplitude_surface_K": 1.923345523855831,
+        "measured": 0.06288112843179756,
+        "analytic": 0.059065940839136466,
+        "phase_lag_measured": 3.0558302230686714,
+        "phase_lag_analytic": 2.8291008178312382
+      },
+      {
+        "depth": 0.004,
+        "f": 3.0,
+        "amplitude_surface_K": 1.7539571492952586,
+        "measured": 0.0462904005667069,
+        "analytic": 0.04508865254084261,
+        "phase_lag_measured": 3.3069714460455004,
+        "phase_lag_analytic": 3.099124670764965
+      },
+      {
+        "depth": 0.004,
+        "f": 3.5,
+        "amplitude_surface_K": 1.6234188665718126,
+        "measured": 0.03511931590140815,
+        "analytic": 0.03517438252367642,
+        "phase_lag_measured": 3.5352077057210627,
+        "phase_lag_analytic": 3.3474372305443953
+      },
+      {
+        "depth": 0.004,
+        "f": 4.0,
+        "amplitude_surface_K": 1.5186323925815302,
+        "measured": 0.027290690817204456,
+        "analytic": 0.027915842330612214,
+        "phase_lag_measured": 3.7461429815881715,
+        "phase_lag_analytic": 3.5785609258367264
+      },
+      {
+        "depth": 0.004,
+        "f": 5.0,
+        "amplitude_surface_K": 1.3586091380635419,
+        "measured": 0.0174137439567023,
+        "analytic": 0.018298197049058194,
+        "phase_lag_measured": 4.130550543458568,
+        "phase_lag_analytic": 4.000952745897752
+      },
+      {
+        "depth": 0.004,
+        "f": 6.0,
+        "amplitude_surface_K": 1.240389361555017,
+        "measured": 0.011733317431533379,
+        "analytic": 0.012490035146457107,
+        "phase_lag_measured": 4.479751284294439,
+        "phase_lag_analytic": 4.382824140880867
+      },
+      {
+        "depth": 0.004,
+        "f": 7.0,
+        "amplitude_surface_K": 1.1484359809286786,
+        "measured": 0.00822228217149192,
+        "analytic": 0.008791313646361957,
+        "phase_lag_measured": 4.8041387932021875,
+        "phase_lag_analytic": 4.7339911306285165
+      },
+      {
+        "depth": 0.004,
+        "f": 8.0,
+        "amplitude_surface_K": 1.0742923433457823,
+        "measured": 0.005933645393754155,
+        "analytic": 0.006340171914196797,
+        "phase_lag_measured": 5.109648610477311,
+        "phase_lag_analytic": 5.060849395096718
+      },
+      {
+        "depth": 0.004,
+        "f": 10.0,
+        "amplitude_surface_K": 0.9609158591122812,
+        "measured": 0.003293144349856415,
+        "analytic": 0.0034887853672123698,
+        "phase_lag_measured": 5.67738556502877,
+        "phase_lag_analytic": 5.6582016356624765
+      },
+      {
+        "depth": 0.004,
+        "f": 12.0,
+        "amplitude_surface_K": 0.8772223941972865,
+        "measured": 0.001941246644923928,
+        "analytic": 0.002032986587948833,
+        "phase_lag_measured": 6.2001948247482215,
+        "phase_lag_analytic": 6.19824934152993
+      },
+      {
+        "depth": 0.004,
+        "f": 14.0,
+        "amplitude_surface_K": 0.8121721191582747,
+        "measured": 0.0011945240342712304,
+        "analytic": 0.001237237185921913,
+        "phase_lag_measured": 6.687373988784393,
+        "phase_lag_analytic": 6.694874461088791
+      },
+      {
+        "depth": 0.004,
+        "f": 16.0,
+        "amplitude_surface_K": 0.7597336782546616,
+        "measured": 0.0007595175912529823,
+        "analytic": 0.0007792942530276005,
+        "phase_lag_measured": 7.144963171211968,
+        "phase_lag_analytic": 7.157121851673453
+      },
+      {
+        "depth": 0.004,
+        "f": 20.0,
+        "amplitude_surface_K": 0.6795479760790247,
+        "measured": 0.0003307856223159193,
+        "analytic": 0.0003348240152461619,
+        "phase_lag_measured": 7.987904270735497,
+        "phase_lag_analytic": 8.001905491795505
+      },
+      {
+        "depth": 0.004,
+        "f": 24.0,
+        "amplitude_surface_K": 0.620353386409694,
+        "measured": 0.00015534988210952891,
+        "analytic": 0.0001560009779597338,
+        "phase_lag_measured": 8.753884327379247,
+        "phase_lag_analytic": 8.765648281761734
+      },
+      {
+        "depth": 0.004,
+        "f": 28.0,
+        "amplitude_surface_K": 0.5743448879934989,
+        "measured": 7.729617926950058e-05,
+        "analytic": 7.728719562870998e-05,
+        "phase_lag_measured": 9.459316596869886,
+        "phase_lag_analytic": 9.467982261257033
+      },
+      {
+        "depth": 0.004,
+        "f": 32.0,
+        "amplitude_surface_K": 0.5372567860986691,
+        "measured": 4.028612748132715e-05,
+        "analytic": 4.019777990156987e-05,
+        "phase_lag_measured": 10.115751344490258,
+        "phase_lag_analytic": 10.121698790193436
+      },
+      {
+        "depth": 0.004,
+        "f": 36.0,
+        "amplitude_surface_K": 0.50653489504512,
+        "measured": 2.1818036176127666e-05,
+        "analytic": 2.1754655496670705e-05,
+        "phase_lag_measured": 10.731661441710317,
+        "phase_lag_analytic": 10.73568277751018
+      },
+      {
+        "depth": 0.004,
+        "f": 40.0,
+        "amplitude_surface_K": 0.48054409323296265,
+        "measured": 1.2204222127082873e-05,
+        "analytic": 1.2171623338475148e-05,
+        "phase_lag_measured": 11.313500342858035,
+        "phase_lag_analytic": 11.316403271324953
+      }
+    ],
+    "per_depth": [
+      {
+        "depth": 0.001,
+        "f_c_measured": 26.45903560685595,
+        "f_c_analytic": 26.496866658644503,
+        "ratio": 0.9985722443232279,
+        "penetration_at_f_c_m": 0.00043429448190325173,
+        "slab_behind_probe_m": 0.004,
+        "half_space_valid": true
+      },
+      {
+        "depth": 0.002,
+        "f_c_measured": 6.619961154524541,
+        "f_c_analytic": 6.624216664661126,
+        "ratio": 0.9993575828883606,
+        "penetration_at_f_c_m": 0.0008685889638065035,
+        "slab_behind_probe_m": 0.003,
+        "half_space_valid": true
+      },
+      {
+        "depth": 0.004,
+        "f_c_measured": 1.8421300944331584,
+        "f_c_analytic": 1.6560541661652814,
+        "ratio": 1.1123610157623949,
+        "penetration_at_f_c_m": 0.001737177927613007,
+        "slab_behind_probe_m": 0.001,
+        "half_space_valid": false
+      }
+    ]
+  },
+  "quick": false
+}

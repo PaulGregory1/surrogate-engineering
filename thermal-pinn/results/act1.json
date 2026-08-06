@@ -1,0 +1,344 @@
+{
+  "verdict": {
+    "m4_gate": {
+      "criterion": "|median PINN peak error| <= 1.5 x best baseline",
+      "best_baseline_abs_pct": 0.015611820333333535,
+      "worst_baseline_abs_pct": 0.13464898675693096,
+      "pinn_median_abs_pct": 0.21073693865306908,
+      "ratio_to_best": 13.498550082793017,
+      "ratio_to_worst": 1.5650837316250472,
+      "factor": 1.5,
+      "pass": false,
+      "seeds_within_factor": 0
+    },
+    "ablation_lambda_r_zero": {
+      "band_rmse_pct": 143.1940486656436,
+      "factor_worse": 16.71601503397231,
+      "tol": 2.0,
+      "pass": true
+    },
+    "all_pass": false
+  },
+  "act": 1,
+  "law": "A",
+  "scenario": {
+    "name": "showcase",
+    "t_end": 20.0,
+    "x_s": 0.002,
+    "sigma_noise": 0.5,
+    "f_sample": 100.0,
+    "surface_peak_C": 640.1953255698759,
+    "sensor_peak_C": 625.1697133036906
+  },
+  "tuning_scenario": {
+    "name": "tuning",
+    "noise_seed": 20250806,
+    "q_peak": 4200000.0,
+    "t_brake": 4.6
+  },
+  "config": {
+    "width_T": 64,
+    "depth_T": 4,
+    "width_q": 32,
+    "depth_q": 3,
+    "n_freq_x": 4,
+    "w_max_x": 8.0,
+    "n_freq_t": 10,
+    "flux_band_hz": null,
+    "ic_ansatz": "sqrt_t",
+    "n_adam": 4000,
+    "n_lbfgs": 12000,
+    "lr": 0.001,
+    "lr_final": 1e-05,
+    "n_collocation": 4096,
+    "n_boundary": 512,
+    "resample_every": 100,
+    "residual_weight": "sqrt_t",
+    "lbfgs_round": 500,
+    "lambda_r": null,
+    "lambda_b": null,
+    "lambda_r_scale": 1000.0,
+    "balance_every": 0,
+    "balance_ema": 0.9,
+    "dT_ref": 500.0,
+    "device": "cpu",
+    "dtype": "float32",
+    "log_every": 500
+  },
+  "f_c": 6.624216664661126,
+  "weight_sweep": {
+    "criterion": "band_rmse_pct",
+    "scales": [
+      0.0,
+      1.0,
+      10.0,
+      100.0,
+      1000.0,
+      10000.0
+    ],
+    "rows": [
+      {
+        "seed": 0,
+        "band_rmse_pct": 143.1940486656436,
+        "band_rmse_pct_of_peak": 38.05262913529561,
+        "band_max_abs": 4178606.520153172,
+        "surface_peak_error_pct": -41.48438378670605,
+        "surface_peak_error_pct_via_model": -100.0,
+        "sensor_fit_rms_K": 0.45217473509353623,
+        "lambda_r": 0.0,
+        "lambda_b": 0.02205976686863709,
+        "loss_data": 8.180151667147584e-07,
+        "loss_residual": 587131.0625,
+        "loss_boundary": 2.992104782606475e-06,
+        "seconds": 411.0417632079916,
+        "lambda_r_scale": 0.0
+      },
+      {
+        "seed": 0,
+        "band_rmse_pct": 91.43704911016938,
+        "band_rmse_pct_of_peak": 24.29863637098139,
+        "band_max_abs": 3881752.7765238155,
+        "surface_peak_error_pct": -0.1981863452251921,
+        "surface_peak_error_pct_via_model": -77.38426863869825,
+        "sensor_fit_rms_K": 0.461704593972197,
+        "lambda_r": 7.666641559021974e-07,
+        "lambda_b": 0.02205976686863709,
+        "loss_data": 8.528691637366137e-07,
+        "loss_residual": 0.44378048181533813,
+        "loss_boundary": 2.2608037397731096e-06,
+        "seconds": 302.56114745902596,
+        "lambda_r_scale": 1.0
+      },
+      {
+        "seed": 0,
+        "band_rmse_pct": 32.6037413037177,
+        "band_rmse_pct_of_peak": 8.664173461219821,
+        "band_max_abs": 2603739.4881628007,
+        "surface_peak_error_pct": 0.6525425252728999,
+        "surface_peak_error_pct_via_model": -19.13724009134031,
+        "sensor_fit_rms_K": 0.4694429783172465,
+        "lambda_r": 7.666641559021975e-06,
+        "lambda_b": 0.02205976686863709,
+        "loss_data": 8.817064554023091e-07,
+        "loss_residual": 0.034574057906866074,
+        "loss_boundary": 2.778338739517494e-06,
+        "seconds": 302.4341030840005,
+        "lambda_r_scale": 10.0
+      },
+      {
+        "seed": 0,
+        "band_rmse_pct": 13.906474075128735,
+        "band_rmse_pct_of_peak": 3.695529985300582,
+        "band_max_abs": 1594272.533035026,
+        "surface_peak_error_pct": 0.04478379545442071,
+        "surface_peak_error_pct_via_model": -6.792231828098069,
+        "sensor_fit_rms_K": 0.49196742435776425,
+        "lambda_r": 7.666641559021975e-05,
+        "lambda_b": 0.02205976686863709,
+        "loss_data": 9.68370727605361e-07,
+        "loss_residual": 0.006200691685080528,
+        "loss_boundary": 5.3684143495047465e-06,
+        "seconds": 458.08740629200474,
+        "lambda_r_scale": 100.0
+      },
+      {
+        "seed": 0,
+        "band_rmse_pct": 8.566279006965914,
+        "band_rmse_pct_of_peak": 2.276417498905119,
+        "band_max_abs": 849335.3589616893,
+        "surface_peak_error_pct": 0.07059976357911331,
+        "surface_peak_error_pct_via_model": -3.3247865909066463,
+        "sensor_fit_rms_K": 0.6190160077222943,
+        "lambda_r": 0.0007666641559021974,
+        "lambda_b": 0.02205976686863709,
+        "loss_data": 1.5332485645558336e-06,
+        "loss_residual": 0.001487897359766066,
+        "loss_boundary": 1.855072332546115e-05,
+        "seconds": 467.51652187501895,
+        "lambda_r_scale": 1000.0
+      },
+      {
+        "seed": 0,
+        "band_rmse_pct": 25.53911418889792,
+        "band_rmse_pct_of_peak": 6.786807480688747,
+        "band_max_abs": 2058809.279728686,
+        "surface_peak_error_pct": 0.37826609556394847,
+        "surface_peak_error_pct_via_model": -9.167784859051137,
+        "sensor_fit_rms_K": 1.5833780056920552,
+        "lambda_r": 0.007666641559021975,
+        "lambda_b": 0.02205976686863709,
+        "loss_data": 1.0033118087449111e-05,
+        "loss_residual": 0.003014268819242716,
+        "loss_boundary": 0.0008215841371566057,
+        "seconds": 692.6223722920113,
+        "lambda_r_scale": 10000.0
+      }
+    ],
+    "chosen_scale": 1000.0
+  },
+  "initial_condition_ablation": {
+    "sqrt_t": {
+      "band_rmse_pct": 8.566279006965914,
+      "surface_peak_error_pct": 0.07059976357911331,
+      "surface_peak_error_pct_via_model": -3.3247865909066463,
+      "loss_residual": 0.001487897359766066
+    },
+    "linear": {
+      "band_rmse_pct": 30.70806513431619,
+      "surface_peak_error_pct": -0.06289733712702505,
+      "surface_peak_error_pct_via_model": -15.300769269069706,
+      "loss_residual": 0.014549465849995613
+    },
+    "factor_worse": 3.5847612609097896
+  },
+  "baselines": [
+    {
+      "method": "beck",
+      "band_rmse_pct": 3.9707698594156,
+      "band_rmse_pct_of_peak": 0.9725113239191152,
+      "band_max_abs": 240164.1372735434,
+      "surface_peak_error_pct": -0.015611820333333535
+    },
+    {
+      "method": "tikhonov",
+      "band_rmse_pct": 3.1919758676889747,
+      "band_rmse_pct_of_peak": 0.7817709882236635,
+      "band_max_abs": 329989.3846624821,
+      "surface_peak_error_pct": -0.11164230271260965
+    },
+    {
+      "method": "alifanov",
+      "band_rmse_pct": 3.254796652966313,
+      "band_rmse_pct_of_peak": 0.7971569025986392,
+      "band_max_abs": 293603.7846683025,
+      "surface_peak_error_pct": -0.13464898675693096
+    }
+  ],
+  "pinn_seeds": [
+    {
+      "seed": 0,
+      "band_rmse_pct": 7.869318303766197,
+      "band_rmse_pct_of_peak": 1.9273343540143937,
+      "band_max_abs": 1072553.9500206518,
+      "surface_peak_error_pct": 0.18776682584278065,
+      "surface_peak_error_pct_via_model": -3.8880287647925402,
+      "sensor_fit_rms_K": 0.6311471098407153,
+      "lambda_r": 0.000819044216733373,
+      "lambda_b": 0.023568441692091872,
+      "loss_data": 1.5941762967486284e-06,
+      "loss_residual": 0.0017706097569316626,
+      "loss_boundary": 2.1636684323311783e-05,
+      "seconds": 569.0961616249988
+    },
+    {
+      "seed": 1,
+      "band_rmse_pct": 8.472689014549427,
+      "band_rmse_pct_of_peak": 2.075110445183822,
+      "band_max_abs": 1110624.532836827,
+      "surface_peak_error_pct": 0.21073693865306908,
+      "surface_peak_error_pct_via_model": -4.337215782203751,
+      "sensor_fit_rms_K": 0.7600507391677687,
+      "lambda_r": 0.0018459269981791547,
+      "lambda_b": 0.03184570331358901,
+      "loss_data": 2.311855268999352e-06,
+      "loss_residual": 0.001471030875109136,
+      "loss_boundary": 4.4970729504711926e-05,
+      "seconds": 563.6729705419857
+    },
+    {
+      "seed": 2,
+      "band_rmse_pct": 10.660588737584739,
+      "band_rmse_pct_of_peak": 2.610965539179244,
+      "band_max_abs": 1589454.0967393722,
+      "surface_peak_error_pct": 0.043719490644668256,
+      "surface_peak_error_pct_via_model": -5.1580643760934395,
+      "sensor_fit_rms_K": 1.0344478473719658,
+      "lambda_r": 0.0031459746643100767,
+      "lambda_b": 0.04531299641900248,
+      "loss_data": 4.28246221417794e-06,
+      "loss_residual": 0.0018439424457028508,
+      "loss_boundary": 3.758067396120168e-05,
+      "seconds": 451.75844266600325
+    },
+    {
+      "seed": 3,
+      "band_rmse_pct": 9.368326569528175,
+      "band_rmse_pct_of_peak": 2.2944678230179165,
+      "band_max_abs": 1400766.477493736,
+      "surface_peak_error_pct": 0.23374677496151627,
+      "surface_peak_error_pct_via_model": -4.703489307268354,
+      "sensor_fit_rms_K": 0.9306314945682242,
+      "lambda_r": 0.00290239728658284,
+      "lambda_b": 0.02835817227186679,
+      "loss_data": 3.466025646048365e-06,
+      "loss_residual": 0.0015198745531961322,
+      "loss_boundary": 5.571822839556262e-05,
+      "seconds": 437.63070470798993
+    },
+    {
+      "seed": 4,
+      "band_rmse_pct": 9.54380803974229,
+      "band_rmse_pct_of_peak": 2.337446319119002,
+      "band_max_abs": 1377389.925375558,
+      "surface_peak_error_pct": 0.23175066917903983,
+      "surface_peak_error_pct_via_model": -5.00643692907263,
+      "sensor_fit_rms_K": 0.7783827345820855,
+      "lambda_r": 0.0014768995553257676,
+      "lambda_b": 0.043825393003418395,
+      "loss_data": 2.424723788863048e-06,
+      "loss_residual": 0.0017163912998512387,
+      "loss_boundary": 2.138820491381921e-05,
+      "seconds": 442.11076016697916
+    }
+  ],
+  "pinn_summary": {
+    "surface_peak_error_pct": {
+      "n": 5,
+      "mean": 0.18154413985621481,
+      "std": 0.0792659856927103,
+      "median": 0.21073693865306908,
+      "min": 0.043719490644668256,
+      "max": 0.23374677496151627,
+      "worst_abs": 0.23374677496151627
+    },
+    "band_rmse_pct": {
+      "n": 5,
+      "mean": 9.182946133034164,
+      "std": 1.0698245343181578,
+      "median": 9.368326569528175,
+      "min": 7.869318303766197,
+      "max": 10.660588737584739,
+      "worst_abs": 10.660588737584739
+    },
+    "surface_peak_error_pct_via_model": {
+      "n": 5,
+      "mean": -4.618647031886143,
+      "std": 0.5151594141118461,
+      "median": -4.703489307268354,
+      "min": -5.1580643760934395,
+      "max": -3.8880287647925402,
+      "worst_abs": 5.1580643760934395
+    },
+    "sensor_fit_rms_K": {
+      "n": 5,
+      "mean": 0.8269319851061517,
+      "std": 0.15730406027978133,
+      "median": 0.7783827345820855,
+      "min": 0.6311471098407153,
+      "max": 1.0344478473719658,
+      "worst_abs": 1.0344478473719658
+    },
+    "seconds": {
+      "n": 5,
+      "mean": 492.85380794159136,
+      "std": 67.34524363670101,
+      "median": 451.75844266600325,
+      "min": 437.63070470798993,
+      "max": 569.0961616249988,
+      "worst_abs": 569.0961616249988
+    }
+  },
+  "quick": false,
+  "device": "cpu",
+  "total_seconds": 526.8902720419865
+}

@@ -27,6 +27,11 @@ Two stages, in this order and never the other way round.
       says the residual is doing the work, and it is the cheapest way to catch a setup where
       the answer is really coming from somewhere else.
 
+      One further ablation runs at the chosen weight: the ramp the hard initial condition is
+      built from.  `sqrt(t) N` against `t N`, everything else identical.  It is here rather
+      than in prose because it was the single most expensive mistake in building this file
+      and the claim should be regenerated rather than remembered.
+
   (2) **Five seeds on the showcase**, at the weight stage 1 chose, against the three
       baselines on the same record.  Every seed is stored rather than only their mean: a PINN
       is a variable object, and concealing that would be the single largest credibility
@@ -226,7 +231,26 @@ def main() -> None:
                     "tol": ABLATION_FACTOR, "pass": bool(cost >= ABLATION_FACTOR)}
         print(f"\n    with the heat equation switched off the same network is {cost:.1f}x worse in band "
               f"-- the residual is what turns it from an interpolator into an inversion")
-    print(f"    chosen: lambda_r x {chosen['lambda_r_scale']:.0e}, and it is frozen from here on\n")
+
+    # The other ablation, and the one that cost the most to find: the ramp the hard initial
+    # condition uses.  Run at the chosen weight and on the same scenario, so the only thing
+    # that differs between this row and `chosen` is `t N` against `sqrt(t) N`.
+    linear_cfg = replace(base, lambda_r_scale=chosen["lambda_r_scale"], ic_ansatz="linear")
+    linear_row, _ = run_pinn(TUNING, tune_Y, linear_cfg, 0, tune_model, cache=cache, **tune_kw)
+    linear_row["ic_ansatz"] = "linear"
+    ic_ablation = {
+        "sqrt_t": {k: chosen[k] for k in ("band_rmse_pct", "surface_peak_error_pct",
+                                          "surface_peak_error_pct_via_model", "loss_residual")},
+        "linear": {k: linear_row[k] for k in ("band_rmse_pct", "surface_peak_error_pct",
+                                              "surface_peak_error_pct_via_model", "loss_residual")},
+        "factor_worse": linear_row["band_rmse_pct"] / chosen["band_rmse_pct"],
+    }
+    print(f"    the hard initial condition's ramp, at the same weight: "
+          f"sqrt(t) N {chosen['band_rmse_pct']:.2f} % in band, "
+          f"t N {linear_row['band_rmse_pct']:.2f} % ({ic_ablation['factor_worse']:.1f}x worse)")
+    print("    a switched-on flux makes the surface leave T0 as sqrt(t); t N asserts it leaves "
+          "linearly,\n    and no weights can recover the difference")
+    print(f"\n    chosen: lambda_r x {chosen['lambda_r_scale']:.0e}, and it is frozen from here on\n")
 
     # ------------------------------------------------------ (2) the showcase, five seeds
     scenario = SHOWCASE
@@ -331,6 +355,7 @@ def main() -> None:
         "f_c": f_c,
         "weight_sweep": {"criterion": SWEEP_CRITERION, "scales": list(scales), "rows": sweep,
                          "chosen_scale": chosen["lambda_r_scale"]},
+        "initial_condition_ablation": ic_ablation,
         "baselines": baselines,
         "pinn_seeds": seeds,
         "pinn_summary": {"surface_peak_error_pct": peak, "band_rmse_pct": band,

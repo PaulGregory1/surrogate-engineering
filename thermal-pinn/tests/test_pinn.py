@@ -236,7 +236,7 @@ def test_only_the_sqrt_ansatz_can_express_the_rise_a_switched_on_flux_actually_p
             loss = torch.mean((net(x, t) - target) ** 2)
             loss.backward()
             opt.step()
-        reached[ansatz] = float(loss) ** 0.5 / float(target.mean())
+        reached[ansatz] = float(loss.detach()) ** 0.5 / float(target.mean())
     assert reached["sqrt_t"] < 0.02
     assert reached["linear"] > 3.0 * reached["sqrt_t"]
 

@@ -51,7 +51,7 @@ information lost.  Both are measured in `figs/illposed.png`, not assumed.
 | M1 truth solver + verification | done — `results/solver_validation.json` |
 | M2 the ill-posedness, demonstrated | done — `results/illposedness.json`, `figs/illposed.png` |
 | M3 classical baselines (Beck, Tikhonov, Alifanov) | done — `results/baseline_validation.json` |
-| M4 the PINN, act 1 | code, tests and script done — the numbers are being regenerated, see *What is left* |
+| M4 the PINN, act 1 | done — `results/act1.json`, `figs/act1_linear.png` |
 | M5 acts 2 and 3 | not started |
 | M6 studies, tables, writing | not started |
 
@@ -184,14 +184,52 @@ Three things had to be got right for that to be true, and each was found by meas
   the honest reading is that the classical route needs a tuning parameter, and here the usual
   way of setting it *without* knowing the noise level does measurably worse than knowing σ.
 
-## What M4 built, and what it found out about building it
+## What M4 establishes: the PINN loses act 1, and by how much
 
-`thermalpinn/pinn.py` is the PINN: the field is a network `T(x, t)`, the flux is a second
-network `q(t)`, the heat equation is scored at collocation points by automatic
-differentiation rather than solved, and the initial condition is satisfied by construction.
-`scripts/03_act1.py` runs it against Beck, Tikhonov and Alifanov on the same record, five
-seeds, with the residual weight chosen on a scenario (`scenario.TUNING`) that is neither the
-showcase nor any case the M6 table will average over.
+Numbers from `results/act1.json`; the figure is `figs/act1_linear.png`. Law A, the showcase
+stop, the same 0.5 K record all three baselines were given, five seeds, and a residual weight
+chosen on a different scenario entirely.
+
+| method | band RMSE on `q` | of the flux peak | error on `T_surf` max |
+|---|---|---|---|
+| Beck | 3.97 % | 0.97 % | **−0.016 %** |
+| Tikhonov | 3.19 % | 0.78 % | −0.112 % |
+| Alifanov | 3.26 % | 0.80 % | −0.135 % |
+| PINN, 5 seeds | 9.18 % ± 1.07 | 2.25 % | **+0.18 % ± 0.08** |
+
+**On the question the repo was built to ask, it is a draw.** The PINN reads a surface nobody
+can instrument to 0.18 % of its 600 K rise — about 1.1 K on a peak of 640 °C — against 0.016
+to 0.135 % for the three classical methods. The spread across five seeds, ±0.08 %, is smaller
+than the spread between the baselines themselves.
+
+**On the flux it is a loss, by a factor of about 2.5**, and the milestone's gate is failed
+rather than argued with: the criterion was a factor 1.5 of the *best* baseline on the surface
+peak, and the median seed is 13.5× Beck. Against the worst baseline it is 1.57×, which is
+still outside. The plan said to write the gap down as measured if it came out this way, so:
+the PINN does not win act 1, and act 1 is where the classical route is strongest.
+
+**The number that says how much to trust the first row.** The PINN gives two answers for the
+surface — the network's own `T(0, t)`, and what its flux produces when pushed through the same
+finite-volume model the baselines are scored with. They disagree by 4.6 %. That gap is not
+noise, it is the trained network failing to satisfy the physics it was scored on, and it means
+the +0.18 % above is partly the network's smoothness rather than a correct inversion. A
+converged PINN would have those two agree. This one does not, and reporting only the flattering
+half would be the easiest dishonesty available in this repo.
+
+Two further readings, both from the same file:
+
+- **The regularisation is real and it has an optimum.** The residual weight was swept over
+  four decades on the tuning scenario: 91.4 % in band at ×1, 32.6 % at ×10, 13.9 % at ×100,
+  **8.6 % at ×1000**, then back up to 25.5 % at ×10⁴ where the sensor fit degrades to 1.58 K
+  against 0.5 K of noise. That is the same U-shape Tikhonov's `lambda` has, found the same
+  way, and it needs the truth to find — which is why it is found on a scenario that is
+  neither the showcase nor any case the M6 table will average over.
+- **The physics term is what does the inverting.** With `lambda_r = 0` the same network fits
+  the thermocouple *better* than any other setting — 0.45 K, below the noise — and gets the
+  surface peak wrong by 41 %, 16.7× worse in band. Fitting the sensor and inverting for the
+  surface are different problems, and that row is the cleanest demonstration of it here.
+
+## What it cost to get there
 
 Three things had to be corrected before any of it meant anything, and all three were found by
 measuring rather than by reading. Each is written up where it lives in the code, and each has
@@ -218,27 +256,37 @@ a test; none of them is a hyperparameter that happened to work.
   leave as `sqrt(t)`. For `t N` to produce that, `N` would have to diverge at the origin, and
   a tanh network cannot, so the flux it can express is pinned near zero at t = 0 and has to
   climb to meet the truth. `T = T0 + sqrt(t) N(x, t)` is the same statement as the residual's
-  own weight, applied to the ansatz instead of to the norm, and the two cancel.
+  own weight, applied to the ansatz instead of to the norm, and the two cancel. Run as an
+  ablation at the chosen weight, everything else identical: **8.6 % in band against 30.7 %**,
+  and the disagreement between the PINN's two answers for the surface goes from 15.3 % to
+  3.3 %. It is the single most expensive mistake in the file, it is invisible until the flux
+  is plotted, and it is the standard choice.
 
-The last one is the reason the act-1 numbers are being regenerated: it changes the answer, so
-every training that produced the earlier result has to be redone rather than patched.
+The third is why the act-1 numbers above are the second set produced: it changes the answer,
+so every training behind the first set was redone rather than patched.
+
+There is a fourth, smaller, in the same spirit. The plan called for 20 000 Adam steps then
+2 000 of L-BFGS. Measured, that is close to backwards: past about 4 000 steps Adam moved the
+residual from 65 to 57, while the next 2 000 L-BFGS iterations took it from 57 to 1.0 at
+1.2× the cost per iteration. The split is now 4 000 / 12 000. `float64` was tried and buys
+about 5 % for twice the time, so `float32` stands as the plan assumed; Fourier bandwidth and
+network width were swept and are not the lever.
 
 ## What is left
 
-- **M4's numbers.** `scripts/03_act1.py` runs end to end and has produced a complete result
-  once; the initial-condition correction above invalidated it. Eleven trainings, about two
-  hours, resumable — each one is cached under `data/act1_cache/` against a key that includes
-  the whole configuration, so an interrupted run continues instead of starting over. It
-  writes `results/act1.json` and `figs/act1_linear.png`, and neither is committed until it
-  comes from the current code.
-- **The act-1 section of this README**, written from that JSON. On the evidence so far it
-  will be reporting a loss on the flux and something close to a draw on the surface peak,
-  which is what the plan expected and what the honesty rules say goes in the headline rather
-  than in a footnote.
-- **The ansatz comparison belongs in the script, not in prose.** The `sqrt(t)`-against-`t`
-  measurement was made on a scratch script; it should be a row of the act-1 ablation next to
-  `lambda_r = 0`, so the claim above is regenerated rather than quoted.
-- **M5 and M6**, as planned: acts 2 and 3, then the studies, tables and the eight figures.
+- **M5, the milestone that decides whether the repo has a result.** Act 2 measures what
+  frozen properties cost; act 3 asks the PINN to discover `k(T)`'s knee against three
+  parametric families the classical route has to guess between. `pinn.py` is written for it —
+  the residual is in conservative form precisely so that `k_hat` can become a third network
+  without anyone re-deriving a chain rule — but `k_psi` itself is not written yet.
+- **The act-1 disagreement is a loose end worth pulling on before M5.** 4.6 % between the
+  network's own surface and its flux pushed through the model is the honest bound on the
+  first table above, and act 3's headline is a curve read off the same field. Whatever
+  closes that gap is worth more to M5 than anything else on this list.
+- **M6**: the studies (noise, depth, sensor count, PINN ablations, cost), `RESULTS.md`,
+  `BACKGROUND.md`, the eight figures, and `run_all.py --force` regenerating everything.
+- **Outside this directory, once M6 lands**: the root `README.md` three-column table,
+  `KNOWLEDGE-GRAPH.md` (new node, and its baseline advanced), `CLAUDE.md` (the third `.venv`).
 
 ## Running it
 

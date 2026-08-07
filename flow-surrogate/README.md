@@ -30,9 +30,9 @@ Regenerate with `python scripts/05_setup_figure.py`.
 |---|---|---|---|---|
 | POD + ridge (classic ROM) | 0.144 | 7.08 % | 19.5 % | 17 600x |
 | POD + kernel ridge | 0.107 | 3.78 % | 13.8 % | 19 800x |
-| FNO | 0.080 | 1.94 % | 8.8 % | 343x |
-| U-Net | 0.081 | 1.15 % | 3.9 % | 709x |
-| **U-Net + continuity loss** | **0.078** | **1.03 %** | **4.2 %** | 713x |
+| FNO | 0.080 | 1.94 % | 8.8 % | 347x |
+| U-Net | 0.081 | 1.15 % | 3.9 % | 772x |
+| **U-Net + continuity loss** | **0.078** | **1.03 %** | **4.2 %** | 700x |
 
 ![Drag parity](figs/cd_parity.png)
 

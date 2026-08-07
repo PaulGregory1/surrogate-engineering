@@ -142,7 +142,7 @@ the alias off the root `tsconfig.json` (which only holds project references), so
 App.tsx — <ChatProvider> + <TooltipProvider> wrapping <Backdrop> + a 3-column shell
 ├─ Backdrop (in App.tsx) — gradient masses + grain, viewport-fixed, shared by every page
 ├─ components/ContourField.tsx — burnt iso-lines, scoped to the content column only
-├─ components/AppSidebar.tsx — left nav (icon rail < md), health dot footer
+├─ components/AppSidebar.tsx — left nav (icon rail < md), health dot footer, mark from /mark.svg
 ├─ main — <Routes>, own scroll container
 │   ├─ pages/Home.tsx — hero, lab cards, principles
 │   ├─ pages/FlowLab.tsx — debounced predict-on-change (250ms)
@@ -302,8 +302,9 @@ hand-drawn or hand-cropped. Three scripts, in dependency order:
   land on exactly two rows. A cell's *radius* follows the horizontal axis (smallest against
   the mouth, ~3× larger at the back), its *colour* the vertical one on the measure ramp. It
   writes `logo.svg` (mark on its paper tile), `logo-plain.svg`, `logo-dark.svg` — **and**
-  `engine-copilot/frontend/public/favicon.svg`, which is byte-identical to `logo.svg` and no
-  longer copied by hand. Needs only numpy.
+  the app's two copies, `frontend/public/favicon.svg` (tiled, a browser tab needs its own
+  ground) and `frontend/public/mark.svg` (plain, what `AppSidebar` sets). Neither is copied
+  by hand any more. Needs only numpy.
 - **`make_brand.py`** builds the README banner and imports `make_logo` for the mark rather
   than holding a copy; `build_logo()` is now a two-line delegation. Writes `banner.png`.
 - **`capture.py`** drives a **running** platform through optimise → verify and writes
@@ -416,7 +417,7 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Understand the science behind a result | `flow-surrogate/README-full.md` + `BACKGROUND.md` — don't re-derive from code. Both are local-only (gitignored); the committed `flow-surrogate/README.md` is a short summary |
 | Change UI copy | The interface, the agent's replies and the exported report are **English**. `report.py`'s template and `backend/tests/{test_report,test_tools}.py` assert on that copy, and `docs/capture.py` drives the screenshots by button label — a wording change breaks all three |
 | Redo the README mark/banner or its screenshots | `docs/make_brand.py` (mark + banner; it calls `make_logo`), `docs/capture.py` (screenshots, needs both servers up) — run both with `engine-copilot/.venv/bin/python` |
-| Change the mark itself | `docs/make_logo.py` only — lattice pitch, mouth angles and the dot-radius ratio are constants at the top. Rerun it and the favicon follows; never hand-edit the SVGs |
+| Change the mark itself | `docs/make_logo.py` only — lattice pitch, mouth angles and the dot-radius ratio are constants at the top. Rerun it and the favicon, the sidebar mark and the banner all follow; never hand-edit the SVGs |
 
 ---
 

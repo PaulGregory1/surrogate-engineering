@@ -118,23 +118,27 @@ def tile_svg(stops=RAMP) -> str:
             f'\n</svg>\n')
 
 
-FAVICON = HERE.parent / "engine-copilot/frontend/public/favicon.svg"
+PUBLIC = HERE.parent / "engine-copilot/frontend/public"
 
 
 def build() -> None:
-    for name, body in (
-        ("logo.svg", None),
-        ("logo-plain.svg", f"\n  {dots()}"),
-        ("logo-dark.svg", f"\n  {dots(RAMP_DARK)}"),
+    plain = f"{HEAD}\n  {dots()}\n</svg>\n"
+    for name, text in (
+        ("logo.svg", tile_svg()),
+        ("logo-plain.svg", plain),
+        ("logo-dark.svg", f"{HEAD}\n  {dots(RAMP_DARK)}\n</svg>\n"),
     ):
-        (HERE / name).write_text(tile_svg() if body is None else f"{HEAD}{body}\n</svg>\n")
+        (HERE / name).write_text(text)
         print(f"wrote {HERE / name}")
 
-    # The app's favicon is the same file. It used to be copied across by hand, which is
-    # exactly the kind of step that silently drifts; write it here instead.
-    if FAVICON.parent.is_dir():
-        FAVICON.write_text(tile_svg())
-        print(f"wrote {FAVICON}")
+    # The app's two copies are written from here rather than copied across by hand, which
+    # is exactly the kind of step that silently drifts. `favicon.svg` keeps the tile — a
+    # browser tab needs its own ground; the sidebar mark sits on the app's paper already,
+    # so it takes the plain one.
+    if PUBLIC.is_dir():
+        for name, text in (("favicon.svg", tile_svg()), ("mark.svg", plain)):
+            (PUBLIC / name).write_text(text)
+            print(f"wrote {PUBLIC / name}")
 
 
 if __name__ == "__main__":

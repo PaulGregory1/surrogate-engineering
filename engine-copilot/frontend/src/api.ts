@@ -58,11 +58,11 @@ async function readSSE(res: Response, onData: (data: any) => void): Promise<void
 async function readSSEUntilDone(res: Response, label: string, onData: (data: any) => void): Promise<void> {
   let sawDone = false
   await readSSE(res, (data) => {
-    if (data.error) throw new Error(`${label} : ${data.error}`)
+    if (data.error) throw new Error(`${label}: ${data.error}`)
     if (data.done) sawDone = true
     onData(data)
   })
-  if (!sawDone) throw new Error(`${label} : le flux s’est interrompu avant la fin — backend arrêté, ou code obsolète (relance uvicorn).`)
+  if (!sawDone) throw new Error(`${label}: the stream ended early — backend stopped, or stale code (restart uvicorn).`)
 }
 
 export interface FlowVerifyRequest {

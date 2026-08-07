@@ -17,7 +17,7 @@ export interface Turn {
 }
 
 /** What the page the user is currently looking at wants the agent to know. Labs
- *  publish this so a question like "et si je montais Re ?" resolves against the
+ *  publish this so a question like "what if I raised Re?" resolves against the
  *  design actually on screen instead of the agent having to ask for every number. */
 export interface PageContext {
   label: string
@@ -43,8 +43,8 @@ const ChatCtx = createContext<ChatState | null>(null)
 const OPEN_KEY = 'engine-copilot.chat.open'
 
 const GENERIC_SUGGESTIONS = [
-  'Quels modèles sont disponibles et quelle est leur erreur ?',
-  'Explique-moi ce que fait le surrogate par rapport au solveur LBM.',
+  'Which models are available, and what is their error?',
+  'Explain what the surrogate does compared to the LBM solver.',
 ]
 
 export function ChatProvider({ children }: { children: React.ReactNode }) {
@@ -82,10 +82,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setTurns((t) => [...t, { role: 'user', text, tools: [] }, { role: 'assistant', text: '', tools: [] }])
 
       // The transcript shows what the user typed; the wire carries the design state
-      // too, so "optimise cette forme" has a referent.
+      // too, so "optimise this shape" has a referent.
       const ctx = contextRef.current
       const wire = ctx?.lines.length
-        ? `[État courant de l'interface — ${ctx.label}]\n${ctx.lines.join('\n')}\n\n${text}`
+        ? `[Current interface state — ${ctx.label}]\n${ctx.lines.join('\n')}\n\n${text}`
         : text
 
       try {
@@ -116,7 +116,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         setTurns((prev) => {
           const next = [...prev]
-          next[next.length - 1] = { ...next[next.length - 1], text: `Erreur : ${String(e)}` }
+          next[next.length - 1] = { ...next[next.length - 1], text: `Error: ${String(e)}` }
           return next
         })
       } finally {

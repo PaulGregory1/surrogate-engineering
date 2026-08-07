@@ -76,8 +76,12 @@ platform state — every request recomputes from the trained checkpoints in `run
 | `models/{unet.py,fno.py,pod.py}` | `UNet`, `FNO2d`, `PODRegressor` |
 | `runs/*.pt` (+`*_history.json`) | trained checkpoints: `unet`, `unet-phys`, `fno`, `pod-*` |
 
-Science/results are documented in `flow-surrogate/README.md` and `flow-surrogate/BACKGROUND.md`
-(from-scratch explainer) — don't re-derive them here, cite them.
+Science/results are documented in `flow-surrogate/README-full.md` (the unabridged README:
+the problem in equations, the solver, the five models, the optimiser) and
+`flow-surrogate/BACKGROUND.md` (from-scratch explainer) — don't re-derive them here, cite
+them. **Both are gitignored and local-only**: the repo ships the root `README.md` plus a
+short `flow-surrogate/README.md`. They are still on disk and still the right thing to
+read; just never link to them from a committed file, and don't reintroduce them to git.
 
 **Repo layout**: `flowsurrogate/` (library), `scripts/00-06_*.py` (pipeline stages),
 `run_all.py` (orchestrates generate → train → optimize; `--quick`/`--force`), `data/*.npz`
@@ -109,7 +113,7 @@ follow the same layout.
 | `/api/flow/simulate` | POST (SSE) | streaming LBM frames for the live-animation toggle |
 | `/api/report/generate` | POST | deterministic Markdown report from an optimisation result |
 | `/api/agent/chat` | POST (SSE) | Claude Agent SDK chat turn |
-| `/api/agent/reset` | POST | drop the resumed SDK session — what *Effacer la conversation* calls, since clearing the transcript alone leaves the agent resuming turns the user deleted |
+| `/api/agent/reset` | POST | drop the resumed SDK session — what *Clear the conversation* calls, since clearing the transcript alone leaves the agent resuming turns the user deleted |
 
 Every planned route that concerns the Flow Lab exists; `/api/stress/*` left with the Stress
 Lab (branch `stress-lab`). `/api/report/generate` is the only synchronous non-trivial one —
@@ -166,10 +170,10 @@ lib/utils.ts (`cn`)
 router, so the conversation survives navigation and panel collapse; `/chat` now redirects to
 `/`. Each lab calls `usePublishChatContext({label, lines, suggestions})` to publish its live
 design; `send()` prepends those lines to the wire message (the transcript still shows only
-what the user typed) so "optimise cette forme" resolves against what is on screen. Suggestions
+what the user typed) so "optimise this shape" resolves against what is on screen. Suggestions
 are per-page. Toggle: ⌘/Ctrl-J, persisted in `localStorage` (`engine-copilot.chat.open`, stored
 as `'1'`/`'0'` — any other value reads as "no explicit choice" and falls back to the breakpoint),
-defaulting open ≥1024px and closed below. *Effacer la conversation* clears the transcript **and**
+defaulting open ≥1024px and closed below. *Clear the conversation* clears the transcript **and**
 `POST`s `/api/agent/reset`: the conversation also lives in the SDK session the backend resumes by
 id, and dropping only the local half leaves the agent answering out of turns the user deleted.
 
@@ -211,7 +215,7 @@ Its governing rules, because they explain choices that otherwise look arbitrary:
   turns are white sheets rather than orange bubbles, and the "send" button is outlined.
 - **Two budgets to count before shipping**: **one** black-filled element outside text, and
   **one** filled orange button — and they draw on the *same* budget, so each lab has exactly one
-  ("Optimiser").
+  ("Optimise").
 - **No red, no green in the chrome.** Nominal is plain ink; anything out of envelope is
   `--burnt`. Status is always carried by a word and a mark as well as a colour. (This is why
   `MetricsBadge` was deleted: its good/warning tint had no home here, and the model, its measured
@@ -317,7 +321,7 @@ solver** on the optimized design for an honest comparison.
 /api/flow/simulate` SSE → `lbm_frames.simulate_streaming` (shares the warmed singleton
 solver with `flow_service.verify`) → frame-by-frame field updates.
 
-**Report export** — two entry points, one renderer. The lab's *Exporter le rapport*
+**Report export** — two entry points, one renderer. The lab's *Export report*
 button → `api.generateReport` → `POST /api/report/generate` → `report.render_report` →
 `downloadMarkdown` saves a `.md` via an object URL; or the copilot's `render_report` tool
 calls `render_report` directly, in-process. Nothing on this path touches a model, so a
@@ -360,11 +364,13 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | M2 | Animation (client streamlines + LBM SSE) | done, committed (`4ef16a8`) |
 | M3 | Live optimizer (Adam streaming + verify) | done, committed (`4ef16a8`) |
 | M4 | Stress Lab | done, but **not on this branch** — built in `4ef16a8`, moved off `main` onto `stress-lab` |
-| M5 | Claude Agent SDK chat | **done** — chat committed (`eeeabf6`), moved into a sidebar (`85f5ce3`), all 8 tools wired (`035c78a`); 6 remain here, the 2 stress tools left with M4. The plan's acceptance criterion was checked live against a running backend: "Optimise ma forme à Re=100 et vérifie" calls `flow_optimize` then `flow_verify` and quotes both Cd |
-| M6 | Report export + demo GIF + polish | **done except the GIF** — `report.py` + `/api/report/generate` (`871dd9e`), `render_report` tool (`035c78a`), *Exporter le rapport* in the lab + README with a mermaid architecture. No `docs/demo.gif`: recording it needs a headless browser driver and `ffmpeg`, neither installed, and adding Playwright to the frontend deps for one animation is the repo owner's call |
+| M5 | Claude Agent SDK chat | **done** — chat committed (`eeeabf6`), moved into a sidebar (`85f5ce3`), all 8 tools wired (`035c78a`); 6 remain here, the 2 stress tools left with M4. The plan's acceptance criterion was checked live against a running backend: "Optimise my shape at Re=100 and verify" calls `flow_optimize` then `flow_verify` and quotes both Cd |
+| M6 | Report export + demo GIF + polish | **done except the GIF** — `report.py` + `/api/report/generate` (`871dd9e`), `render_report` tool (`035c78a`), *Export report* in the lab + README with a mermaid architecture. No `docs/demo.gif`: recording it needs a headless browser driver and `ffmpeg`, neither installed, and adding Playwright to the frontend deps for one animation is the repo owner's call |
 | — | `main` reduced to the Flow Lab | the Stress Lab was removed from `main` and preserved on `stress-lab`; `bridge-lab` and `thermal-pinn` hold the two labs that were never merged. Deliberate scoping, not an abandonment |
 | — | UI rebuild on shadcn/ui | done, committed (`85f5ce3`) — left nav + right copilot sidebar shell, all panels on shadcn primitives, unified `lib/chartTheme.ts`. `ChatOrchestrator.tsx`, `ThemeToggle.tsx`, `Skeleton.tsx`, `colors.ts`, `ComingSoon.tsx` deleted |
 | — | Calque restyle | done, committed (`d746eb8`) — the shadcn/ui *structure* of `85f5ce3` kept, its dark blue/slate skin replaced by the Calque charte (see the design-system section above). Touches `index.html`, `index.css`, `lib/chartTheme.ts`, new `lib/motion.ts`, `App.tsx` and every page/component; `MetricsBadge.tsx` deleted, `ContourField.tsx` added. No route, service or data-flow change |
+| — | Platform in English | done, uncommitted — every user-facing string (pages, components, chat panel, `<html lang>`), the report template in `report.py`, and the assertions in `test_report.py`/`test_tools.py`. `docs/capture.py`'s Playwright selectors follow the button labels, so they moved too, and the screenshots were re-captured against the English UI. The Calque `.cq-*` class vocabulary stays French — it is internal, not copy. `agent.py` still answers in whatever language the user writes in |
+| — | Long-form docs made local-only | done, uncommitted — `flow-surrogate/README.md` (560 l.) became the gitignored `README-full.md`, `BACKGROUND.md` was untracked in place, and a short `flow-surrogate/README.md` replaced them. The root `README.md` no longer links to either |
 
 `engine-copilot/README.md` claims M0–M6 minus the GIF, which matches the committed tree.
 
@@ -394,7 +400,8 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Change SSE streaming behavior (frontend) | `api.ts` (`readSSE`, `stream*` functions), the consuming page/component |
 | Debug an MPS threading issue | `device_lock.py` (`MPS_LOCK`) |
 | Touch the LBM solver ground truth | `flow-surrogate/flowsurrogate/lbm.py`; mirrored/instrumented copy in `engine-copilot/backend/engine_copilot/lbm_frames.py` — **keep both in sync by hand** |
-| Understand the science behind a result | `flow-surrogate/README.md` + `BACKGROUND.md` — don't re-derive from code |
+| Understand the science behind a result | `flow-surrogate/README-full.md` + `BACKGROUND.md` — don't re-derive from code. Both are local-only (gitignored); the committed `flow-surrogate/README.md` is a short summary |
+| Change UI copy | The interface, the agent's replies and the exported report are **English**. `report.py`'s template and `backend/tests/{test_report,test_tools}.py` assert on that copy, and `docs/capture.py` drives the screenshots by button label — a wording change breaks all three |
 | Redo the README mark/banner or its screenshots | `docs/make_brand.py` (mark + banner), `docs/capture.py` (screenshots, needs both servers up) — run both with `engine-copilot/.venv/bin/python` |
 
 ---

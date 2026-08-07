@@ -116,7 +116,7 @@ class FlowService:
 
         `init_coeffs` (the design currently on screen) seeds start #0. Without it every
         start comes from `sample_shapes`, so the run is identical for every user design at
-        a given seed and the UI ends up showing "Départ: your shape" beside a result it had
+        a given seed and the UI ends up showing "Start: your shape" beside a result it had
         no part in. Any remaining starts stay random, which is what `n_starts > 1` is for.
         """
         from flowsurrogate.geometry import sample_shapes

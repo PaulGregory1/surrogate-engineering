@@ -35,22 +35,22 @@ const PANELS: {
 }[] = [
   {
     key: 'u',
-    title: 'Vitesse axiale',
-    caption: 'u — bleu = sillage',
+    title: 'Axial velocity',
+    caption: 'u — blue = wake',
     colorscale: SEQUENTIAL,
     diverging: false,
   },
   {
     key: 'v',
-    title: 'Vitesse transverse',
-    caption: 'v — cisaillement',
+    title: 'Transverse velocity',
+    caption: 'v — shear',
     colorscale: DIVERGING,
     diverging: true,
   },
   {
     key: 'p',
-    title: 'Pression',
-    caption: 'p — dépression arrière',
+    title: 'Pressure',
+    caption: 'p — base suction',
     colorscale: DIVERGING,
     diverging: true,
   },

@@ -58,7 +58,7 @@ export function ToolCallCard({
         />
         <span className="cq-num truncate text-band text-ink">{name}</span>
         <span className={cn('cq-k ml-auto', isError && 'text-burnt')}>
-          {running ? 'EN COURS' : isError ? 'ÉCHEC' : 'TERMINÉ'}
+          {running ? 'RUNNING' : isError ? 'FAILED' : 'DONE'}
         </span>
       </button>
 
@@ -70,7 +70,7 @@ export function ToolCallCard({
           </div>
           {result !== undefined && (
             <div>
-              <div className="cq-k mb-1">RÉSULTAT</div>
+              <div className="cq-k mb-1">RESULT</div>
               <pre className="overflow-x-auto break-all whitespace-pre-wrap">{format(result)}</pre>
             </div>
           )}

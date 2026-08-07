@@ -39,10 +39,10 @@ export function PageHeader({
             <TooltipTrigger asChild>
               <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
                 <PanelRightOpen />
-                Copilote
+                Copilot
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Ouvrir le copilote ⌘J</TooltipContent>
+            <TooltipContent>Open the copilot ⌘J</TooltipContent>
           </Tooltip>
         )}
       </div>

@@ -75,7 +75,7 @@ def test_render_report_tool_returns_markdown():
         render_report_tool.handler,
         {"project": "flow", "context": {"history": {"cd_best": [2.0, 1.5]}, "reynolds": 80.0}},
     )
-    assert result["content"][0]["text"].startswith("# Rapport d'optimisation")
+    assert result["content"][0]["text"].startswith("# Optimisation report")
 
 
 def test_render_report_tool_rejects_unknown_project():

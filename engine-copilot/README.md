@@ -133,15 +133,14 @@ Open `http://localhost:5173`.
 
 ## Reports
 
-The lab exports a Markdown report once an optimisation has run — **Exporter le
-rapport**, next to *Vérifier au solveur*. The copilot can produce the same document on
-request ("fais-moi un rapport"), because the chat tool and the button call the same
-renderer.
+The lab exports a Markdown report once an optimisation has run — **Export report**, next
+to *Verify with solver*. The copilot can produce the same document on request ("write me
+a report"), because the chat tool and the button call the same renderer.
 
 The report is a fixed template, not a generated text: every number in it comes straight
-from the solver or the surrogate. A flow report run before **Vérifier au solveur** says
-in as many words that nothing confirmed the surrogate — an un-verified optimum is
-reported as exactly that.
+from the solver or the surrogate. A flow report run before **Verify with solver** says in
+as many words that nothing confirmed the surrogate — an un-verified optimum is reported
+as exactly that.
 
 ## Tests
 

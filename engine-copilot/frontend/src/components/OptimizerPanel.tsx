@@ -21,7 +21,7 @@ const ITERS = 250
 // One start, seeded with the shape on screen. The Cd landscape at fixed area is
 // effectively unimodal across the whole Re slider — starts as different as blunt,
 // slender, wavy and flat land on the same optimum to ~1e-4 in Cd — so the 15 extra
-// random starts bought nothing, took 16x longer, and left DÉPART showing a shape the
+// random starts bought nothing, took 16x longer, and left START showing a shape the
 // result had never descended from. The endpoint still accepts n_starts > 1.
 const N_STARTS = 1
 
@@ -136,9 +136,9 @@ export function OptimizerPanel({
   return (
     <Card className="gap-5 py-5">
       <CardHeader className="px-5">
-        <CardTitle className="cq-title">Optimisation de forme</CardTitle>
+        <CardTitle className="cq-title">Shape optimisation</CardTitle>
         <CardDescription className="cq-muted text-body">
-          Descente Adam à travers le surrogate gelé, depuis la forme à l’écran, à aire constante —
+          Adam descent through the frozen surrogate, from the shape on screen, at constant area —
           Re&nbsp;=&nbsp;{reynolds.toFixed(0)}.
         </CardDescription>
         <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
@@ -146,7 +146,7 @@ export function OptimizerPanel({
               move" budget: nothing else here is filled. */}
           <Button onClick={runOptimize} disabled={running}>
             <Sparkles />
-            {running ? 'Optimisation…' : 'Optimiser'}
+            {running ? 'Optimising…' : 'Optimise'}
           </Button>
         </div>
       </CardHeader>
@@ -154,7 +154,7 @@ export function OptimizerPanel({
       <CardContent className="flex flex-col gap-5 px-5">
         {error && (
           <div className="cq-error">
-            <div className="text-body font-medium">L’optimisation n’a pas abouti.</div>
+            <div className="text-body font-medium">The optimisation did not complete.</div>
             <div className="mt-1 cq-num text-band cq-muted">{error}</div>
           </div>
         )}
@@ -164,7 +164,7 @@ export function OptimizerPanel({
         {running && (
           <div>
             <div className="cq-k mb-2">
-              DESCENTE · {lastIt} / {ITERS} ITÉRATIONS · AIRE CONSTANTE
+              DESCENT · {lastIt} / {ITERS} ITERATIONS · CONSTANT AREA
             </div>
             <div className="cq-progress">
               <div style={{ width: `${progress * 100}%` }} />
@@ -176,7 +176,7 @@ export function OptimizerPanel({
           <div className="flex items-center gap-3">
             <figure className="flex-1">
               <ShapePreview coeffs={initialCoeffs ?? coeffs} targetArea={targetArea} />
-              <figcaption className="cq-k mt-2 text-center">DÉPART</figcaption>
+              <figcaption className="cq-k mt-2 text-center">START</figcaption>
             </figure>
             <ArrowRight className="size-4 shrink-0 text-ink3" />
             <figure className="flex-1">
@@ -185,7 +185,7 @@ export function OptimizerPanel({
                 targetArea={targetArea}
                 tone={started ? 'measure' : 'ink'}
               />
-              <figcaption className={cn('cq-k mt-2 text-center', started && 'text-burnt')}>OPTIMISÉ</figcaption>
+              <figcaption className={cn('cq-k mt-2 text-center', started && 'text-burnt')}>OPTIMISED</figcaption>
             </figure>
           </div>
 
@@ -196,11 +196,11 @@ export function OptimizerPanel({
               // An empty state is an invitation, never an excuse — and this is
               // exactly where the background masses carry the panel.
               <div className="flex h-[300px] flex-col items-center justify-center px-6 text-center">
-                <div className="cq-k mb-3">AUCUNE DESCENTE LANCÉE</div>
-                <div className="cq-value max-w-[16ch] text-[22px]">Cherche la forme la moins traînante</div>
+                <div className="cq-k mb-3">NO DESCENT RUN YET</div>
+                <div className="cq-value max-w-[16ch] text-[22px]">Search for the lowest-drag shape</div>
                 <p className="mt-3 max-w-[38ch] cq-muted text-body leading-[1.7]">
-                  {ITERS} itérations de descente depuis la forme à l’écran, à aire projetée
-                  constante.
+                  {ITERS} descent iterations from the shape on screen, at constant projected
+                  area.
                 </p>
               </div>
             )}
@@ -212,7 +212,7 @@ export function OptimizerPanel({
             <Separator />
             <motion.div className="flex flex-wrap items-end gap-x-8 gap-y-4" {...settle()}>
               <div>
-                <div className="cq-k">CD OPTIMISÉ · SURROGATE</div>
+                <div className="cq-k">OPTIMISED CD · SURROGATE</div>
                 <div className="cq-value mt-2 text-[26px]">
                   <AnimatedNumber value={finalCd} decimals={3} />
                 </div>
@@ -220,12 +220,12 @@ export function OptimizerPanel({
 
               <div className="flex flex-1 flex-wrap items-center gap-4">
                 <Button variant="outline" size="sm" onClick={runVerify} disabled={running || verifying}>
-                  {verifying ? 'Solveur LBM…' : 'Vérifier au solveur'}
+                  {verifying ? 'LBM solver…' : 'Verify with solver'}
                 </Button>
 
                 <Button variant="outline" size="sm" onClick={runExport} disabled={running || exporting}>
                   <Download />
-                  {exporting ? 'Rapport…' : 'Exporter le rapport'}
+                  {exporting ? 'Report…' : 'Export report'}
                 </Button>
 
                 {verifyResult ? (
@@ -250,14 +250,14 @@ export function OptimizerPanel({
                         verifyResult.gap_pct < 5 ? 'text-or' : 'text-burnt',
                       )}
                     >
-                      écart {verifyResult.gap_pct.toFixed(1)} %
+                      gap {verifyResult.gap_pct.toFixed(1)} %
                     </span>
                   </motion.div>
                 ) : (
                   // No italic here: this screen already spends its one serif moment
                   // on the headline Cd, at the top of the lab.
                   <span className="max-w-[38ch] cq-muted text-body leading-[1.7]">
-                    Rejoue le design optimisé dans le vrai solveur — la seule mesure honnête.
+                    Re-runs the optimised design in the real solver — the only honest measurement.
                   </span>
                 )}
 
@@ -269,7 +269,7 @@ export function OptimizerPanel({
                     onClick={() => onApply(bestCoeffs)}
                     disabled={running}
                   >
-                    Appliquer ce design
+                    Apply this design
                   </Button>
                 )}
               </div>

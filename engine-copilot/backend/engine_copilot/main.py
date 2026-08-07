@@ -153,7 +153,7 @@ async def agent_chat(req: ChatRequest):
 
 @app.post("/api/agent/reset")
 def agent_reset() -> dict:
-    """Drop the resumed session behind *Effacer la conversation*.
+    """Drop the resumed session behind *Clear the conversation*.
 
     Clearing the transcript client-side is not enough: the SDK conversation is resumed
     by id on the server, so without this the agent still answers out of the turns the

@@ -1,2 +1,10 @@
 CALL_BASTIEN_SCHWITZ.md
 *.bak/
+
+# The long-form write-ups stay local: the repo ships the root README plus one
+# minimal README per project. `README-full.md` is the unabridged flow-surrogate
+# README (the problem in equations, the solver, the five models, the optimiser);
+# `BACKGROUND.md` is the from-scratch explainer behind it. Both are still on disk
+# and still worth reading — they are just not what a visitor should land on.
+flow-surrogate/README-full.md
+flow-surrogate/BACKGROUND.md

@@ -10,47 +10,47 @@ const LABS = [
     to: '/flow',
     icon: Wind,
     title: 'Flow Lab',
-    domain: 'AÉRODYNAMIQUE EXTERNE',
+    domain: 'EXTERNAL AERODYNAMICS',
     stat: '713',
     statUnit: '×',
-    statLabel: 'PLUS RAPIDE QUE LE SOLVEUR LBM',
+    statLabel: 'FASTER THAN THE LBM SOLVER',
     description:
-      'Dessine un corps immergé, lis son coefficient de traînée en temps réel, puis laisse une descente de gradient à travers le surrogate chercher la forme la moins traînante — et vérifie le résultat dans le vrai solveur.',
-    method: 'U-Net + contrainte de continuité',
+      'Draw an immersed body, read its drag coefficient in real time, then let gradient descent through the surrogate look for the lowest-drag shape — and check the answer in the real solver.',
+    method: 'U-Net + continuity constraint',
   },
 ]
 
 const PRINCIPLES = [
   {
-    title: 'Chaque nombre porte son erreur',
-    body: 'Une prédiction s’affiche toujours avec l’erreur mesurée de son modèle sur le jeu de test. Pas d’estimation présentée comme une mesure.',
+    title: 'Every number carries its error',
+    body: 'A prediction is always shown with its model’s measured error on the test split. No estimate presented as a measurement.',
   },
   {
-    title: 'Le solveur reste accessible',
-    body: 'Un clic rejoue n’importe quel design dans le solveur haute-fidélité. Le surrogate accélère la boucle, il ne la remplace pas.',
+    title: 'The solver stays one click away',
+    body: 'One click re-runs any design in the high-fidelity solver. The surrogate speeds the loop up, it does not replace it.',
   },
   {
-    title: 'Le copilote appelle les mêmes modèles',
-    body: 'L’agent n’improvise pas de chiffres : il appelle les services de prédiction du backend, et chaque appel est visible dans la conversation.',
+    title: 'The copilot calls the same models',
+    body: 'The agent never improvises a number: it calls the backend’s own prediction services, and every call stays visible in the conversation.',
   },
 ]
 
 export function Home() {
   usePublishChatContext({
-    label: 'Accueil',
+    label: 'Overview',
     lines: [],
     suggestions: [
-      'Que fait le Flow Lab, et sur quel solveur son modèle a-t-il été entraîné ?',
-      'Quels modèles sont disponibles et quelle est leur erreur mesurée ?',
-      'Prédis le Cd d’une forme à a2=0.05, b2=-0.02, a3=0.03, b3=0.01, a4=-0.04, b4=0, Re=80',
+      'What does the Flow Lab do, and which solver was its model trained against?',
+      'Which models are available, and what is their measured error?',
+      'Predict the Cd of a shape at a2=0.05, b2=-0.02, a3=0.03, b3=0.01, a4=-0.04, b4=0, Re=80',
     ],
   })
 
   return (
     <>
       <PageHeader
-        title="Vue d’ensemble"
-        subtitle="Un workflow d’ingénierie piloté par des surrogates entraînés"
+        title="Overview"
+        subtitle="An engineering workflow driven by trained surrogates"
       />
 
       {/* This is an index of instruments, not a landing page — which is why nothing
@@ -58,14 +58,14 @@ export function Home() {
           quieter than the two measured figures it introduces. */}
       <div className="mx-auto w-full max-w-4xl px-6 py-12">
         <motion.div {...reveal()}>
-          <div className="cq-k mb-4">ENGINE-COPILOT · DÉMONSTRATEUR</div>
+          <div className="cq-k mb-4">ENGINE-COPILOT · DEMONSTRATOR</div>
           <h2 className="cq-value max-w-[26ch] text-[28px]">
-            Des surrogates ML, mis entre les mains d’un ingénieur.
+            ML surrogates, put in an engineer’s hands.
           </h2>
           <p className="cq-muted mt-5 max-w-[62ch] text-body leading-[1.7]">
-            Écoulement externe autour d’un corps immergé, résolu en millisecondes par un modèle
-            entraîné sur un solveur de référence — toujours contextualisé par son erreur connue, et
-            vérifiable face à ce solveur en un clic.
+            External flow around an immersed body, solved in milliseconds by a model trained
+            against a reference solver — always shown with its known error, and checkable against
+            that solver in one click.
           </p>
         </motion.div>
 
@@ -109,7 +109,7 @@ export function Home() {
         </div>
 
         <motion.div className="mt-12" {...reveal(0.24)}>
-          <div className="cq-k">CE QUI TIENT LA DÉMO</div>
+          <div className="cq-k">WHAT THIS DEMO RESTS ON</div>
           <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-3">
             {PRINCIPLES.map((p) => (
               // Ink rule over the heading, hairline everywhere else — the same

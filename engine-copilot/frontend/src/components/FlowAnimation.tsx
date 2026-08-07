@@ -69,15 +69,15 @@ export function FlowAnimation({
   return (
     <Card className="gap-4 py-5">
       <CardHeader className="px-5">
-        <CardTitle className="cq-title">Écoulement</CardTitle>
+        <CardTitle className="cq-title">Flow</CardTitle>
         <div className="col-start-2 row-span-2 row-start-1 self-start justify-self-end">
           <Tabs value={mode} onValueChange={(v) => setMode(v as Mode)}>
             <TabsList className="h-8">
               <TabsTrigger value="streamlines" className="text-body">
-                Lignes de courant
+                Streamlines
               </TabsTrigger>
               <TabsTrigger value="lbm" className="text-body">
-                Solveur LBM
+                LBM solver
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -110,9 +110,8 @@ export function FlowAnimation({
               )}
             </div>
             <p className="cq-muted text-band leading-[1.7]">
-              Particules advectées (RK4) dans le champ prédit par le surrogate — instantané, aucune
-              intégration en temps. La structure du sillage est réelle, la vitesse d’affichage ne
-              l’est pas.
+              Particles advected (RK4) through the field the surrogate predicted — a snapshot, with
+              no time integration. The wake structure is real, the playback speed is not.
             </p>
           </div>
         ) : (
@@ -122,12 +121,12 @@ export function FlowAnimation({
                   button, further down. */}
               <Button variant="outline" size="sm" onClick={runSimulation} disabled={running}>
                 <Play />
-                {running ? 'Simulation…' : 'Lancer le solveur'}
+                {running ? 'Simulating…' : 'Run the solver'}
               </Button>
               {frame && (
                 <div className="min-w-[160px] flex-1">
                   <div className="cq-k mb-1.5">
-                    ITÉRATIONS LBM · {frame.t_step} / {TOTAL_STEPS}
+                    LBM ITERATIONS · {frame.t_step} / {TOTAL_STEPS}
                   </div>
                   <div className="cq-progress">
                     <div style={{ width: `${progress * 100}%` }} />
@@ -136,7 +135,7 @@ export function FlowAnimation({
               )}
               {cdFinal !== null && (
                 <div className="ml-auto text-right">
-                  <div className="cq-k">CD · LBM, RUN COURT</div>
+                  <div className="cq-k">CD · LBM, SHORT RUN</div>
                   <div className="mt-1 cq-num text-[16px] text-or">
                     <AnimatedNumber value={cdFinal} decimals={3} />
                   </div>
@@ -146,7 +145,7 @@ export function FlowAnimation({
 
             {error && (
               <div className="cq-error">
-                <div className="text-body font-medium">Le solveur s’est interrompu.</div>
+                <div className="text-body font-medium">The solver stopped.</div>
                 <div className="mt-1 cq-num text-band cq-muted">{error}</div>
               </div>
             )}
@@ -192,8 +191,8 @@ export function FlowAnimation({
               )}
             </div>
             <p className="cq-muted text-band leading-[1.7]">
-              Vraies itérations du solveur Lattice-Boltzmann, diffusées image par image. C’est la
-              référence que le surrogate approxime — et la raison pour laquelle il existe.
+              Real Lattice-Boltzmann solver iterations, streamed frame by frame. This is the
+              reference the surrogate approximates — and the reason it exists.
             </p>
           </div>
         )}

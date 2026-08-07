@@ -32,8 +32,8 @@ def _num(value: Any, digits: int = 4, suffix: str = "") -> str:
 def _pct_drop(initial: Any, final: Any) -> str:
     """Signed relative change, so a reduction reads as a negative number.
 
-    The sentence around it is "ramène le Cd de 1.90 à 1.44, soit X" — an engineer reads
-    a drop there as -24 %, not +24 %.
+    The sentence around it is "takes the Cd from 1.90 to 1.44, i.e. X" — an engineer
+    reads a drop there as -24 %, not +24 %.
     """
     try:
         i, f = float(initial), float(final)
@@ -59,10 +59,10 @@ def _coeff_row(coeffs: Any) -> str:
 def _history_table(best: Any, n_points: int = 10) -> str:
     """Downsample a convergence history to a small Markdown table."""
     if not isinstance(best, (list, tuple)) or not best:
-        return "_Historique de convergence non fourni._"
+        return "_No convergence history was supplied._"
 
     step = max(1, len(best) // n_points)
-    rows = ["| Itération | Meilleur |", "| --- | --- |"]
+    rows = ["| Iteration | Best |", "| --- | --- |"]
     for i in range(0, len(best), step):
         rows.append(f"| {i} | {_num(best[i])} |")
     if (len(best) - 1) % step:
@@ -92,70 +92,70 @@ def _flow_report(ctx: dict) -> str:
     verify = ctx.get("verify") or {}
     if verify:
         verification = (
-            f"Le solveur LBM de référence donne $C_d = {_num(verify.get('cd_lbm'))}$ sur la forme "
-            f"optimisée, contre {_num(verify.get('cd_surrogate'))} annoncés par le surrogate — "
-            f"soit un écart de {_num(verify.get('gap_pct'), 2, ' %')}, obtenu en "
-            f"{_num(verify.get('wall_time_s'), 1, ' s')} de calcul direct."
+            f"The reference LBM solver gives $C_d = {_num(verify.get('cd_lbm'))}$ on the "
+            f"optimised shape, against {_num(verify.get('cd_surrogate'))} claimed by the "
+            f"surrogate — a gap of {_num(verify.get('gap_pct'), 2, ' %')}, obtained in "
+            f"{_num(verify.get('wall_time_s'), 1, ' s')} of direct computation."
         )
     else:
         verification = (
-            "_Aucune vérification LBM n'a été lancée sur cette forme._ Les valeurs ci-dessus "
-            "sont des sorties de surrogate : elles n'engagent que la précision du modèle."
+            "_No LBM verification was run on this shape._ The values above are surrogate "
+            "outputs: they commit to nothing beyond the model's own accuracy."
         )
 
     re_warning = ""
     try:
         if reynolds is not None and not (10.0 <= float(reynolds) <= 150.0):
             re_warning = (
-                f"\n> **Hors domaine d'entraînement.** Le modèle a été entraîné sur "
-                f"Re ∈ [10, 150] ; ce résultat à Re = {_num(reynolds, 0)} est une "
-                f"extrapolation et l'erreur attendue ne s'y applique pas.\n"
+                f"\n> **Outside the training range.** The model was trained on "
+                f"Re ∈ [10, 150]; this result at Re = {_num(reynolds, 0)} is an "
+                f"extrapolation, and the expected error does not apply to it.\n"
             )
     except (TypeError, ValueError):
         pass
 
-    return f"""# Rapport d'optimisation — traînée à aire constante
+    return f"""# Optimisation report — drag at constant area
 
-## Résumé exécutif
+## Executive summary
 
-La descente sur les coefficients de forme ramène le coefficient de traînée de
-**{_num(cd_initial)}** à **{_num(cd_final)}**, soit **{_pct_drop(cd_initial, cd_final)}**,
-à nombre de Reynolds fixé (Re = {_num(reynolds, 0)}) et à aire constante.
+Descent on the shape coefficients takes the drag coefficient from
+**{_num(cd_initial)}** to **{_num(cd_final)}**, i.e. **{_pct_drop(cd_initial, cd_final)}**,
+at a fixed Reynolds number (Re = {_num(reynolds, 0)}) and constant area.
 {re_warning}
 ## Conditions
 
-| Paramètre | Valeur |
+| Parameter | Value |
 | --- | --- |
-| Nombre de Reynolds | {_num(reynolds, 0)} |
-| Modèle surrogate | `{model}` |
-| Erreur $C_d$ attendue (MAPE test) | {_num(quality.get('cd_mape_pct'), 2, ' %')} |
-| Pire cas observé au test | {_num(quality.get('cd_worst_pct'), 2, ' %')} |
-| Aire cible | {_num(ctx.get('target_area'), 5)} |
-| Itérations | {len(cd_series) if cd_series else 'n/a'} |
+| Reynolds number | {_num(reynolds, 0)} |
+| Surrogate model | `{model}` |
+| Expected $C_d$ error (test MAPE) | {_num(quality.get('cd_mape_pct'), 2, ' %')} |
+| Worst case observed on test | {_num(quality.get('cd_worst_pct'), 2, ' %')} |
+| Target area | {_num(ctx.get('target_area'), 5)} |
+| Iterations | {len(cd_series) if cd_series else 'n/a'} |
 
-## Forme retenue
+## Retained shape
 
-Coefficients de Fourier : {_coeff_row(ctx.get('final_coeffs'))}
+Fourier coefficients: {_coeff_row(ctx.get('final_coeffs'))}
 
 ## Convergence
 
 {_history_table(cd_series)}
 
-## Vérification
+## Verification
 
 {verification}
 
-## Réserves
+## Caveats
 
-- Le surrogate est un modèle appris : l'écart annoncé ci-dessus est une moyenne sur le
-  jeu de test, pas une garantie sur cette forme précise.
-- L'optimisation se fait *à travers* le surrogate. Un optimum du modèle n'est pas un
-  optimum de l'écoulement réel — d'où l'intérêt de la vérification LBM.
-- L'aire est contrainte, mais aucune autre contrainte de fabrication n'est imposée.
+- The surrogate is a learned model: the error quoted above is a mean over the test
+  split, not a guarantee on this particular shape.
+- The optimisation runs *through* the surrogate. An optimum of the model is not an
+  optimum of the real flow — which is what the LBM verification is for.
+- Area is constrained, but no other manufacturing constraint is imposed.
 
 ---
-_Rapport généré par Engine-Copilot à partir du résultat d'optimisation, sans intervention
-d'un modèle de langage : les chiffres proviennent directement du solveur et du surrogate._
+_Report generated by Engine-Copilot from the optimisation result, with no language model
+involved: the numbers come straight from the solver and the surrogate._
 """
 
 

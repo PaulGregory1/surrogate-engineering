@@ -30,7 +30,7 @@ export function StatTile({
   unit?: string
   decimals?: number
   loading?: boolean
-  /** e.g. `± 0.006 · SURFACE PROJETÉE CONSTANTE` — mono orange, under the figure */
+  /** e.g. `± 0.006 · CONSTANT PROJECTED AREA` — mono orange, under the figure */
   interval?: string
   className?: string
 }) {

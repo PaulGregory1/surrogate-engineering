@@ -15,9 +15,9 @@ import { predictFlow, type FlowPredictResponse } from '@/api'
 const DEFAULT_TARGET_AREA = 307 // refined once the first prediction comes back
 
 const MODELS = [
-  { value: 'unet-phys', label: 'U-Net + continuité', hint: 'défaut' },
-  { value: 'unet', label: 'U-Net', hint: 'sans terme physique' },
-  { value: 'fno', label: 'FNO', hint: 'opérateur de Fourier' },
+  { value: 'unet-phys', label: 'U-Net + continuity', hint: 'default' },
+  { value: 'unet', label: 'U-Net', hint: 'no physics term' },
+  { value: 'fno', label: 'FNO', hint: 'Fourier operator' },
 ] as const
 
 export function FlowLab() {
@@ -55,19 +55,19 @@ export function FlowLab() {
   // stylistic one — so this rides directly under the figure, never in a tooltip.
   const band = result ? (result.cd_surrogate * result.cd_error_pct_expected) / 100 : null
 
-  // Hand the design on screen to the copilot, so a question can just say "cette forme".
+  // Hand the design on screen to the copilot, so a question can just say "this shape".
   usePublishChatContext({
     label: 'Flow Lab',
     lines: [
       `coefficients [a2,b2,a3,b3,a4,b4] = [${coeffs.map((c) => c.toFixed(3)).join(', ')}]`,
       `Reynolds = ${reynolds.toFixed(0)}`,
-      `modèle = ${model}`,
-      result ? `Cd prédit = ${result.cd_surrogate.toFixed(4)}` : 'Cd prédit = (en cours)',
+      `model = ${model}`,
+      result ? `predicted Cd = ${result.cd_surrogate.toFixed(4)}` : 'predicted Cd = (pending)',
     ],
     suggestions: [
-      'Prédis le Cd de la forme affichée et compare-la à un cercle.',
-      'Ce Reynolds est-il dans le domaine d’entraînement du modèle ?',
-      'Quelle erreur dois-je attendre sur ce Cd ?',
+      'Predict the Cd of the shape on screen and compare it to a circle.',
+      'Is this Reynolds number inside the model’s training range?',
+      'What error should I expect on this Cd?',
     ],
   })
 
@@ -75,7 +75,7 @@ export function FlowLab() {
     <>
       <PageHeader
         title="Flow Lab"
-        subtitle="Écoulement externe autour d’un corps immergé"
+        subtitle="External flow around an immersed body"
         actions={
           <Select value={model} onValueChange={(v) => setModel(v as typeof model)}>
             <SelectTrigger size="sm" className="w-[255px]">
@@ -111,33 +111,33 @@ export function FlowLab() {
             <div className="flex flex-wrap items-start gap-x-8 gap-y-4">
               <div className="cq-calque w-full shrink-0 px-[21px] py-[19px] sm:w-[298px]">
                 <StatTile
-                  label="COEFFICIENT DE TRAÎNÉE"
+                  label="DRAG COEFFICIENT"
                   value={result?.cd_surrogate ?? null}
                   decimals={3}
                   loading={loading && !result}
-                  interval={band !== null ? `± ${band.toFixed(3)} · AIRE CONSTANTE` : undefined}
+                  interval={band !== null ? `± ${band.toFixed(3)} · CONSTANT AREA` : undefined}
                 />
                 {result && (
                   <motion.div className="mt-4" key={result.model} {...settle()}>
                     <div className="cq-row">
-                      <span>Modèle</span>
+                      <span>Model</span>
                       <span>{result.model}</span>
                     </div>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="cq-row cursor-default">
-                          <span>Erreur mesurée</span>
+                          <span>Measured error</span>
                           <span>± {result.cd_error_pct_expected.toFixed(2)} %</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-64">
-                        Erreur relative moyenne de <span className="font-mono">{result.model}</span> sur le
-                        jeu de test, face au solveur haute-fidélité. La valeur affichée est une
-                        prédiction, pas une mesure.
+                        Mean relative error of <span className="font-mono">{result.model}</span> on the
+                        test split, against the high-fidelity solver. The value shown is a
+                        prediction, not a measurement.
                       </TooltipContent>
                     </Tooltip>
                     <div className="cq-row">
-                      <span>Latence</span>
+                      <span>Latency</span>
                       <span>{result.latency_ms.toFixed(1)} ms</span>
                     </div>
                     {/* The interval printed as bounds, not as a ± — it is the one
@@ -145,7 +145,7 @@ export function FlowLab() {
                         1.712" needs no arithmetic. */}
                     {band !== null && (
                       <div className="cq-row">
-                        <span>Intervalle</span>
+                        <span>Interval</span>
                         <span>
                           {(result.cd_surrogate - band).toFixed(3)} — {(result.cd_surrogate + band).toFixed(3)}
                         </span>
@@ -153,8 +153,8 @@ export function FlowLab() {
                     )}
                     {reynolds > 150 && (
                       <div className="cq-row">
-                        <span>Enveloppe</span>
-                        <span className="cq-warn">Re {reynolds.toFixed(0)} hors 20–150</span>
+                        <span>Envelope</span>
+                        <span className="cq-warn">Re {reynolds.toFixed(0)} outside 20–150</span>
                       </div>
                     )}
                   </motion.div>
@@ -164,7 +164,7 @@ export function FlowLab() {
 
             {error && (
               <div className="cq-error">
-                <div className="text-body font-medium">La prédiction n’a pas abouti.</div>
+                <div className="text-body font-medium">The prediction did not complete.</div>
                 <div className="mt-1 cq-num text-band cq-muted">{error}</div>
               </div>
             )}

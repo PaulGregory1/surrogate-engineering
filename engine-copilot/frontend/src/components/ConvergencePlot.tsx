@@ -37,7 +37,7 @@ export function ConvergencePlot({ history, height = 300 }: { history: Convergenc
           y: history.map((h) => h.cd_best),
           type: 'scatter',
           mode: 'lines',
-          name: hasPopulation ? 'Cd meilleur' : 'Cd',
+          name: hasPopulation ? 'Cd best' : 'Cd',
           line: { color: MARK.measure, width: 2, shape: 'spline', smoothing: 0.4 },
           hovertemplate: 'it %{x} · Cd %{y:.4f}<extra></extra>',
         },
@@ -48,7 +48,7 @@ export function ConvergencePlot({ history, height = 300 }: { history: Convergenc
                 y: history.map((h) => h.cd_mean),
                 type: 'scatter' as const,
                 mode: 'lines' as const,
-                name: 'Cd moyen (population)',
+                name: 'Cd mean (population)',
                 line: { color: MARK.gone, width: 1.25, dash: 'dot' as const },
                 hovertemplate: 'it %{x} · Cd %{y:.4f}<extra></extra>',
               },
@@ -73,7 +73,7 @@ export function ConvergencePlot({ history, height = 300 }: { history: Convergenc
       layout={baseLayout({
         height,
         margin: { l: 52, r: 16, t: 26, b: 38 },
-        xaxis: axisX('ITÉRATION'),
+        xaxis: axisX('ITERATION'),
         yaxis: axisY('Cd', { tickformat: '.3f' }),
         hovermode: 'x unified',
         legend: {

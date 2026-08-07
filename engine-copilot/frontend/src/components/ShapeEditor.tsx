@@ -108,13 +108,13 @@ export function ShapeEditor({
   return (
     <Card className="gap-5 py-5">
       <CardHeader className="px-5">
-        <CardTitle className="cq-title">Géométrie</CardTitle>
+        <CardTitle className="cq-title">Geometry</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-5 px-5">
         <ShapePreview coeffs={coeffs} targetArea={targetArea} />
 
         <div className="flex flex-col gap-3">
-          <div className="cq-k">COEFFICIENTS DE FOURIER</div>
+          <div className="cq-k">FOURIER COEFFICIENTS</div>
           {LABELS.map((lab, i) => (
             <CoeffSlider key={lab} label={lab} value={coeffs[i]} onChange={(v) => setCoeff(i, v)} />
           ))}
@@ -124,7 +124,7 @@ export function ShapeEditor({
 
         <div className="flex flex-col gap-2.5">
           <div className="flex items-baseline justify-between">
-            <span className="cq-k">NOMBRE DE REYNOLDS</span>
+            <span className="cq-k">REYNOLDS NUMBER</span>
             <span
               className={cn(
                 'cq-num text-band',
@@ -145,7 +145,7 @@ export function ShapeEditor({
             <span>10</span>
             {/* A point outside the training envelope is flagged burnt, never red: the
                 charte has no red, and introducing one would break the ramp's reading. */}
-            <span className={cn(outOfEnvelope && 'text-burnt')}>ENTRAÎNÉ 20–150</span>
+            <span className={cn(outOfEnvelope && 'text-burnt')}>TRAINED 20–150</span>
             <span>200</span>
           </div>
         </div>
@@ -153,7 +153,7 @@ export function ShapeEditor({
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="flex-1" onClick={() => onChange([0, 0, 0, 0, 0, 0])}>
             <RotateCcw />
-            Cercle
+            Circle
           </Button>
           <Button
             variant="outline"
@@ -162,7 +162,7 @@ export function ShapeEditor({
             onClick={() => onChange(coeffs.map(() => (Math.random() * 2 - 1) * COEFF_RANGE * 0.7))}
           >
             <Shuffle />
-            Aléatoire
+            Random
           </Button>
         </div>
       </CardContent>

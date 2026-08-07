@@ -31,7 +31,7 @@ WIDTH = 1600  # committed width; 2x source is downsampled to keep the repo light
 # Short enough that the panel is mostly transcript rather than empty paper below it.
 COPILOT_VIEWPORT = {"width": 1680, "height": 600}
 COPILOT_WIDTH = 760
-QUESTION = "Quel est le Cd de cette forme à Re = 130, et suis-je encore dans le domaine d'entraînement ?"
+QUESTION = "What is the Cd of this shape at Re = 130, and am I still inside the training range?"
 
 
 def _fit(path: Path, width: int = WIDTH) -> None:
@@ -60,7 +60,7 @@ def copilot() -> None:
         box.fill(QUESTION)
         box.press("Enter")
 
-        send = page.locator('button[aria-label="Envoyer"]')
+        send = page.locator('button[aria-label="Send"]')
         for _ in range(600):  # the composer disables while the turn streams
             if send.is_disabled():
                 break
@@ -88,15 +88,17 @@ def lab() -> None:
         page.goto(URL, wait_until="networkidle")
         time.sleep(7)  # debounced predict + entrance animations
 
-        page.get_by_role("button", name="Optimiser").click()
-        page.wait_for_selector("text=CD OPTIMISÉ", timeout=180_000)
+        page.get_by_role("button", name="Optimise").click()
+        page.wait_for_selector("text=OPTIMISED CD", timeout=180_000)
         time.sleep(2)
-        page.get_by_role("button", name="Vérifier au solveur").click()
-        page.wait_for_selector("text=écart", timeout=300_000)
+        page.get_by_role("button", name="Verify with solver").click()
+        # A regex, not `text=gap`: bare substring matching would also hit the word
+        # elsewhere in the panel; only "gap 8.9 %" means the solver has answered.
+        page.wait_for_selector("text=/gap [0-9]/", timeout=300_000)
         time.sleep(4)
 
         page.screenshot(path=str(HERE / "flow-lab.png"))
-        page.locator("text=Optimisation de forme").locator(
+        page.locator("text=Shape optimisation").locator(
             "xpath=ancestor::div[contains(@class,'rounded-xl')][1]"
         ).screenshot(path=str(HERE / "optimizer.png"))
         browser.close()

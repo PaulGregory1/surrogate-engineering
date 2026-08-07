@@ -40,18 +40,18 @@ def test_flow_report_reads_the_flow_optimize_payload_verbatim():
     )
     assert "1.7660" in md and "1.5490" in md
     assert "-12.29 %" in md
-    assert "Historique de convergence non fourni" not in md
-    assert "| Itération | Meilleur |" in md
+    assert "No convergence history was supplied" not in md
+    assert "| Iteration | Best |" in md
 
 
 def test_flow_report_flags_extrapolation_outside_the_training_range():
     md = render_report("flow", {"reynolds": 400.0, "history": {"cd_best": [2.0, 1.8]}})
-    assert "Hors domaine d'entraînement" in md
+    assert "Outside the training range" in md
 
 
 def test_flow_report_without_verification_says_so():
     md = render_report("flow", {"history": {"cd_best": [2.0, 1.8]}})
-    assert "Aucune vérification LBM" in md
+    assert "No LBM verification" in md
 
 
 def test_flow_report_with_verification_quotes_the_gap():
@@ -68,7 +68,7 @@ def test_flow_report_with_verification_quotes_the_gap():
 def test_partial_context_degrades_to_na_instead_of_raising():
     md = render_report("flow", {})
     assert "n/a" in md
-    assert md.startswith("# Rapport d'optimisation")
+    assert md.startswith("# Optimisation report")
 
 
 def test_unknown_project_raises():

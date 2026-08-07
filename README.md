@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="flow-surrogate">flow-surrogate</a>&nbsp; · &nbsp;<a href="engine-copilot">engine-copilot</a>&nbsp; · &nbsp;<a href="flow-surrogate/BACKGROUND.md">background</a>&nbsp; · &nbsp;<a href="KNOWLEDGE-GRAPH.md">code&nbsp;map</a>
+  <a href="flow-surrogate">flow-surrogate</a>&nbsp; · &nbsp;<a href="engine-copilot">engine-copilot</a>&nbsp; · &nbsp;<a href="flow-surrogate/RESULTS.md">results</a>&nbsp; · &nbsp;<a href="KNOWLEDGE-GRAPH.md">code&nbsp;map</a>
 </p>
 
 <p align="center">
@@ -38,13 +38,6 @@ result in an engineer's hands.
 
 It runs end to end on a laptop (Apple M-series, MPS).  Data generation is ~20-25 min;
 training is minutes per model.
-
-> **Not familiar with these models?**  The repo carries a `BACKGROUND.md` that explains
-> everything its README assumes, from first principles and with figures:
-> [`flow-surrogate/BACKGROUND.md`](flow-surrogate/BACKGROUND.md) covers reduced-order
-> models (POD + ridge / kernel ridge), U-Nets, physics-informed losses, Fourier neural
-> operators, shape derivatives and the winner's curse.  It assumes no prior CFD or deep
-> learning.
 
 ![flow-surrogate setup](flow-surrogate/figs/setup.png)
 
@@ -225,11 +218,10 @@ docs/               README assets — the mark, the banner, the screenshots, and
                     scripts that generate them
 ```
 
-`flow-surrogate` has its own `README.md` (the problem in equations, how to run it, what
-the results mean), `BACKGROUND.md` (the mathematics behind the models, assuming none of
-it), `RESULTS.md` (generated tables), `figs/` (all committed), `tests/`, and a
-`run_all.py`.  Only `data/` and `runs/` are left out of the repo, being a few hundred
-megabytes of solver output and checkpoints.
+`flow-surrogate` has its own [`README.md`](flow-surrogate/README.md) (what it does, the
+result table, how to run it), [`RESULTS.md`](flow-surrogate/RESULTS.md) (generated
+tables), `figs/` (all committed), `tests/`, and a `run_all.py`.  Only `data/` and `runs/`
+are left out of the repo, being a few hundred megabytes of solver output and checkpoints.
 
 `engine-copilot` treats it as a read-only library and turns it into an interactive
 demo — see [`engine-copilot/README.md`](engine-copilot/README.md), and

@@ -28,7 +28,7 @@ function Composer() {
         <textarea
           ref={ref}
           rows={1}
-          placeholder="Demande une prédiction, une optimisation…"
+          placeholder="Ask for a prediction, an optimisation…"
           disabled={busy}
           onInput={(e) => {
             // Grow with the content up to a ceiling, so a long prompt is visible
@@ -47,11 +47,11 @@ function Composer() {
         />
         {/* Outline, not filled: the lab's primary action already spends this
             screen's one orange flat. */}
-        <Button variant="outline" size="icon-sm" onClick={submit} disabled={busy} aria-label="Envoyer">
+        <Button variant="outline" size="icon-sm" onClick={submit} disabled={busy} aria-label="Send">
           <Send />
         </Button>
       </div>
-      <p className="cq-k mt-2">ENTRÉE POUR ENVOYER · ⇧ ENTRÉE POUR UN SAUT DE LIGNE</p>
+      <p className="cq-k mt-2">ENTER TO SEND · ⇧ ENTER FOR A NEW LINE</p>
     </div>
   )
 }
@@ -72,15 +72,15 @@ function Transcript() {
     return (
       <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-4 pt-7">
         <div>
-          <div className="cq-k mb-3">COPILOTE D’INGÉNIERIE</div>
-          <div className="cq-value text-[20px]">Pose ta question sans quitter la page</div>
+          <div className="cq-k mb-3">ENGINEERING COPILOT</div>
+          <div className="cq-value text-[20px]">Ask without leaving the page</div>
           <p className="mt-3 cq-muted text-body leading-[1.7]">
-            L’agent voit la configuration affichée à l’écran et appelle les mêmes modèles que les
-            labs. Chaque appel reste visible dans la conversation.
+            The agent sees the configuration currently on screen and calls the same models the labs
+            do. Every call stays visible in the conversation.
           </p>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="cq-k">POUR DÉMARRER</div>
+          <div className="cq-k">TO GET STARTED</div>
           {suggestions.map((s) => (
             <button
               key={s}
@@ -170,7 +170,7 @@ export function ChatSidebar() {
           >
             <div className="flex h-full w-[380px] max-w-[100vw] flex-col">
               <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-line px-4">
-                <span className="cq-k">COPILOTE</span>
+                <span className="cq-k">COPILOT</span>
                 {pageContext && (
                   <span className="cq-k truncate rounded-full border border-line2 px-2 py-0.5 text-ink2">
                     {pageContext.label.toUpperCase()}
@@ -180,20 +180,20 @@ export function ChatSidebar() {
                   {turns.length > 0 && (
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon-sm" onClick={clear} aria-label="Effacer la conversation">
+                        <Button variant="ghost" size="icon-sm" onClick={clear} aria-label="Clear the conversation">
                           <Eraser />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Effacer la conversation</TooltipContent>
+                      <TooltipContent>Clear the conversation</TooltipContent>
                     </Tooltip>
                   )}
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon-sm" onClick={() => setOpen(false)} aria-label="Fermer">
+                      <Button variant="ghost" size="icon-sm" onClick={() => setOpen(false)} aria-label="Close">
                         <PanelRightClose />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Fermer le copilote ⌘J</TooltipContent>
+                    <TooltipContent>Close the copilot ⌘J</TooltipContent>
                   </Tooltip>
                 </div>
               </header>

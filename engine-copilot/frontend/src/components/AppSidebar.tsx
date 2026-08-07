@@ -5,7 +5,7 @@ import { getHealth } from '@/api'
 import { cn } from '@/lib/utils'
 
 const NAV = [
-  { to: '/', label: 'Vue d’ensemble', icon: LayoutDashboard, end: true },
+  { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/flow', label: 'Flow Lab', icon: Wind, end: false },
 ]
 
@@ -33,10 +33,10 @@ function HealthDot() {
   }, [])
 
   const copy = {
-    checking: { text: 'CONNEXION…', dot: 'bg-ink3', tone: 'text-ink3' },
-    ok: { text: 'BACKEND + AGENT PRÊTS', dot: 'bg-ink', tone: 'text-ink3' },
-    degraded: { text: 'AGENT INDISPONIBLE', dot: 'bg-burnt', tone: 'text-burnt' },
-    down: { text: 'BACKEND INJOIGNABLE', dot: 'bg-burnt', tone: 'text-burnt' },
+    checking: { text: 'CONNECTING…', dot: 'bg-ink3', tone: 'text-ink3' },
+    ok: { text: 'BACKEND + AGENT READY', dot: 'bg-ink', tone: 'text-ink3' },
+    degraded: { text: 'AGENT UNAVAILABLE', dot: 'bg-burnt', tone: 'text-burnt' },
+    down: { text: 'BACKEND UNREACHABLE', dot: 'bg-burnt', tone: 'text-burnt' },
   }[state]
 
   return (
@@ -59,8 +59,8 @@ export function AppSidebar() {
             the poster register. */}
         <span className="cq-title leading-none">NC</span>
         <div className="hidden leading-tight md:block">
-          <div className="cq-k">COPILOTE</div>
-          <div className="cq-muted mt-0.5 text-band">Surrogates d’ingénierie</div>
+          <div className="cq-k">COPILOT</div>
+          <div className="cq-muted mt-0.5 text-band">Engineering surrogates</div>
         </div>
       </div>
 

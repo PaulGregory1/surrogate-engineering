@@ -44,6 +44,11 @@ def _pct_drop(initial: Any, final: Any) -> str:
     return f"{100.0 * (f - i) / abs(i):+.2f} %"
 
 
+def _first(*values: Any) -> Any:
+    """First value that was actually supplied — `None` is "absent", 0.0 is a number."""
+    return next((v for v in values if v is not None), None)
+
+
 def _coeff_row(coeffs: Any) -> str:
     names = ("a2", "b2", "a3", "b3", "a4", "b4")
     if not isinstance(coeffs, (list, tuple)) or len(coeffs) != 6:
@@ -51,12 +56,9 @@ def _coeff_row(coeffs: Any) -> str:
     return ", ".join(f"{n} = {float(c):+.4f}" for n, c in zip(names, coeffs))
 
 
-def _history_table(history: Any, n_points: int = 10) -> str:
+def _history_table(best: Any, n_points: int = 10) -> str:
     """Downsample a convergence history to a small Markdown table."""
-    if not isinstance(history, dict):
-        return "_Historique de convergence non fourni._"
-    best = history.get("cd_best") or []
-    if not best:
+    if not isinstance(best, (list, tuple)) or not best:
         return "_Historique de convergence non fourni._"
 
     step = max(1, len(best) // n_points)
@@ -71,11 +73,20 @@ def _history_table(history: Any, n_points: int = 10) -> str:
 def _flow_report(ctx: dict) -> str:
     model = ctx.get("model", "unet-phys")
     quality = config.FLOW_MODEL_QUALITY.get(model, {})
+
+    # Two callers, one renderer, and they do not name things the same way: the lab posts
+    # its own optimisation state (`cd_surrogate_final`, `history.cd_best`), while the
+    # agent is told by `render_report`'s tool description to forward the `flow_optimize`
+    # payload as-is (`cd_final`, `convergence_cd_best`). Accept both spellings here
+    # rather than at each call site — anything else silently prints `n/a` for the two
+    # numbers the report exists to carry.
     history = ctx.get("history") or {}
-    cd_series = history.get("cd_best") or []
+    cd_series = history.get("cd_best") or ctx.get("convergence_cd_best") or []
 
     cd_initial = ctx.get("cd_initial", cd_series[0] if cd_series else None)
-    cd_final = ctx.get("cd_surrogate_final", cd_series[-1] if cd_series else None)
+    cd_final = _first(
+        ctx.get("cd_surrogate_final"), ctx.get("cd_final"), cd_series[-1] if cd_series else None
+    )
     reynolds = ctx.get("reynolds")
 
     verify = ctx.get("verify") or {}
@@ -128,7 +139,7 @@ Coefficients de Fourier : {_coeff_row(ctx.get('final_coeffs'))}
 
 ## Convergence
 
-{_history_table(history)}
+{_history_table(cd_series)}
 
 ## Vérification
 

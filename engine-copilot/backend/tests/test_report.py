@@ -20,6 +20,30 @@ def test_flow_report_quotes_both_cd_and_the_reduction():
     assert "1.03 %" in md  # expected surrogate error, never omitted
 
 
+def test_flow_report_reads_the_flow_optimize_payload_verbatim():
+    """The agent forwards `flow_optimize`'s own result, which spells two keys
+    differently from the lab's context. Both spellings must land in the document —
+    the tool description promises the payload can be passed through as-is."""
+    md = render_report(
+        "flow",
+        {
+            "cd_initial": 1.7660,
+            "cd_final": 1.5490,
+            "reduction_pct": 12.29,
+            "final_coeffs": [0.16, -0.0076, -0.0103, 0.002, 0.014, -0.001],
+            "cd_error_pct_expected": 1.03,
+            "reynolds": 80.0,
+            "iters": 100,
+            "convergence_cd_best": [1.7660, 1.62, 1.57, 1.5490],
+            "target_area": 306.92,
+        },
+    )
+    assert "1.7660" in md and "1.5490" in md
+    assert "-12.29 %" in md
+    assert "Historique de convergence non fourni" not in md
+    assert "| Itération | Meilleur |" in md
+
+
 def test_flow_report_flags_extrapolation_outside_the_training_range():
     md = render_report("flow", {"reynolds": 400.0, "history": {"cd_best": [2.0, 1.8]}})
     assert "Hors domaine d'entraînement" in md

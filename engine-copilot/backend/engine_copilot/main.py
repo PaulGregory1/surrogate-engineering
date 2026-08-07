@@ -149,3 +149,15 @@ async def agent_chat(req: ChatRequest):
             yield {"event": event["type"], "data": json.dumps(event, default=str)}
 
     return EventSourceResponse(event_stream())
+
+
+@app.post("/api/agent/reset")
+def agent_reset() -> dict:
+    """Drop the resumed session behind *Effacer la conversation*.
+
+    Clearing the transcript client-side is not enough: the SDK conversation is resumed
+    by id on the server, so without this the agent still answers out of the turns the
+    user just deleted. Nothing to offload to a thread -- it assigns one attribute.
+    """
+    agent_session.reset()
+    return {"ok": True}

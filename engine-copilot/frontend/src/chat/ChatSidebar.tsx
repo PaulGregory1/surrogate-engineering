@@ -5,6 +5,7 @@ import { ToolCallCard } from '@/components/ToolCallCard'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CALQUE_EASE } from '@/lib/motion'
+import { Markdown } from './Markdown'
 import { useChat, useChatSuggestions } from './ChatProvider'
 
 function Composer() {
@@ -118,8 +119,8 @@ function Transcript() {
                 />
               ))}
               {turn.text ? (
-                <div className="px-0.5 text-ctl leading-relaxed whitespace-pre-wrap text-ink">
-                  {turn.text}
+                <div className="px-0.5">
+                  <Markdown>{turn.text}</Markdown>
                 </div>
               ) : (
                 busy &&

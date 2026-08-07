@@ -188,6 +188,12 @@ export async function streamAgentChat(message: string, onEvent: (e: AgentEvent) 
   await readSSE(res, (data) => onEvent(data as AgentEvent))
 }
 
+/** Forget the server-side conversation, so "clear" clears what the agent remembers
+ *  and not merely what the transcript shows. */
+export async function resetAgent(): Promise<void> {
+  await fetch('/api/agent/reset', { method: 'POST' })
+}
+
 // `context` is deliberately untyped on the wire: the backend treats every field as
 // optional and renders "n/a" for whatever is missing, so the lab sends the shape of
 // result it happens to have rather than a schema both sides must agree on.

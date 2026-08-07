@@ -109,6 +109,7 @@ follow the same layout.
 | `/api/flow/simulate` | POST (SSE) | streaming LBM frames for the live-animation toggle |
 | `/api/report/generate` | POST | deterministic Markdown report from an optimisation result |
 | `/api/agent/chat` | POST (SSE) | Claude Agent SDK chat turn |
+| `/api/agent/reset` | POST | drop the resumed SDK session — what *Effacer la conversation* calls, since clearing the transcript alone leaves the agent resuming turns the user deleted |
 
 Every planned route that concerns the Flow Lab exists; `/api/stress/*` left with the Stress
 Lab (branch `stress-lab`). `/api/report/generate` is the only synchronous non-trivial one —
@@ -118,7 +119,7 @@ thread.
 **Tests** (`backend/tests/`, hit real singletons, no mocking — ~40 s, model loading included):
 `test_flow_service.py`, `test_tools.py` (the 6-tool roster, JSON output, payload-size guards,
 error paths), `test_report.py` (the flow template, partial context, extrapolation warning,
-unknown-project rejection). `pyproject.toml` sets `pythonpath = ["backend"]`; without it every
+unknown-project rejection, and the `flow_optimize` payload spelling the agent forwards). `pyproject.toml` sets `pythonpath = ["backend"]`; without it every
 module dies at import. Two gaps, both deliberate: no test exercises the SDK loop in
 `agent.py`, only the underlying tool functions; and `flow_verify`/`flow_simulate` have no
 tool-level test because both run the real LBM for tens of seconds — their service-layer
@@ -151,6 +152,9 @@ App.tsx — <ChatProvider> + <TooltipProvider> wrapping <Backdrop> + a 3-column 
 │   │   │      unconfirmed optimum is reported as unconfirmed)
 │   │   │   └─ ConvergencePlot.tsx — live cd_best/cd_mean
 └─ chat/ChatSidebar.tsx — right panel on EVERY page (overlay + backdrop < lg)
+   └─ chat/Markdown.tsx — react-markdown + remark-gfm, every element mapped onto the
+          charte; the agent answers in Markdown and hands `render_report` back verbatim,
+          so the transcript needs tables, not a bold-only patch
 Shared: PageHeader.tsx (sticky, per-page actions + copilot toggle), StatTile.tsx
 (the one 40px figure + its interval), ColorScaleLegend.tsx, AnimatedNumber.tsx,
 ToolCallCard.tsx
@@ -163,8 +167,18 @@ router, so the conversation survives navigation and panel collapse; `/chat` now 
 `/`. Each lab calls `usePublishChatContext({label, lines, suggestions})` to publish its live
 design; `send()` prepends those lines to the wire message (the transcript still shows only
 what the user typed) so "optimise cette forme" resolves against what is on screen. Suggestions
-are per-page. Toggle: ⌘/Ctrl-J, persisted in `localStorage` (`engine-copilot.chat.open`), defaulting
-open ≥1024px and closed below.
+are per-page. Toggle: ⌘/Ctrl-J, persisted in `localStorage` (`engine-copilot.chat.open`, stored
+as `'1'`/`'0'` — any other value reads as "no explicit choice" and falls back to the breakpoint),
+defaulting open ≥1024px and closed below. *Effacer la conversation* clears the transcript **and**
+`POST`s `/api/agent/reset`: the conversation also lives in the SDK session the backend resumes by
+id, and dropping only the local half leaves the agent answering out of turns the user deleted.
+
+Two rules about what the transcript shows. Assistant text goes through `chat/Markdown.tsx`,
+never raw — the agent writes Markdown and is told to return `render_report`'s document
+untouched, so headings, GFM tables, lists and `code` all have to render (and `**1.03 %**`
+must not reach the reader as asterisks). And `agent.py` only emits tool events for
+`_ALLOWED_TOOLS`: the CLI runs housekeeping tools of its own, they are not calls on the
+user's design, and a card for one is noise in a panel that promises the lab's model calls.
 
 `api.ts`: typed fetch client. JSON: `predictFlow`, `verifyFlow`, `getHealth`,
 `generateReport` (+ `downloadMarkdown`, a Blob/object-URL save helper — its `context` is
@@ -274,6 +288,17 @@ fields can't spare.
 (stagger by a datum's position on its axis, not by array index). Reduced motion is honoured
 globally in `index.css`.
 
+### `docs/` — README assets (root level)
+
+Everything the root `README.md` shows, plus the scripts that produce it — nothing here is
+hand-drawn or hand-cropped. `make_brand.py` writes `logo.svg` (the mark: iso-lines of
+`rho - r(theta)` around a body from the lab's own six-harmonic family, i.e. the surrogate's
+input rendered as a logo) and `banner.png`; `capture.py` drives a **running** platform
+through optimise → verify and writes `flow-lab.png` + `optimizer.png`, so the numbers in the
+screenshots are a real session. Both run on `engine-copilot/.venv` — the only venv here with
+matplotlib *and* playwright. `logo.svg` is also the app's `frontend/public/favicon.svg`; if
+you regenerate the mark, copy it across.
+
 ---
 
 ## Key flows
@@ -353,7 +378,8 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Work on a lab that isn't the Flow Lab | `git checkout stress-lab` / `bridge-lab` / `thermal-pinn` — none of their files exist on `main`, so searching here for them will always come up empty |
 | Add a new FastAPI route | `main.py` (route), `schemas.py` (request/response models), matching `*_service.py`, `api.ts` (frontend client), `PLATFORM_PLAN.md` §3 (API contract source of truth) |
 | Change what a report says | `backend/engine_copilot/report.py` (`_flow_report` — deterministic, never call a model from here) |
-| Change what a report *receives* | the `runExport` context in `OptimizerPanel.tsx`, and `render_report_tool` in `tools.py` — two callers, one renderer |
+| Change what a report *receives* | the `runExport` context in `OptimizerPanel.tsx`, and `render_report_tool` in `tools.py` — two callers, one renderer, and they spell two keys differently (`cd_surrogate_final`/`history.cd_best` vs `flow_optimize`'s `cd_final`/`convergence_cd_best`); `_flow_report` accepts both |
+| Change how the copilot's answers are displayed | `chat/Markdown.tsx` (element → charte mapping), not `ChatSidebar.tsx` |
 | Add a new agent tool | `tools.py` (`@tool`-decorated function + add to `ALL_TOOLS`), `agent.py` (`SYSTEM_PROMPT` if it should mention the tool) |
 | Change the agent's behavior/persona | `agent.py` (`SYSTEM_PROMPT`), `agent.py` (`_options`, e.g. `max_turns`) |
 | Add a new frontend page | `App.tsx` (route), new file in `pages/`, `AppSidebar.tsx` (nav entry), `PageHeader` at the top of the page, `usePublishChatContext` so the copilot sees it |
@@ -369,6 +395,7 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Debug an MPS threading issue | `device_lock.py` (`MPS_LOCK`) |
 | Touch the LBM solver ground truth | `flow-surrogate/flowsurrogate/lbm.py`; mirrored/instrumented copy in `engine-copilot/backend/engine_copilot/lbm_frames.py` — **keep both in sync by hand** |
 | Understand the science behind a result | `flow-surrogate/README.md` + `BACKGROUND.md` — don't re-derive from code |
+| Redo the README mark/banner or its screenshots | `docs/make_brand.py` (mark + banner), `docs/capture.py` (screenshots, needs both servers up) — run both with `engine-copilot/.venv/bin/python` |
 
 ---
 

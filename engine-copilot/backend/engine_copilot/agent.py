@@ -85,8 +85,24 @@ class AgentSession:
     def __init__(self) -> None:
         self._session_id: str | None = None
 
+    def reset(self) -> None:
+        """Forget the resumed conversation.
+
+        Dropping the id is the whole reset: the next `query()` starts a fresh CLI
+        session instead of resuming. Without this, clearing the transcript in the
+        browser only hides the turns -- the agent keeps answering out of a history the
+        user believes they deleted.
+        """
+        self._session_id = None
+
     async def chat(self, message: str) -> AsyncIterator[dict]:
         options = _options(self._session_id)
+
+        # The CLI runs housekeeping tools of its own (tool search, for one). They are
+        # not calls on the user's design, and the transcript promises the lab's model
+        # calls -- so only this project's tools get a card, and their results are
+        # matched back by id.
+        internal: set[str] = set()
 
         async for msg in query(prompt=message, options=options):
             if isinstance(msg, AssistantMessage):
@@ -94,10 +110,13 @@ class AgentSession:
                     if isinstance(block, TextBlock):
                         yield {"type": "text", "delta": block.text}
                     elif isinstance(block, ToolUseBlock):
+                        if block.name not in _ALLOWED_TOOLS:
+                            internal.add(block.id)
+                            continue
                         yield {"type": "tool_use_start", "id": block.id, "name": block.name, "input": block.input}
             elif isinstance(msg, UserMessage):
                 for block in msg.content if isinstance(msg.content, list) else []:
-                    if isinstance(block, ToolResultBlock):
+                    if isinstance(block, ToolResultBlock) and block.tool_use_id not in internal:
                         yield {"type": "tool_use_end", "id": block.tool_use_id, "result": block.content, "is_error": bool(block.is_error)}
             elif isinstance(msg, ResultMessage):
                 self._session_id = msg.session_id

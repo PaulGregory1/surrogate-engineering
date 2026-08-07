@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { streamAgentChat } from '@/api'
+import { resetAgent, streamAgentChat } from '@/api'
 
 export interface ToolCall {
   id: string
@@ -126,7 +126,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     [busy],
   )
 
-  const clear = useCallback(() => setTurns([]), [])
+  // The transcript is only half the conversation: the other half is the SDK session
+  // the backend resumes by id. Drop both, and drop the local one whatever the network
+  // says — a clear that visibly fails to clear is worse than one that leaves a stale
+  // session behind.
+  const clear = useCallback(() => {
+    setTurns([])
+    void resetAgent().catch(() => {})
+  }, [])
 
   const value = useMemo(
     () => ({ turns, busy, open, pageContext, setOpen, toggle, send, clear, publishContext }),

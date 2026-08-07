@@ -1,6 +1,9 @@
 CALL_BASTIEN_SCHWITZ.md
 *.bak/
 
+# make_brand.py imports make_logo, so docs/ is now an import path too.
+__pycache__/
+
 # The long-form write-ups stay local: the repo ships the root README plus one
 # minimal README per project. `README-full.md` is the unabridged flow-surrogate
 # README (the problem in equations, the solver, the five models, the optimiser);

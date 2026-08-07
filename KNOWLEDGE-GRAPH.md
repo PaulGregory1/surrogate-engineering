@@ -295,13 +295,26 @@ globally in `index.css`.
 ### `docs/` — README assets (root level)
 
 Everything the root `README.md` shows, plus the scripts that produce it — nothing here is
-hand-drawn or hand-cropped. `make_brand.py` writes `logo.svg` (the mark: iso-lines of
-`rho - r(theta)` around a body from the lab's own six-harmonic family, i.e. the surrogate's
-input rendered as a logo) and `banner.png`; `capture.py` drives a **running** platform
-through optimise → verify and writes `flow-lab.png` + `optimizer.png`, so the numbers in the
-screenshots are a real session. Both run on `engine-copilot/.venv` — the only venv here with
-matplotlib *and* playwright. `logo.svg` is also the app's `frontend/public/favicon.svg`; if
-you regenerate the mark, copy it across.
+hand-drawn or hand-cropped. Three scripts, in dependency order:
+
+- **`make_logo.py`** owns the mark and nothing else: the dot **"C"**, a square lattice of
+  cells clipped to an annulus with a wedge cut out on the right, so the top and bottom arcs
+  land on exactly two rows. A cell's *radius* follows the horizontal axis (smallest against
+  the mouth, ~3× larger at the back), its *colour* the vertical one on the measure ramp. It
+  writes `logo.svg` (mark on its paper tile), `logo-plain.svg`, `logo-dark.svg` — **and**
+  `engine-copilot/frontend/public/favicon.svg`, which is byte-identical to `logo.svg` and no
+  longer copied by hand. Needs only numpy.
+- **`make_brand.py`** builds the README banner and imports `make_logo` for the mark rather
+  than holding a copy; `build_logo()` is now a two-line delegation. Writes `banner.png`.
+- **`capture.py`** drives a **running** platform through optimise → verify and writes
+  `flow-lab.png` + `optimizer.png`, so the numbers in the screenshots are a real session.
+
+The last two run on `engine-copilot/.venv` — the only venv here with matplotlib *and*
+playwright. Running `make_brand.py` regenerates the mark on the way, so it is the single
+command that refreshes everything the README shows except the screenshots.
+
+The mark this replaced — iso-lines of `rho - r(theta)`, the surrogate's own input rendered
+as a logo — is in the history, at `make_brand.py`'s `build_logo()` before the dot-C commit.
 
 ---
 
@@ -402,7 +415,8 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Touch the LBM solver ground truth | `flow-surrogate/flowsurrogate/lbm.py`; mirrored/instrumented copy in `engine-copilot/backend/engine_copilot/lbm_frames.py` — **keep both in sync by hand** |
 | Understand the science behind a result | `flow-surrogate/README-full.md` + `BACKGROUND.md` — don't re-derive from code. Both are local-only (gitignored); the committed `flow-surrogate/README.md` is a short summary |
 | Change UI copy | The interface, the agent's replies and the exported report are **English**. `report.py`'s template and `backend/tests/{test_report,test_tools}.py` assert on that copy, and `docs/capture.py` drives the screenshots by button label — a wording change breaks all three |
-| Redo the README mark/banner or its screenshots | `docs/make_brand.py` (mark + banner), `docs/capture.py` (screenshots, needs both servers up) — run both with `engine-copilot/.venv/bin/python` |
+| Redo the README mark/banner or its screenshots | `docs/make_brand.py` (mark + banner; it calls `make_logo`), `docs/capture.py` (screenshots, needs both servers up) — run both with `engine-copilot/.venv/bin/python` |
+| Change the mark itself | `docs/make_logo.py` only — lattice pitch, mouth angles and the dot-radius ratio are constants at the top. Rerun it and the favicon follows; never hand-edit the SVGs |
 
 ---
 

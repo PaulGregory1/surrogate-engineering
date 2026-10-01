@@ -1,5 +1,6 @@
 import { PanelRightOpen } from 'lucide-react'
 import { useChat } from '@/chat/ChatProvider'
+import { Mark } from '@/components/Mark'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -35,15 +36,22 @@ export function PageHeader({
       <div className="ml-auto flex items-center gap-2">
         {actions}
         {!open && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-                <PanelRightOpen />
-                Copilot
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Open the copilot ⌘J</TooltipContent>
-          </Tooltip>
+          // Folded, the copilot is reduced to this one control — so the mark rides
+          // beside it and holds the panel's identity while it is off screen. The two
+          // sit as one unit on a tighter gutter than the page actions next to them;
+          // the mark stays decorative, the button remains the only target.
+          <div className="flex items-center gap-2">
+            <Mark className="size-6" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+                  <PanelRightOpen />
+                  Copilot
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Open the copilot ⌘J</TooltipContent>
+            </Tooltip>
+          </div>
         )}
       </div>
     </header>

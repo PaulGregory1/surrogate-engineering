@@ -25,6 +25,7 @@ from . import config
 from .flow_service import flow_service
 from .lbm_frames import simulate_streaming
 from .report import render_report
+from .stress_service import stress_service
 
 
 def _ok(payload: dict) -> dict:
@@ -48,6 +49,7 @@ def _check_coeffs(coeffs) -> str | None:
     if not isinstance(coeffs, (list, tuple)) or len(coeffs) != 6:
         return "coeffs must have exactly 6 floats: a2,b2,a3,b3,a4,b4"
     return None
+
 
 
 @tool(
@@ -220,26 +222,104 @@ async def flow_simulate_tool(args: dict) -> dict:
 
 
 @tool(
+    "stress_predict",
+    "Predict the von Mises stress field and its peak for a perforated plate, given 2-4 holes "
+    "as [x, y, r] triples and a load angle in degrees. Use this whenever the user asks about "
+    "stress, von Mises, or where a plate will fail. Always report the expected error percentage "
+    "alongside the peak — the peak is the hardest quantity for this model to get right.",
+    {
+        "holes": list,
+        "load_angle_deg": float,
+    },
+)
+async def stress_predict_tool(args: dict) -> dict:
+    holes = args["holes"]
+    load_angle_deg = args.get("load_angle_deg", -90.0)
+    try:
+        result = await anyio.to_thread.run_sync(
+            lambda: stress_service.predict(holes, load_angle_deg, "gnn-mp10-glob")
+        )
+    except ValueError as e:
+        return _err(str(e))
+    return _ok(
+        {
+            "peak_vm_surrogate": round(result["peak_vm_surrogate"], 4),
+            "peak_error_pct_expected": result["peak_error_pct_expected"],
+            "peak_location": [round(v, 4) for v in result["peak_location"]],
+            "peak_vm_coarse_fem": round(result["peak_vm_coarse_fem"], 4),
+            "load_angle_deg": load_angle_deg,
+            "holes": holes,
+        }
+    )
+
+
+@tool(
+    "stress_optimize",
+    "Search for a hole layout that lowers the peak von Mises stress, keeping the removed area "
+    "constant. Use this when the user asks to optimise, improve or de-stress a perforated plate. "
+    "Takes a few seconds. This is a randomised local search over the surrogate, not a gradient "
+    "descent — say so if the user asks how it works.",
+    {
+        "holes": list,
+        "load_angle_deg": float,
+        "n_iters": int,
+    },
+)
+async def stress_optimize_tool(args: dict) -> dict:
+    holes = args["holes"]
+    load_angle_deg = args.get("load_angle_deg", -90.0)
+    n_iters = int(args.get("n_iters", 30))
+
+    def run() -> dict:
+        final: dict = {}
+        for event in stress_service.optimise_streaming(holes, load_angle_deg, "gnn-mp10-glob", n_iters, 0):
+            if event.get("done"):
+                final = event
+        return final
+
+    try:
+        final = await anyio.to_thread.run_sync(run)
+    except ValueError as e:
+        return _err(str(e))
+    if not final:
+        return _err("optimisation produced no result")
+
+    initial, best = final["peak_vm_initial"], final["peak_vm_final"]
+    return _ok(
+        {
+            "peak_vm_initial": round(initial, 4),
+            "peak_vm_final": round(best, 4),
+            "reduction_pct": round(100.0 * (initial - best) / abs(initial), 2) if abs(initial) > 1e-12 else None,
+            "final_holes": [[round(v, 5) for v in h] for h in final["final_holes"]],
+            "peak_error_pct_expected": config.STRESS_MODEL_QUALITY["gnn-mp10-glob"]["peak_err_pct"],
+            "load_angle_deg": load_angle_deg,
+            "n_iters": n_iters,
+        }
+    )
+
+
+@tool(
     "get_model_card",
-    "Return the known accuracy and speed numbers for the flow surrogate models "
+    "Return the known accuracy and speed numbers for the flow and stress surrogate models "
     "(from RESULTS.md). Use this when the user asks how accurate or how fast a model is.",
     {"model": str},
 )
 async def get_model_card_tool(args: dict) -> dict:
     key = args.get("model", "unet-phys")
-    quality = config.FLOW_MODEL_QUALITY.get(key)
+    quality = config.FLOW_MODEL_QUALITY.get(key) or config.STRESS_MODEL_QUALITY.get(key)
     if quality is None:
-        return _err(f"Unknown model '{key}'. Known models: {list(config.FLOW_MODEL_QUALITY)}")
+        known = list(config.FLOW_MODEL_QUALITY) + list(config.STRESS_MODEL_QUALITY)
+        return _err(f"Unknown model '{key}'. Known models: {known}")
     return _ok({"model": key, **quality})
 
 
 @tool(
     "render_report",
-    "Turn an optimisation result into a Markdown engineering report. `project` is 'flow'; "
-    "`context` is the result payload from flow_optimize (add a `verify` key with the "
-    "flow_verify result if you have one). Use this when the user asks for a report, a summary "
-    "document or something to send to a colleague. Returns the Markdown itself — hand it back "
-    "to the user as-is rather than rewriting it.",
+    "Turn an optimisation result into a Markdown engineering report. `project` is 'flow' or "
+    "'stress'; `context` is the result payload from flow_optimize or stress_optimize (add a "
+    "`verify` key with the flow_verify result if you have one). Use this when the user asks for "
+    "a report, a summary document or something to send to a colleague. Returns the Markdown "
+    "itself — hand it back to the user as-is rather than rewriting it.",
     {
         "project": str,
         "context": dict,
@@ -258,6 +338,8 @@ ALL_TOOLS = [
     flow_optimize_tool,
     flow_verify_tool,
     flow_simulate_tool,
+    stress_predict_tool,
+    stress_optimize_tool,
     get_model_card_tool,
     render_report_tool,
 ]

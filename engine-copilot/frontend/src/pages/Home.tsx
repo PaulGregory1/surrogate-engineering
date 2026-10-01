@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Wind } from 'lucide-react'
+import { ArrowRight, Grid2x2, Wind } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { usePublishChatContext } from '@/chat/ChatProvider'
 import { reveal } from '@/lib/motion'
@@ -17,6 +17,18 @@ const LABS = [
     description:
       'Draw an immersed body, read its drag coefficient in real time, then let gradient descent through the surrogate look for the lowest-drag shape — and check the answer in the real solver.',
     method: 'U-Net + continuity constraint',
+  },
+  {
+    to: '/stress',
+    icon: Grid2x2,
+    title: 'Stress Lab',
+    domain: 'STRUCTURAL MECHANICS',
+    stat: '6.0',
+    statUnit: '%',
+    statLabel: 'EXPECTED ERROR ON THE PEAK',
+    description:
+      'Place the holes in a loaded plate, watch the von Mises map recompute on every move, and let the model search for a layout that lowers the stress peak.',
+    method: 'MeshGraphNet, 10 message-passing steps',
   },
 ]
 
@@ -40,7 +52,7 @@ export function Home() {
     label: 'Overview',
     lines: [],
     suggestions: [
-      'What does the Flow Lab do, and which solver was its model trained against?',
+      'What is the difference between the two labs?',
       'Which models are available, and what is their measured error?',
       'Predict the Cd of a shape at a2=0.05, b2=-0.02, a3=0.03, b3=0.01, a4=-0.04, b4=0, Re=80',
     ],
@@ -50,7 +62,7 @@ export function Home() {
     <>
       <PageHeader
         title="Overview"
-        subtitle="An engineering workflow driven by trained surrogates"
+        subtitle="Two engineering workflows driven by trained surrogates"
       />
 
       {/* This is an index of instruments, not a landing page — which is why nothing
@@ -63,16 +75,13 @@ export function Home() {
             ML surrogates, put in an engineer’s hands.
           </h2>
           <p className="cq-muted mt-5 max-w-[62ch] text-body leading-[1.7]">
-            External flow around an immersed body, solved in milliseconds by a model trained
-            against a reference solver — always shown with its known error, and checkable against
-            that solver in one click.
+            External flow and a perforated plate, solved in milliseconds by models trained
+            against reference solvers — always shown with their known error, and checkable
+            against those solvers in one click.
           </p>
         </motion.div>
 
-        {/* One lab, one card — and the card keeps the width it had when there were two.
-            Stretched across the full column it would read as a landing-page banner, which
-            is the one register this interface refuses. */}
-        <div className="mt-11 grid grid-cols-1 gap-4 md:max-w-[calc(50%-0.5rem)]">
+        <div className="mt-11 grid grid-cols-1 gap-4 md:grid-cols-2">
           {LABS.map((lab, i) => (
             <motion.div key={lab.to} {...reveal(0.08 * (i + 1))}>
               <Link

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Eraser, PanelRightClose, Send } from 'lucide-react'
+import { Mark } from '@/components/Mark'
 import { ToolCallCard } from '@/components/ToolCallCard'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -170,6 +171,11 @@ export function ChatSidebar() {
           >
             <div className="flex h-full w-[380px] max-w-[100vw] flex-col">
               <header className="flex h-14 shrink-0 items-center gap-2.5 border-b border-line px-4">
+                {/* Same mark as the nav rail, a size down: this header carries one
+                    micro-label, not a stacked title, so the nav's 32px would run the
+                    panel. It sits on the band's own baseline, opposite the rail's,
+                    which is what makes the two rails read as one application. */}
+                <Mark className="size-6" />
                 <span className="cq-k">COPILOT</span>
                 {pageContext && (
                   <span className="cq-k truncate rounded-full border border-line2 px-2 py-0.5 text-ink2">

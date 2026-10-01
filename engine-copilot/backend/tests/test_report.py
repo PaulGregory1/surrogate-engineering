@@ -71,6 +71,22 @@ def test_partial_context_degrades_to_na_instead_of_raising():
     assert md.startswith("# Optimisation report")
 
 
+def test_stress_report_lists_the_final_holes():
+    md = render_report(
+        "stress",
+        {
+            "peak_vm_initial": 2.5,
+            "peak_vm_final": 2.0,
+            "final_holes": [[0.1, 0.2, 0.03], [0.3, 0.4, 0.05]],
+            "load_angle_deg": -90.0,
+            "model": "gnn-mp10-glob",
+        },
+    )
+    assert "-20.00 %" in md
+    assert "0.0300" in md and "0.0500" in md
+    assert "6.56 %" in md
+
+
 def test_unknown_project_raises():
     with pytest.raises(ValueError):
         render_report("thermal", {})

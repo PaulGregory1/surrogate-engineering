@@ -157,7 +157,7 @@ export function useChatSuggestions(): string[] {
 /**
  * Publish the current page's design state to the chat sidebar for as long as the
  * page is mounted, and withdraw it on unmount so a stale Flow Lab design never
- * gets attached to a question asked from another page.
+ * gets attached to a question asked from the Stress Lab.
  */
 export function usePublishChatContext(ctx: PageContext | null) {
   const { publishContext } = useChat()

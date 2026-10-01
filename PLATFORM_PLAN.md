@@ -1,11 +1,10 @@
 # Engine-Copilot — Plan d'exécution pour Claude Code
 
-> **Document historique — lis-le comme tel.** Ce brief a été écrit quand la plateforme
-> visait deux labs. Il décrit toujours le Stress Lab (§3 contrats d'API, §5.3 outils,
-> jalon M4) : c'est volontairement **non réécrit**, pour ne pas falsifier ce qui a été
-> demandé et livré à l'époque. Sur `main`, le Stress Lab n'existe plus — il vit sur la
-> branche `stress-lab`, où ce plan décrit encore l'arbre exact. Pour l'état réel de
-> `main`, la référence est `KNOWLEDGE-GRAPH.md`, pas ce fichier.
+> **Document historique — lis-le comme tel.** Ce brief est le cahier des charges d'origine,
+> volontairement **non réécrit**. Il décrit à nouveau l'arbre de `main` (les deux labs, §3
+> contrats d'API, §5.3 outils, jalon M4), mais il ne suit pas les évolutions postérieures
+> — refonte shadcn/ui, charte Calque, passage de l'interface en anglais. Pour l'état réel
+> de `main`, la référence est `KNOWLEDGE-GRAPH.md`, pas ce fichier.
 
 **Objectif** : construire une mini-plateforme web locale qui expose les deux surrogates
 (`flow-surrogate`, `stress-gnn`) derrière une interface graphique interactive, orchestrée

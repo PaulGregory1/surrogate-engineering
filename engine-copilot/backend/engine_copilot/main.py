@@ -22,7 +22,11 @@ from .schemas import (
     FlowVerifyResponse,
     ReportRequest,
     ReportResponse,
+    StressOptimizeRequest,
+    StressPredictRequest,
+    StressPredictResponse,
 )
+from .stress_service import stress_service
 
 
 def _warm_lbm_solver() -> None:
@@ -39,11 +43,12 @@ def _warm_lbm_solver() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # The service is already loaded at import time (module-level singleton); this just
-    # warms first-call JIT/MPS overhead so the first real request from the UI isn't
-    # the slow one.
+    # Both services are already loaded at import time (module-level singletons);
+    # this just warms first-call JIT/MPS/gmsh overhead so the first real request
+    # from the UI isn't the slow one.
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, flow_service.warmup)
+    await loop.run_in_executor(None, stress_service.warmup)
     await loop.run_in_executor(None, _warm_lbm_solver)
     yield
 
@@ -123,6 +128,36 @@ async def flow_simulate(req: FlowSimulateRequest):
             if item is None:
                 break
             event = "done" if item.get("done") else "frame"
+            yield {"event": event, "data": json.dumps(item)}
+
+    return EventSourceResponse(event_stream())
+
+
+@app.post("/api/stress/predict", response_model=StressPredictResponse)
+async def stress_predict(req: StressPredictRequest) -> dict:
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(
+            None, lambda: stress_service.predict(req.holes, req.load_angle_deg, req.model)
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/stress/optimize")
+async def stress_optimize(req: StressOptimizeRequest):
+    async def event_stream():
+        loop = asyncio.get_event_loop()
+        try:
+            gen = stress_service.optimise_streaming(req.holes, req.load_angle_deg, req.model, req.n_iters, req.seed)
+        except ValueError as e:
+            yield {"event": "error", "data": json.dumps({"error": str(e)})}
+            return
+        while True:
+            item = await loop.run_in_executor(None, lambda: next(gen, None))
+            if item is None:
+                break
+            event = "done" if item.get("done") else "iteration"
             yield {"event": event, "data": json.dumps(item)}
 
     return EventSourceResponse(event_stream())

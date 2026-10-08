@@ -1,0 +1,10 @@
+2026-10-08 05:51:32 === run_opt fcso_noguide: 1 chairs, out /Users/paul/Documents/fcso-chairs/runs/debug/fcso_noguide, config {"name": "fcso_noguide", "method": "fcso", "optimizer": "adam", "lr": 0.005, "steps_per_cycle": 15, "lam_reg": 0.0, "max_steps": 45, "target": 0.7, "thresholds": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7], "opt_res": 64, "eval_res": 64, "beta": 1.0, "seed": 0, "encode_seed": 0, "sigma_start": 0.25, "n_ode": 10, "solver": "euler", "guidance": "none", "lam_guid": 0.0, "fmg_factor": 0.97, "extra": {}}
+2026-10-08 05:51:33 device mps, models loaded in 1.4 s
+2026-10-08 05:51:34 [2b5953c9] start: V0 0.24826 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 05:51:43 [2b5953c9] cycle   1 step   15  V/V0 0.9308  P1 0.8557 -> P2 0.9308 (c/V0 0.8557, |g|/|d| 0.00)  |z-z_s| 11.99  |g| 0.0238  9.1 s/cycle  total 9.1 s
+2026-10-08 05:51:52 [2b5953c9]   snapshot 10%: step 30, 18.2 s, V/V0 0.822
+2026-10-08 05:52:01 [2b5953c9]   snapshot 20%: step 45, 27.2 s, V/V0 0.757
+2026-10-08 05:52:01 [2b5953c9] cycle   3 step   45  V/V0 0.7567  P1 0.6566 -> P2 0.7567 (c/V0 0.6566, |g|/|d| 0.00)  |z-z_s| 20.49  |g| 0.0231  9.1 s/cycle  total 27.2 s
+2026-10-08 05:52:01 [2b5953c9] done (budget): steps 45, V/V0 0.757, 27.2 s, failures ['30', '40', '50', '60', '70']
+2026-10-08 05:52:01 memory {"rss_peak_gb": 1.64, "mps_current_gb": 1.01, "mps_driver_gb": 1.17}
+2026-10-08 05:52:01 summary {"id": "2b5953c986dd08f2f91663a74ccd2338", "stop_reason": "budget", "steps": 45, "elapsed_s": 27.241904958034866, "ratio_final": 0.7567367496954143, "norm_dz_final": 20.49283790588379, "failures": ["30", "40", "50", "60", "70"]}

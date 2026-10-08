@@ -1,0 +1,120 @@
+{
+ "id": "ce95fa90122dd67e5935ba184b9bc177",
+ "name": "fcso_x0",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "target",
+ "steps": 105,
+ "cycles": 7,
+ "elapsed_s": 111.14916579297278,
+ "V_initial": 0.6596024632453918,
+ "V_final": 0.16109776496887207,
+ "ratio_final": 0.2442346321392358,
+ "r_final": 0.7557653678607642,
+ "norm_dz_final": 2352.09716796875,
+ "failures": [],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 15,
+   "cycle": 1,
+   "time_s": 16.024906166945584,
+   "ratio": 0.8882716190507517,
+   "r": 0.11172838094924831,
+   "V": 0.5859061479568481
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 30,
+   "cycle": 2,
+   "time_s": 31.833393083885312,
+   "ratio": 0.7009358056939212,
+   "r": 0.2990641943060788,
+   "V": 0.46233898401260376
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 47.659246750874445,
+   "ratio": 0.4574653409231077,
+   "r": 0.5425346590768922,
+   "V": 0.3017452657222748
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 47.659246750874445,
+   "ratio": 0.4574653409231077,
+   "r": 0.5425346590768922,
+   "V": 0.3017452657222748
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 47.659246750874445,
+   "ratio": 0.4574653409231077,
+   "r": 0.5425346590768922,
+   "V": 0.3017452657222748
+  },
+  "60": {
+   "reached": true,
+   "threshold": 0.6,
+   "step": 60,
+   "cycle": 4,
+   "time_s": 63.42457941791508,
+   "ratio": 0.31969788799194093,
+   "r": 0.680302112008059,
+   "V": 0.21087351441383362
+  },
+  "70": {
+   "reached": true,
+   "threshold": 0.7,
+   "step": 105,
+   "cycle": 7,
+   "time_s": 111.14916579297278,
+   "ratio": 0.2442346321392358,
+   "r": 0.7557653678607642,
+   "V": 0.16109776496887207
+  }
+ },
+ "config": {
+  "name": "fcso_x0",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

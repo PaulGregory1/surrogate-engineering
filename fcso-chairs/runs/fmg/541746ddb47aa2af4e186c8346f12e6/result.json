@@ -1,0 +1,85 @@
+{
+ "id": "541746ddb47aa2af4e186c8346f12e6",
+ "name": "fmg",
+ "method": "fmg",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 100,
+ "elapsed_s": 836.7300622033654,
+ "V_initial": 0.16173771023750305,
+ "V_final": 0.13539402186870575,
+ "ratio_final": 0.8371209266527081,
+ "r_final": 0.1628790733472919,
+ "norm_dz_final": 63.05987548828125,
+ "failures": [
+  "20",
+  "30",
+  "40",
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 570,
+   "cycle": 57,
+   "time_s": 487.710396956536,
+   "ratio": 0.8981984946794896,
+   "r": 0.10180150532051035,
+   "V": 0.14527256786823273
+  },
+  "20": {
+   "reached": false
+  },
+  "30": {
+   "reached": false
+  },
+  "40": {
+   "reached": false
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fmg",
+  "method": "fmg",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

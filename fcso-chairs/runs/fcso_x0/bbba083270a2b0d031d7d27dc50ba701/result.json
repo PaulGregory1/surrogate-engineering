@@ -1,0 +1,109 @@
+{
+ "id": "bbba083270a2b0d031d7d27dc50ba701",
+ "name": "fcso_x0",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 1059.6180615009507,
+ "V_initial": 0.06795493513345718,
+ "V_final": 0.04662313684821129,
+ "ratio_final": 0.6860890494067543,
+ "r_final": 0.3139109505932457,
+ "norm_dz_final": 57.37458801269531,
+ "failures": [
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 47.52025645808317,
+   "ratio": 0.8937877634498979,
+   "r": 0.10621223655010215,
+   "V": 0.06073728948831558
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 375,
+   "cycle": 25,
+   "time_s": 395.7373307929374,
+   "ratio": 0.6445262712294605,
+   "r": 0.3554737287705395,
+   "V": 0.043798740953207016
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 375,
+   "cycle": 25,
+   "time_s": 395.7373307929374,
+   "ratio": 0.6445262712294605,
+   "r": 0.3554737287705395,
+   "V": 0.043798740953207016
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 390,
+   "cycle": 26,
+   "time_s": 411.51268375187647,
+   "ratio": 0.5183559873374546,
+   "r": 0.4816440126625454,
+   "V": 0.03522484749555588
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 435,
+   "cycle": 29,
+   "time_s": 459.4552727928385,
+   "ratio": 0.4896873143314749,
+   "r": 0.5103126856685252,
+   "V": 0.033276669681072235
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_x0",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

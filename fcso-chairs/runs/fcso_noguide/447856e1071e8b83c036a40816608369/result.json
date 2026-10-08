@@ -1,0 +1,91 @@
+{
+ "id": "447856e1071e8b83c036a40816608369",
+ "name": "fcso_noguide",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 657.2850196679356,
+ "V_initial": 2.287059783935547,
+ "V_final": 1.6891294717788696,
+ "ratio_final": 0.7385593868789186,
+ "r_final": 0.26144061312108136,
+ "norm_dz_final": 67.27002716064453,
+ "failures": [
+  "30",
+  "40",
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 495,
+   "cycle": 33,
+   "time_s": 323.0423188371351,
+   "ratio": 0.8976504239090368,
+   "r": 0.10234957609096318,
+   "V": 2.0529801845550537
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 780,
+   "cycle": 52,
+   "time_s": 510.62580112577416,
+   "ratio": 0.7939991706127542,
+   "r": 0.20600082938724584,
+   "V": 1.8159235715866089
+  },
+  "30": {
+   "reached": false
+  },
+  "40": {
+   "reached": false
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_noguide",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "none",
+  "lam_guid": 0.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

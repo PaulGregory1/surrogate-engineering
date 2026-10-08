@@ -1,0 +1,45 @@
+/Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+2026-10-08 02:33:35 2b5953c9 cycle 1 seed 0: c/V0 0.856 V(x)/c 1.031 |d| 43.07 |grad (V-c)^2| 0.0009992 -> lam for |g| = |d|: 4.311e+04
+2026-10-08 02:33:36 2b5953c9 cycle 1 seed 1: c/V0 0.856 V(x)/c 0.997 |d| 42.38 |grad (V-c)^2| 3.371e-05 -> lam for |g| = |d|: 1.257e+06
+2026-10-08 02:33:36 2b5953c9 cycle 1 seed 2: c/V0 0.856 V(x)/c 1.027 |d| 42.27 |grad (V-c)^2| 0.0003787 -> lam for |g| = |d|: 1.116e+05
+2026-10-08 02:33:37 2b5953c9 cycle 3 seed 0: c/V0 0.591 V(x)/c 1.269 |d| 44.19 |grad (V-c)^2| 0.003628 -> lam for |g| = |d|: 1.218e+04
+2026-10-08 02:33:38 2b5953c9 cycle 3 seed 1: c/V0 0.591 V(x)/c 1.246 |d| 44.76 |grad (V-c)^2| 0.002057 -> lam for |g| = |d|: 2.176e+04
+2026-10-08 02:33:39 2b5953c9 cycle 3 seed 2: c/V0 0.591 V(x)/c 1.269 |d| 43.94 |grad (V-c)^2| 0.002515 -> lam for |g| = |d|: 1.747e+04
+2026-10-08 02:33:40 20b0a820 cycle 1 seed 0: c/V0 0.923 V(x)/c 1.087 |d| 43.02 |grad (V-c)^2| 0.00303 -> lam for |g| = |d|: 1.42e+04
+2026-10-08 02:33:41 20b0a820 cycle 1 seed 1: c/V0 0.923 V(x)/c 1.076 |d| 43.81 |grad (V-c)^2| 0.001685 -> lam for |g| = |d|: 2.6e+04
+2026-10-08 02:33:41 20b0a820 cycle 1 seed 2: c/V0 0.923 V(x)/c 1.098 |d| 42.92 |grad (V-c)^2| 0.001647 -> lam for |g| = |d|: 2.606e+04
+2026-10-08 02:33:43 20b0a820 cycle 3 seed 0: c/V0 0.769 V(x)/c 1.240 |d| 43.25 |grad (V-c)^2| 0.006612 -> lam for |g| = |d|: 6542
+2026-10-08 02:33:43 20b0a820 cycle 3 seed 1: c/V0 0.769 V(x)/c 1.205 |d| 44.45 |grad (V-c)^2| 0.006394 -> lam for |g| = |d|: 6953
+2026-10-08 02:33:44 20b0a820 cycle 3 seed 2: c/V0 0.769 V(x)/c 1.214 |d| 43.52 |grad (V-c)^2| 0.01048 -> lam for |g| = |d|: 4153
+2026-10-08 02:33:45 f215c608 cycle 1 seed 0: c/V0 0.921 V(x)/c 1.074 |d| 41.87 |grad (V-c)^2| 0.0004822 -> lam for |g| = |d|: 8.683e+04
+2026-10-08 02:33:46 f215c608 cycle 1 seed 1: c/V0 0.921 V(x)/c 1.083 |d| 42.06 |grad (V-c)^2| 0.0005804 -> lam for |g| = |d|: 7.246e+04
+2026-10-08 02:33:46 f215c608 cycle 1 seed 2: c/V0 0.921 V(x)/c 1.074 |d| 40.80 |grad (V-c)^2| 0.0003154 -> lam for |g| = |d|: 1.293e+05
+2026-10-08 02:33:47 f215c608 cycle 3 seed 0: c/V0 0.763 V(x)/c 1.186 |d| 42.68 |grad (V-c)^2| 0.0007483 -> lam for |g| = |d|: 5.704e+04
+2026-10-08 02:33:48 f215c608 cycle 3 seed 1: c/V0 0.763 V(x)/c 1.204 |d| 43.12 |grad (V-c)^2| 0.0008879 -> lam for |g| = |d|: 4.856e+04
+2026-10-08 02:33:49 f215c608 cycle 3 seed 2: c/V0 0.763 V(x)/c 1.142 |d| 41.99 |grad (V-c)^2| 0.0003279 -> lam for |g| = |d|: 1.28e+05
+2026-10-08 02:33:49 lam_1 (|g| = |d| at the first step): median 3.459e+04, range 4153 - 1.257e+06
+2026-10-08 02:34:12 2b5953c9 cycle 1 lam 1000    : V_after/c 1.0643 (1.068, 1.052, 1.073)  |g|/|d| step0 0.011 max 0.785  7.48 s/correction
+2026-10-08 02:34:36 2b5953c9 cycle 1 lam 3000    : V_after/c 1.0461 (1.045, 1.036, 1.058)  |g|/|d| step0 0.033 max 3.565  7.48 s/correction
+2026-10-08 02:34:59 2b5953c9 cycle 1 lam 1e+04   : V_after/c 1.0168 (1.013, 1.012, 1.026)  |g|/|d| step0 0.110 max 1.570  7.44 s/correction
+2026-10-08 02:35:22 2b5953c9 cycle 1 lam 3e+04   : V_after/c 1.0005 (1.000, 1.000, 1.001)  |g|/|d| step0 0.330 max 0.696  7.46 s/correction
+2026-10-08 02:35:45 2b5953c9 cycle 3 lam 1000    : V_after/c 1.2980 (1.299, 1.288, 1.306)  |g|/|d| step0 0.062 max 1.489  7.49 s/correction
+2026-10-08 02:36:08 2b5953c9 cycle 3 lam 3000    : V_after/c 1.2154 (1.204, 1.188, 1.255)  |g|/|d| step0 0.185 max 3.095  7.42 s/correction
+2026-10-08 02:36:31 2b5953c9 cycle 3 lam 1e+04   : V_after/c 1.1097 (1.093, 1.081, 1.155)  |g|/|d| step0 0.618 max 5.739  7.42 s/correction
+2026-10-08 02:36:54 2b5953c9 cycle 3 lam 3e+04   : V_after/c 1.0111 (0.999, 1.000, 1.035)  |g|/|d| step0 1.853 max 3.803  7.43 s/correction
+2026-10-08 02:37:18 20b0a820 cycle 1 lam 1000    : V_after/c 1.1056 (1.101, 1.096, 1.120)  |g|/|d| step0 0.049 max 1.739  7.45 s/correction
+2026-10-08 02:37:41 20b0a820 cycle 1 lam 3000    : V_after/c 1.0498 (1.075, 1.072, 1.003)  |g|/|d| step0 0.147 max 30.572  7.44 s/correction
+2026-10-08 02:38:04 20b0a820 cycle 1 lam 1e+04   : V_after/c 1.0211 (1.035, 1.028, 1.001)  |g|/|d| step0 0.491 max 15.440  7.47 s/correction
+2026-10-08 02:38:27 20b0a820 cycle 1 lam 3e+04   : V_after/c 1.0041 (1.004, 1.006, 1.002)  |g|/|d| step0 1.473 max 4.890  7.44 s/correction
+2026-10-08 02:38:50 20b0a820 cycle 3 lam 1000    : V_after/c 1.1755 (1.229, 1.212, 1.085)  |g|/|d| step0 0.179 max 0.953  7.45 s/correction
+2026-10-08 02:39:13 20b0a820 cycle 3 lam 3000    : V_after/c 1.1427 (1.184, 1.181, 1.063)  |g|/|d| step0 0.537 max 2.016  7.44 s/correction
+2026-10-08 02:39:36 20b0a820 cycle 3 lam 1e+04   : V_after/c 1.0855 (1.131, 1.122, 1.004)  |g|/|d| step0 1.792 max 11.582  7.45 s/correction
+2026-10-08 02:39:59 20b0a820 cycle 3 lam 3e+04   : V_after/c 1.0132 (1.043, 1.000, 0.997)  |g|/|d| step0 5.375 max 7.223  7.44 s/correction
+2026-10-08 02:40:23 f215c608 cycle 1 lam 1000    : V_after/c 1.1280 (1.126, 1.136, 1.122)  |g|/|d| step0 0.011 max 0.568  7.45 s/correction
+2026-10-08 02:40:46 f215c608 cycle 1 lam 3000    : V_after/c 1.1162 (1.115, 1.122, 1.112)  |g|/|d| step0 0.033 max 12.305  7.43 s/correction
+2026-10-08 02:41:09 f215c608 cycle 1 lam 1e+04   : V_after/c 1.0885 (1.085, 1.093, 1.088)  |g|/|d| step0 0.110 max 1.620  7.43 s/correction
+2026-10-08 02:41:32 f215c608 cycle 1 lam 3e+04   : V_after/c 1.0438 (1.043, 1.042, 1.047)  |g|/|d| step0 0.330 max 3.563  7.52 s/correction
+2026-10-08 02:41:55 f215c608 cycle 3 lam 1000    : V_after/c 1.2253 (1.226, 1.260, 1.190)  |g|/|d| step0 0.015 max 0.732  7.45 s/correction
+2026-10-08 02:42:18 f215c608 cycle 3 lam 3000    : V_after/c 1.2050 (1.207, 1.234, 1.174)  |g|/|d| step0 0.046 max 2.714  7.40 s/correction
+2026-10-08 02:42:41 f215c608 cycle 3 lam 1e+04   : V_after/c 1.1667 (1.166, 1.180, 1.154)  |g|/|d| step0 0.153 max 2.218  7.40 s/correction
+2026-10-08 02:43:04 f215c608 cycle 3 lam 3e+04   : V_after/c 1.0971 (1.101, 1.111, 1.078)  |g|/|d| step0 0.459 max 3.005  7.40 s/correction

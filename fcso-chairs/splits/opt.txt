@@ -1,0 +1,13 @@
+# 10 test-split chairs to optimize. Candidates = first 48 of np.random.default_rng(0).permutation(test ids)
+# (scripts/pick_candidates.py, sheets in runs/m2/candidates/), then picked by eye for variety.
+# The first 3 lines are the --debug set. Format: <id>  # candidate index, description
+2b5953c986dd08f2f91663a74ccd2338  # c09 armchair: thin straight legs, open curved armrests
+20b0a82068ae767c34cc22336880d45c  # c43 office chair: central pedestal, 5-star base, no armrests
+f215c608fe63e97d4aada2bcdc05aa43  # c34 dining chair: four thin legs, open frame back
+7824e41c86f9be776383f517a315e69e  # c00 armchair: square legs, closed armrests
+541746ddb47aa2af4e186c8346f12e6  # c26 office chair: pedestal with castors, armrests, mesh back
+d409dbda0a34a953c9020fbe6b2ff6  # c31 spindle-back chair: turned legs, vertical slats
+ce95fa90122dd67e5935ba184b9bc177  # c12 upholstered tub chair on four legs
+57dfb295c3e699ab2875319f84a135b4  # c47 folding lawn chair: thin tube frame with armrests
+bbba083270a2b0d031d7d27dc50ba701  # c08 cantilever chair: single bent thin tube, no back legs
+447856e1071e8b83c036a40816608369  # c02 massive upholstered armchair, short feet

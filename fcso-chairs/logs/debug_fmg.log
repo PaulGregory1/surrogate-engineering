@@ -1,0 +1,9 @@
+2026-10-08 05:50:49 === run_opt fmg: 1 chairs, out /Users/paul/Documents/fcso-chairs/runs/debug/fmg, config {"name": "fmg", "method": "fmg", "optimizer": "adam", "lr": 0.005, "steps_per_cycle": 15, "lam_reg": 0.0, "max_steps": 45, "target": 0.7, "thresholds": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7], "opt_res": 64, "eval_res": 64, "beta": 1.0, "seed": 0, "encode_seed": 0, "sigma_start": 0.25, "n_ode": 10, "solver": "euler", "guidance": "x0", "lam_guid": 10000.0, "fmg_factor": 0.97, "extra": {}}
+2026-10-08 05:50:51 device mps, models loaded in 1.8 s
+2026-10-08 05:50:51 [2b5953c9] start: V0 0.24826 (64^3), method fmg, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 05:50:59 [2b5953c9] cycle   1 step   10  V/V0 0.9761  P1 1.0000 -> P2 0.9761 (c/V0 0.9700, |g|/|d| 0.17)  |z-z_s| 11.45  |g| 0.0000  8.0 s/cycle  total 8.0 s
+2026-10-08 05:51:30 [2b5953c9]   snapshot 10%: step 50, 38.4 s, V/V0 0.896
+2026-10-08 05:51:30 [2b5953c9] cycle   5 step   50  V/V0 0.8962  P1 0.9068 -> P2 0.8962 (c/V0 0.8796, |g|/|d| 0.02)  |z-z_s| 23.43  |g| 0.0000  7.6 s/cycle  total 38.4 s
+2026-10-08 05:51:30 [2b5953c9] done (budget): steps 50, V/V0 0.896, 38.4 s, failures ['20', '30', '40', '50', '60', '70']
+2026-10-08 05:51:30 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.17}
+2026-10-08 05:51:30 summary {"id": "2b5953c986dd08f2f91663a74ccd2338", "stop_reason": "budget", "steps": 50, "elapsed_s": 38.411745417979546, "ratio_final": 0.8962199077161358, "norm_dz_final": 23.42881965637207, "failures": ["20", "30", "40", "50", "60", "70"]}

@@ -1,0 +1,19 @@
+2026-10-08 05:55:25 chain start: gd fcso_x0 gd_reg fcso fcso_noguide fmg
+2026-10-08 05:55:25 gd: re-evaluating 3 chairs for meshes.npz
+2026-10-08 05:56:33 gd: start
+2026-10-08 06:07:21 gd: exit 0
+2026-10-08 06:07:21 fcso_x0: re-evaluating 3 chairs for meshes.npz
+2026-10-08 06:08:19 fcso_x0: start
+2026-10-08 07:17:55 fcso_x0: exit 0
+2026-10-08 07:17:55 gd_reg: re-evaluating 3 chairs for meshes.npz
+2026-10-08 07:18:51 gd_reg: start
+2026-10-08 07:40:56 gd_reg: exit 0
+2026-10-08 07:40:56 REQUIRED RUNS DONE
+2026-10-08 07:40:56 fcso: re-evaluating 3 chairs for meshes.npz
+2026-10-08 07:41:54 fcso: start
+2026-10-08 08:53:35 fcso: exit 0
+2026-10-08 08:53:35 fcso_noguide: start
+2026-10-08 10:35:09 fcso_noguide: exit 0
+2026-10-08 10:35:09 fmg: start
+2026-10-08 12:40:37 fmg: exit 0
+2026-10-08 12:40:37 chain end

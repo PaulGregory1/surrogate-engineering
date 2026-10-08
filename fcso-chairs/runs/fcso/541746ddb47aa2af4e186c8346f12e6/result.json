@@ -1,0 +1,103 @@
+{
+ "id": "541746ddb47aa2af4e186c8346f12e6",
+ "name": "fcso",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 958.3452505815076,
+ "V_initial": 0.16173771023750305,
+ "V_final": 0.09253113716840744,
+ "ratio_final": 0.5721061404451101,
+ "r_final": 0.4278938595548899,
+ "norm_dz_final": 57.9403076171875,
+ "failures": [
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 30,
+   "cycle": 2,
+   "time_s": 28.7982312500244,
+   "ratio": 0.8535289275858174,
+   "r": 0.14647107241418256,
+   "V": 0.13804781436920166
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 43.16441308299545,
+   "ratio": 0.6888361046224841,
+   "r": 0.3111638953775159,
+   "V": 0.11141077429056168
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 43.16441308299545,
+   "ratio": 0.6888361046224841,
+   "r": 0.3111638953775159,
+   "V": 0.11141077429056168
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 390,
+   "cycle": 26,
+   "time_s": 373.3693392939167,
+   "ratio": 0.5763405568841963,
+   "r": 0.4236594431158037,
+   "V": 0.09321600198745728
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "noisy",
+  "lam_guid": 1000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

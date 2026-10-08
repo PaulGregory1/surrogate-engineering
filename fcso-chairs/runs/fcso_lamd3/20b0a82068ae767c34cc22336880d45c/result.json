@@ -1,0 +1,109 @@
+{
+ "id": "20b0a82068ae767c34cc22336880d45c",
+ "name": "fcso_lamd3",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 955.2346499589039,
+ "V_initial": 0.27634432911872864,
+ "V_final": 0.12146306037902832,
+ "ratio_final": 0.4395352014871378,
+ "r_final": 0.5604647985128621,
+ "norm_dz_final": 62.11345672607422,
+ "failures": [
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 90,
+   "cycle": 6,
+   "time_s": 86.03050354286097,
+   "ratio": 0.8883408571317337,
+   "r": 0.11165914286826628,
+   "V": 0.24548795819282532
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 120,
+   "cycle": 8,
+   "time_s": 114.65762120997533,
+   "ratio": 0.7841376243087548,
+   "r": 0.21586237569124522,
+   "V": 0.2166919857263565
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 285,
+   "cycle": 19,
+   "time_s": 271.7820064178668,
+   "ratio": 0.6925072717109817,
+   "r": 0.3074927282890183,
+   "V": 0.19137045741081238
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 645,
+   "cycle": 43,
+   "time_s": 615.1598284997744,
+   "ratio": 0.596464930946381,
+   "r": 0.403535069053619,
+   "V": 0.16482970118522644
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 915,
+   "cycle": 61,
+   "time_s": 872.1305192088475,
+   "ratio": 0.4920903865236169,
+   "r": 0.5079096134763831,
+   "V": 0.13598638772964478
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_lamd3",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "noisy",
+  "lam_guid": 333,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

@@ -1,0 +1,69 @@
+{
+ "config": {
+  "name": "probe_sgd_lr0.005",
+  "method": "gd",
+  "optimizer": "sgd",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 60,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "noisy",
+  "lam_guid": 0.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ },
+ "chairs": [
+  {
+   "id": "2b5953c986dd08f2f91663a74ccd2338",
+   "stop_reason": "budget",
+   "steps": 60,
+   "elapsed_s": 32.310289208893664,
+   "ratio_final": 0.998856385472224,
+   "norm_dz_final": 0.009218745864927769,
+   "failures": [
+    "10",
+    "20",
+    "30",
+    "40",
+    "50",
+    "60",
+    "70"
+   ]
+  },
+  {
+   "id": "20b0a82068ae767c34cc22336880d45c",
+   "stop_reason": "budget",
+   "steps": 60,
+   "elapsed_s": 32.17058108304627,
+   "ratio_final": 0.9993432246504936,
+   "norm_dz_final": 0.00984212476760149,
+   "failures": [
+    "10",
+    "20",
+    "30",
+    "40",
+    "50",
+    "60",
+    "70"
+   ]
+  }
+ ]
+}

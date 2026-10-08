@@ -1,0 +1,79 @@
+{
+ "id": "20b0a82068ae767c34cc22336880d45c",
+ "name": "fcso",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 45,
+ "cycles": 3,
+ "elapsed_s": 43.037388250930235,
+ "V_initial": 0.27634432911872864,
+ "V_final": 0.25502026081085205,
+ "ratio_final": 0.9228351514363267,
+ "r_final": 0.07716484856367334,
+ "norm_dz_final": 22.9201602935791,
+ "failures": [
+  "10",
+  "20",
+  "30",
+  "40",
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": false
+  },
+  "20": {
+   "reached": false
+  },
+  "30": {
+   "reached": false
+  },
+  "40": {
+   "reached": false
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 45,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "noisy",
+  "lam_guid": 1000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

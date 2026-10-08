@@ -1,0 +1,74 @@
+2026-10-08 02:22:13 2b5953c9 cycle 1 seed 0: c/V0 0.856 V(x)/c 1.037 |d| 43.07 |grad (V-c)^2| 0.003145 -> lam for |g| = |d|: 1.37e+04
+2026-10-08 02:22:13 2b5953c9 cycle 1 seed 1: c/V0 0.856 V(x)/c 1.028 |d| 42.38 |grad (V-c)^2| 0.004544 -> lam for |g| = |d|: 9327
+2026-10-08 02:22:14 2b5953c9 cycle 1 seed 2: c/V0 0.856 V(x)/c 1.060 |d| 42.27 |grad (V-c)^2| 0.01048 -> lam for |g| = |d|: 4032
+2026-10-08 02:22:15 2b5953c9 cycle 3 seed 0: c/V0 0.591 V(x)/c 1.218 |d| 44.19 |grad (V-c)^2| 0.03813 -> lam for |g| = |d|: 1159
+2026-10-08 02:22:15 2b5953c9 cycle 3 seed 1: c/V0 0.591 V(x)/c 1.188 |d| 44.76 |grad (V-c)^2| 0.02326 -> lam for |g| = |d|: 1924
+2026-10-08 02:22:16 2b5953c9 cycle 3 seed 2: c/V0 0.591 V(x)/c 1.108 |d| 43.94 |grad (V-c)^2| 0.01726 -> lam for |g| = |d|: 2546
+2026-10-08 02:22:17 20b0a820 cycle 1 seed 0: c/V0 0.923 V(x)/c 1.255 |d| 43.02 |grad (V-c)^2| 0.08909 -> lam for |g| = |d|: 482.9
+2026-10-08 02:22:17 20b0a820 cycle 1 seed 1: c/V0 0.923 V(x)/c 1.211 |d| 43.81 |grad (V-c)^2| 0.01753 -> lam for |g| = |d|: 2499
+2026-10-08 02:22:18 20b0a820 cycle 1 seed 2: c/V0 0.923 V(x)/c 1.200 |d| 42.92 |grad (V-c)^2| 0.02479 -> lam for |g| = |d|: 1732
+2026-10-08 02:22:19 20b0a820 cycle 3 seed 0: c/V0 0.769 V(x)/c 1.345 |d| 43.25 |grad (V-c)^2| 0.02267 -> lam for |g| = |d|: 1908
+2026-10-08 02:22:19 20b0a820 cycle 3 seed 1: c/V0 0.769 V(x)/c 1.372 |d| 44.45 |grad (V-c)^2| 0.0554 -> lam for |g| = |d|: 802.5
+2026-10-08 02:22:20 20b0a820 cycle 3 seed 2: c/V0 0.769 V(x)/c 0.763 |d| 43.52 |grad (V-c)^2| 0.0655 -> lam for |g| = |d|: 664.4
+2026-10-08 02:22:21 f215c608 cycle 1 seed 0: c/V0 0.921 V(x)/c 1.173 |d| 41.87 |grad (V-c)^2| 0.002496 -> lam for |g| = |d|: 1.678e+04
+2026-10-08 02:22:21 f215c608 cycle 1 seed 1: c/V0 0.921 V(x)/c 1.171 |d| 42.06 |grad (V-c)^2| 0.005883 -> lam for |g| = |d|: 7148
+2026-10-08 02:22:22 f215c608 cycle 1 seed 2: c/V0 0.921 V(x)/c 1.170 |d| 40.80 |grad (V-c)^2| 0.01144 -> lam for |g| = |d|: 3567
+2026-10-08 02:22:23 f215c608 cycle 3 seed 0: c/V0 0.763 V(x)/c 1.292 |d| 42.68 |grad (V-c)^2| 0.002112 -> lam for |g| = |d|: 2.021e+04
+2026-10-08 02:22:23 f215c608 cycle 3 seed 1: c/V0 0.763 V(x)/c 1.294 |d| 43.12 |grad (V-c)^2| 0.02506 -> lam for |g| = |d|: 1720
+2026-10-08 02:22:24 f215c608 cycle 3 seed 2: c/V0 0.763 V(x)/c 1.285 |d| 41.99 |grad (V-c)^2| 0.003002 -> lam for |g| = |d|: 1.399e+04
+2026-10-08 02:22:24 lam_1 (|g| = |d| at the first step): median 2522, range 482.9 - 2.021e+04
+2026-10-08 02:22:27 2b5953c9 cycle 1 lam 0       : V_after/c 1.0768 (1.088, 1.060, 1.083)  |g|/|d| step0 0.000 max 0.000  0.67 s/correction
+2026-10-08 02:22:30 2b5953c9 cycle 3 lam 0       : V_after/c 1.3524 (1.367, 1.343, 1.347)  |g|/|d| step0 0.000 max 0.000  0.67 s/correction
+2026-10-08 02:22:33 20b0a820 cycle 1 lam 0       : V_after/c 1.1294 (1.135, 1.110, 1.144)  |g|/|d| step0 0.000 max 0.000  0.68 s/correction
+2026-10-08 02:22:36 20b0a820 cycle 3 lam 0       : V_after/c 1.2608 (1.285, 1.244, 1.253)  |g|/|d| step0 0.000 max 0.000  0.67 s/correction
+2026-10-08 02:22:39 f215c608 cycle 1 lam 0       : V_after/c 1.1355 (1.136, 1.143, 1.128)  |g|/|d| step0 0.000 max 0.000  0.72 s/correction
+2026-10-08 02:22:42 f215c608 cycle 3 lam 0       : V_after/c 1.2415 (1.235, 1.290, 1.199)  |g|/|d| step0 0.000 max 0.000  0.68 s/correction
+2026-10-08 02:24:10 2b5953c9 cycle 1 seed 0: c/V0 0.856 V(x)/c 1.037 |d| 43.07 |grad (V-c)^2| 0.003145 -> lam for |g| = |d|: 1.37e+04
+2026-10-08 02:24:11 2b5953c9 cycle 1 seed 1: c/V0 0.856 V(x)/c 1.028 |d| 42.38 |grad (V-c)^2| 0.004544 -> lam for |g| = |d|: 9327
+2026-10-08 02:24:11 2b5953c9 cycle 1 seed 2: c/V0 0.856 V(x)/c 1.060 |d| 42.27 |grad (V-c)^2| 0.01048 -> lam for |g| = |d|: 4032
+2026-10-08 02:24:12 2b5953c9 cycle 3 seed 0: c/V0 0.591 V(x)/c 1.218 |d| 44.19 |grad (V-c)^2| 0.03813 -> lam for |g| = |d|: 1159
+2026-10-08 02:24:13 2b5953c9 cycle 3 seed 1: c/V0 0.591 V(x)/c 1.188 |d| 44.76 |grad (V-c)^2| 0.02326 -> lam for |g| = |d|: 1924
+2026-10-08 02:24:14 2b5953c9 cycle 3 seed 2: c/V0 0.591 V(x)/c 1.108 |d| 43.94 |grad (V-c)^2| 0.01726 -> lam for |g| = |d|: 2546
+2026-10-08 02:24:14 20b0a820 cycle 1 seed 0: c/V0 0.923 V(x)/c 1.255 |d| 43.02 |grad (V-c)^2| 0.08909 -> lam for |g| = |d|: 482.9
+2026-10-08 02:24:15 20b0a820 cycle 1 seed 1: c/V0 0.923 V(x)/c 1.211 |d| 43.81 |grad (V-c)^2| 0.01753 -> lam for |g| = |d|: 2499
+2026-10-08 02:24:16 20b0a820 cycle 1 seed 2: c/V0 0.923 V(x)/c 1.200 |d| 42.92 |grad (V-c)^2| 0.02479 -> lam for |g| = |d|: 1732
+2026-10-08 02:24:16 20b0a820 cycle 3 seed 0: c/V0 0.769 V(x)/c 1.345 |d| 43.25 |grad (V-c)^2| 0.02267 -> lam for |g| = |d|: 1908
+2026-10-08 02:24:17 20b0a820 cycle 3 seed 1: c/V0 0.769 V(x)/c 1.372 |d| 44.45 |grad (V-c)^2| 0.0554 -> lam for |g| = |d|: 802.5
+2026-10-08 02:24:18 20b0a820 cycle 3 seed 2: c/V0 0.769 V(x)/c 0.763 |d| 43.52 |grad (V-c)^2| 0.0655 -> lam for |g| = |d|: 664.4
+2026-10-08 02:24:18 f215c608 cycle 1 seed 0: c/V0 0.921 V(x)/c 1.173 |d| 41.87 |grad (V-c)^2| 0.002496 -> lam for |g| = |d|: 1.678e+04
+2026-10-08 02:24:19 f215c608 cycle 1 seed 1: c/V0 0.921 V(x)/c 1.171 |d| 42.06 |grad (V-c)^2| 0.005883 -> lam for |g| = |d|: 7148
+2026-10-08 02:24:20 f215c608 cycle 1 seed 2: c/V0 0.921 V(x)/c 1.170 |d| 40.80 |grad (V-c)^2| 0.01144 -> lam for |g| = |d|: 3567
+2026-10-08 02:24:21 f215c608 cycle 3 seed 0: c/V0 0.763 V(x)/c 1.292 |d| 42.68 |grad (V-c)^2| 0.002112 -> lam for |g| = |d|: 2.021e+04
+2026-10-08 02:24:21 f215c608 cycle 3 seed 1: c/V0 0.763 V(x)/c 1.294 |d| 43.12 |grad (V-c)^2| 0.02506 -> lam for |g| = |d|: 1720
+2026-10-08 02:24:22 f215c608 cycle 3 seed 2: c/V0 0.763 V(x)/c 1.285 |d| 41.99 |grad (V-c)^2| 0.003002 -> lam for |g| = |d|: 1.399e+04
+2026-10-08 02:24:22 lam_1 (|g| = |d| at the first step): median 2522, range 482.9 - 2.021e+04
+2026-10-08 02:24:25 2b5953c9 cycle 1 lam 0       : V_after/c 1.0768 (1.088, 1.060, 1.083)  |g|/|d| step0 0.000 max 0.000  0.66 s/correction
+2026-10-08 02:24:43 2b5953c9 cycle 1 lam 333     : V_after/c 1.0732 (1.083, 1.057, 1.079)  |g|/|d| step0 0.048 max 0.596  5.97 s/correction
+2026-10-08 02:25:02 2b5953c9 cycle 1 lam 1000    : V_after/c 1.0667 (1.073, 1.052, 1.076)  |g|/|d| step0 0.143 max 1.454  5.93 s/correction
+2026-10-08 02:25:20 2b5953c9 cycle 1 lam 3000    : V_after/c 1.0514 (1.053, 1.037, 1.064)  |g|/|d| step0 0.428 max 1.608  5.91 s/correction
+2026-10-08 02:25:39 2b5953c9 cycle 1 lam 1e+04   : V_after/c 1.0263 (1.028, 1.019, 1.033)  |g|/|d| step0 1.428 max 6.291  5.95 s/correction
+2026-10-08 02:25:42 2b5953c9 cycle 3 lam 0       : V_after/c 1.3524 (1.367, 1.343, 1.347)  |g|/|d| step0 0.000 max 0.000  0.68 s/correction
+2026-10-08 02:26:00 2b5953c9 cycle 3 lam 333     : V_after/c 1.3340 (1.349, 1.323, 1.330)  |g|/|d| step0 0.197 max 1.213  5.92 s/correction
+2026-10-08 02:26:19 2b5953c9 cycle 3 lam 1000    : V_after/c 1.2936 (1.301, 1.278, 1.302)  |g|/|d| step0 0.592 max 3.715  5.93 s/correction
+2026-10-08 02:26:37 2b5953c9 cycle 3 lam 3000    : V_after/c 1.1507 (1.218, 1.032, 1.203)  |g|/|d| step0 1.775 max 12.708  5.94 s/correction
+2026-10-08 02:26:56 2b5953c9 cycle 3 lam 1e+04   : V_after/c 1.0454 (1.134, 1.002, 1.000)  |g|/|d| step0 5.918 max 12.566  5.93 s/correction
+2026-10-08 02:26:59 20b0a820 cycle 1 lam 0       : V_after/c 1.1294 (1.135, 1.110, 1.144)  |g|/|d| step0 0.000 max 0.000  0.66 s/correction
+2026-10-08 02:27:18 20b0a820 cycle 1 lam 333     : V_after/c 1.1229 (1.131, 1.103, 1.135)  |g|/|d| step0 0.338 max 0.690  5.96 s/correction
+2026-10-08 02:27:36 20b0a820 cycle 1 lam 1000    : V_after/c 1.1034 (1.100, 1.098, 1.113)  |g|/|d| step0 1.016 max 2.071  5.94 s/correction
+2026-10-08 02:27:55 20b0a820 cycle 1 lam 3000    : V_after/c 1.0141 (0.976, 1.066, 0.999)  |g|/|d| step0 3.049 max 6.213  5.93 s/correction
+2026-10-08 02:28:13 20b0a820 cycle 1 lam 1e+04   : V_after/c 0.9921 (0.985, 0.991, 1.001)  |g|/|d| step0 10.162 max 20.709  5.91 s/correction
+2026-10-08 02:28:16 20b0a820 cycle 3 lam 0       : V_after/c 1.2608 (1.285, 1.244, 1.253)  |g|/|d| step0 0.000 max 0.000  0.67 s/correction
+2026-10-08 02:28:35 20b0a820 cycle 3 lam 333     : V_after/c 1.2363 (1.264, 1.210, 1.234)  |g|/|d| step0 0.364 max 4.510  5.95 s/correction
+2026-10-08 02:28:53 20b0a820 cycle 3 lam 1000    : V_after/c 1.2033 (1.201, 1.191, 1.218)  |g|/|d| step0 1.092 max 4.326  5.92 s/correction
+2026-10-08 02:29:12 20b0a820 cycle 3 lam 3000    : V_after/c 1.1034 (1.070, 1.125, 1.115)  |g|/|d| step0 3.275 max 4.515  5.93 s/correction
+2026-10-08 02:29:30 20b0a820 cycle 3 lam 1e+04   : V_after/c 1.0029 (1.008, 1.000, 1.000)  |g|/|d| step0 10.918 max 23.232  5.93 s/correction
+2026-10-08 02:29:33 f215c608 cycle 1 lam 0       : V_after/c 1.1355 (1.136, 1.143, 1.128)  |g|/|d| step0 0.000 max 0.000  0.67 s/correction
+2026-10-08 02:29:52 f215c608 cycle 1 lam 333     : V_after/c 1.1339 (1.134, 1.141, 1.127)  |g|/|d| step0 0.053 max 0.330  5.95 s/correction
+2026-10-08 02:30:10 f215c608 cycle 1 lam 1000    : V_after/c 1.1315 (1.130, 1.137, 1.127)  |g|/|d| step0 0.160 max 0.380  5.92 s/correction
+2026-10-08 02:30:29 f215c608 cycle 1 lam 3000    : V_after/c 1.1233 (1.119, 1.125, 1.126)  |g|/|d| step0 0.480 max 1.013  5.93 s/correction
+2026-10-08 02:30:47 f215c608 cycle 1 lam 1e+04   : V_after/c 1.0880 (1.086, 1.083, 1.096)  |g|/|d| step0 1.599 max 4.366  5.94 s/correction
+2026-10-08 02:30:50 f215c608 cycle 3 lam 0       : V_after/c 1.2415 (1.235, 1.290, 1.199)  |g|/|d| step0 0.000 max 0.000  0.66 s/correction
+2026-10-08 02:31:09 f215c608 cycle 3 lam 333     : V_after/c 1.2379 (1.232, 1.286, 1.196)  |g|/|d| step0 0.078 max 0.195  5.93 s/correction
+2026-10-08 02:31:27 f215c608 cycle 3 lam 1000    : V_after/c 1.2316 (1.225, 1.279, 1.191)  |g|/|d| step0 0.234 max 0.581  5.93 s/correction
+2026-10-08 02:31:46 f215c608 cycle 3 lam 3000    : V_after/c 1.2161 (1.212, 1.259, 1.177)  |g|/|d| step0 0.702 max 2.520  5.98 s/correction
+2026-10-08 02:32:05 f215c608 cycle 3 lam 1e+04   : V_after/c 1.1439 (1.152, 1.141, 1.139)  |g|/|d| step0 2.341 max 5.813  5.93 s/correction

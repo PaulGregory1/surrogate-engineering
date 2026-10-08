@@ -1,0 +1,35 @@
+[
+ {
+  "id": "2b5953c986dd08f2f91663a74ccd2338",
+  "chamfer": 0.009736534287119066,
+  "fscore_0p02": 0.9987838643952403,
+  "components": 1,
+  "mesh_volume": 0.24174772822735446,
+  "grid_inside_frac": 0.029782772064208984,
+  "encode_decode_s": 2.784512996673584,
+  "z_mean_std": 0.9656903743743896,
+  "posterior_std_mean": 0.1488375961780548
+ },
+ {
+  "id": "20b0a82068ae767c34cc22336880d45c",
+  "chamfer": 0.010781750003060067,
+  "fscore_0p02": 0.9954299950775042,
+  "components": 1,
+  "mesh_volume": 0.28740617167213145,
+  "grid_inside_frac": 0.03517961502075195,
+  "encode_decode_s": 2.497882127761841,
+  "z_mean_std": 1.0257948637008667,
+  "posterior_std_mean": 0.21288827061653137
+ },
+ {
+  "id": "f215c608fe63e97d4aada2bcdc05aa43",
+  "chamfer": 0.008567488934596613,
+  "fscore_0p02": 1.0,
+  "components": 1,
+  "mesh_volume": 0.11072134306925803,
+  "grid_inside_frac": 0.013252735137939453,
+  "encode_decode_s": 2.241988182067871,
+  "z_mean_std": 0.9781332015991211,
+  "posterior_std_mean": 0.19297461211681366
+ }
+]

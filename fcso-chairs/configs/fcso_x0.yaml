@@ -1,0 +1,6 @@
+# FCSO, x0 guidance variant (SPEC): decode D(x; sigma) and differentiate through the denoiser.
+# lam_guid calibrated separately for this mode at milestone 6 (DECISIONS.md, runs/m6/calibration_x0.json).
+base: base.yaml
+method: fcso
+guidance: x0
+lam_guid: 10000.0

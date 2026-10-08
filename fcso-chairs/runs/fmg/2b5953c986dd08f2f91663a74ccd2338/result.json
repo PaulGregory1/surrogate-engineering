@@ -1,0 +1,103 @@
+{
+ "id": "2b5953c986dd08f2f91663a74ccd2338",
+ "name": "fmg",
+ "method": "fmg",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 100,
+ "elapsed_s": 822.6847653792938,
+ "V_initial": 0.2482583224773407,
+ "V_final": 0.14038591086864471,
+ "ratio_final": 0.5654832009970508,
+ "r_final": 0.43451679900294915,
+ "norm_dz_final": 63.582061767578125,
+ "failures": [
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 50,
+   "cycle": 5,
+   "time_s": 41.36435366701335,
+   "ratio": 0.8962199077161358,
+   "r": 0.1037800922838642,
+   "V": 0.22249405086040497
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 250,
+   "cycle": 25,
+   "time_s": 203.44848320703022,
+   "ratio": 0.7962639284422509,
+   "r": 0.2037360715577491,
+   "V": 0.19767914712429047
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 850,
+   "cycle": 85,
+   "time_s": 696.5741644210648,
+   "ratio": 0.685697897773238,
+   "r": 0.314302102226762,
+   "V": 0.1702302098274231
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 980,
+   "cycle": 98,
+   "time_s": 805.8122469622176,
+   "ratio": 0.595139149071081,
+   "r": 0.404860850928919,
+   "V": 0.14774824678897858
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fmg",
+  "method": "fmg",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

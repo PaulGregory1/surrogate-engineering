@@ -1,0 +1,7 @@
+# FCSO (Algorithm 1): Phase 1 from base.yaml (Adam 0.005 reset every cycle, M = 15), then Phase 2 = guided
+# EDM correction (sigma_start 0.25, N = 10 Euler steps), Option B guidance on the noisy state.
+# lam_guid calibrated at milestone 6 (DECISIONS.md, runs/m6/calibration_noisy.json).
+base: base.yaml
+method: fcso
+guidance: noisy
+lam_guid: 1000.0

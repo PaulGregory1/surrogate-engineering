@@ -1,0 +1,64 @@
+{
+ "id": "ce95fa90122dd67e5935ba184b9bc177",
+ "name": "fcso_noguide",
+ "rows": [
+  {
+   "label": "init",
+   "reached": true,
+   "step": 0,
+   "time_s": 0.0,
+   "ratio": 1.0,
+   "r": 0.0,
+   "components": 3,
+   "stray_components": 2,
+   "stray_share": 7.962829092544865e-06,
+   "largest_share": 0.9999920371709075,
+   "mesh_volume": 0.6543632268824813,
+   "mesh_ratio": 1.0,
+   "chamfer_to_initial": 0.0
+  },
+  {
+   "label": "10",
+   "reached": false
+  },
+  {
+   "label": "20",
+   "reached": false
+  },
+  {
+   "label": "30",
+   "reached": false
+  },
+  {
+   "label": "40",
+   "reached": false
+  },
+  {
+   "label": "50",
+   "reached": false
+  },
+  {
+   "label": "60",
+   "reached": false
+  },
+  {
+   "label": "70",
+   "reached": false
+  },
+  {
+   "label": "final",
+   "reached": true,
+   "step": 1000,
+   "time_s": 605.4891982898116,
+   "ratio": 0.9076190193048386,
+   "r": 0.09238098069516143,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.5917540139426238,
+   "mesh_ratio": 0.9043203982623834,
+   "chamfer_to_initial": 0.10521992730628604
+  }
+ ]
+}

@@ -1,0 +1,97 @@
+{
+ "id": "20b0a82068ae767c34cc22336880d45c",
+ "name": "fmg",
+ "method": "fmg",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 100,
+ "elapsed_s": 828.1332016282249,
+ "V_initial": 0.27634432911872864,
+ "V_final": 0.18835699558258057,
+ "ratio_final": 0.681602536166591,
+ "r_final": 0.31839746383340894,
+ "norm_dz_final": 64.07588195800781,
+ "failures": [
+  "40",
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 100,
+   "cycle": 10,
+   "time_s": 82.78116179187782,
+   "ratio": 0.8775491430267983,
+   "r": 0.12245085697320168,
+   "V": 0.2425057291984558
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 180,
+   "cycle": 18,
+   "time_s": 149.12398291681893,
+   "ratio": 0.7997019598758792,
+   "r": 0.20029804012412078,
+   "V": 0.22099310159683228
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 930,
+   "cycle": 93,
+   "time_s": 772.0712742952164,
+   "ratio": 0.6984754615680193,
+   "r": 0.3015245384319807,
+   "V": 0.19301973283290863
+  },
+  "40": {
+   "reached": false
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fmg",
+  "method": "fmg",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

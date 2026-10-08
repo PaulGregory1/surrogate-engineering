@@ -1,0 +1,109 @@
+{
+ "id": "d409dbda0a34a953c9020fbe6b2ff6",
+ "name": "fcso_x0",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 1060.8446592891123,
+ "V_initial": 0.24593281745910645,
+ "V_final": 0.11656013131141663,
+ "ratio_final": 0.47395110793132833,
+ "r_final": 0.5260488920686717,
+ "norm_dz_final": 64.50658416748047,
+ "failures": [
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 30,
+   "cycle": 2,
+   "time_s": 31.89402045798488,
+   "ratio": 0.8126266944703772,
+   "r": 0.18737330552962284,
+   "V": 0.19985157251358032
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 45,
+   "cycle": 3,
+   "time_s": 47.69466666597873,
+   "ratio": 0.7929034979549537,
+   "r": 0.20709650204504626,
+   "V": 0.19500099122524261
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 150,
+   "cycle": 10,
+   "time_s": 158.58975441893563,
+   "ratio": 0.6879425520859084,
+   "r": 0.3120574479140916,
+   "V": 0.16918765008449554
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 330,
+   "cycle": 22,
+   "time_s": 349.0262497109361,
+   "ratio": 0.5946036880633087,
+   "r": 0.40539631193669134,
+   "V": 0.14623256027698517
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 795,
+   "cycle": 53,
+   "time_s": 840.896846997086,
+   "ratio": 0.49753633483500515,
+   "r": 0.5024636651649949,
+   "V": 0.12236051261425018
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_x0",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

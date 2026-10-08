@@ -1,0 +1,32 @@
+.....2b5953c9 mesh 0.2417 V64 0.2483 (+2.69 %)  beta10 +2.51 %  vertex-grid -1.84 %
+20b0a820 mesh 0.2874 V64 0.2763 (-3.85 %)  beta10 -4.04 %  vertex-grid -1.87 %
+f215c608 mesh 0.1107 V64 0.1141 (+3.02 %)  beta10 +2.97 %  vertex-grid -0.37 %
+7824e41c mesh 0.5348 V64 0.5578 (+4.31 %)  beta10 +4.94 %  vertex-grid -5.08 %
+541746dd mesh 0.1594 V64 0.1617 (+1.48 %)  beta10 +0.34 %  vertex-grid -2.68 %
+d409dbda mesh 0.2434 V64 0.2459 (+1.04 %)  beta10 +0.81 %  vertex-grid -3.32 %
+ce95fa90 mesh 0.6544 V64 0.6596 (+0.80 %)  beta10 +1.45 %  vertex-grid -1.60 %
+57dfb295 mesh 0.1206 V64 0.1245 (+3.26 %)  beta10 +3.21 %  vertex-grid -2.23 %
+bbba0832 mesh 0.0662 V64 0.0680 (+2.62 %)  beta10 +2.18 %  vertex-grid -1.93 %
+447856e1 mesh 2.2786 V64 2.2871 (+0.37 %)  beta10 +0.26 %  vertex-grid -5.47 %
+.2b5953c9 V64 0.2483 V48 0.2403 (-3.20 %)
+20b0a820 V64 0.2763 V48 0.2920 (+5.68 %)
+f215c608 V64 0.1141 V48 0.1335 (+17.08 %)
+.{'seconds': 0.5750874169170856, 'before': {'rss_peak_gb': 3.259521484375, 'mps_current_gb': 0.39868855476379395, 'mps_driver_gb': 0.6989288330078125}, 'after': {'rss_peak_gb': 3.259521484375, 'mps_current_gb': 0.39870405197143555, 'mps_driver_gb': 2.472381591796875}, 'peak_mps_current_allocated_gb': 1.4046132564544678}
+.
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49
+  /Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+    warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+tests/test_volume.py::test_volume_vs_mesh
+  /Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:237: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    ar.shape = shape
+
+tests/test_volume.py::test_volume_vs_mesh
+  /Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/skimage/measure/_marching_cubes_lewiner.py:213: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    faces.shape = -1, 3
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 3 warnings in 51.06s

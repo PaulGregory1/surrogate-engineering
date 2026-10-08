@@ -1,0 +1,91 @@
+{
+ "id": "f215c608fe63e97d4aada2bcdc05aa43",
+ "name": "gd_reg",
+ "method": "gd",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 526.5320650812937,
+ "V_initial": 0.11406297236680984,
+ "V_final": 0.09082615375518799,
+ "ratio_final": 0.7962807900806262,
+ "r_final": 0.20371920991937376,
+ "norm_dz_final": 2.743853807449341,
+ "failures": [
+  "30",
+  "40",
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 30,
+   "cycle": 2,
+   "time_s": 15.795734999119304,
+   "ratio": 0.8672281172332612,
+   "r": 0.1327718827667388,
+   "V": 0.098918616771698
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 630,
+   "cycle": 42,
+   "time_s": 331.4074776240159,
+   "ratio": 0.7999017327602689,
+   "r": 0.20009826723973112,
+   "V": 0.09123916923999786
+  },
+  "30": {
+   "reached": false
+  },
+  "40": {
+   "reached": false
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "gd_reg",
+  "method": "gd",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.001,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "noisy",
+  "lam_guid": 0.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

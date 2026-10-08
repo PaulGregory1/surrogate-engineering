@@ -1,0 +1,109 @@
+{
+ "id": "20b0a82068ae767c34cc22336880d45c",
+ "name": "fcso_noguide",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 602.3694805861451,
+ "V_initial": 0.27634432911872864,
+ "V_final": 0.13354243338108063,
+ "ratio_final": 0.4832465128086831,
+ "r_final": 0.5167534871913169,
+ "norm_dz_final": 61.70935821533203,
+ "failures": [
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 90,
+   "cycle": 6,
+   "time_s": 54.15619858400896,
+   "ratio": 0.8912396197950149,
+   "r": 0.10876038020498513,
+   "V": 0.24628901481628418
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 120,
+   "cycle": 8,
+   "time_s": 72.2249723339919,
+   "ratio": 0.7918272881422285,
+   "r": 0.20817271185777153,
+   "V": 0.21881698071956635
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 360,
+   "cycle": 24,
+   "time_s": 216.73622437706217,
+   "ratio": 0.6905538233869614,
+   "r": 0.30944617661303864,
+   "V": 0.19083063304424286
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 675,
+   "cycle": 45,
+   "time_s": 406.285921460134,
+   "ratio": 0.5897087724372632,
+   "r": 0.41029122756273684,
+   "V": 0.1629626750946045
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 975,
+   "cycle": 65,
+   "time_s": 586.9092126691248,
+   "ratio": 0.4885381377798211,
+   "r": 0.511461862220179,
+   "V": 0.13500474393367767
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_noguide",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "none",
+  "lam_guid": 0.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

@@ -1,0 +1,17 @@
+/Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+tables: 2.3 s
+meshes loaded: 60 chair-runs, 4.2 s
+/Users/paul/Documents/fcso-chairs/report/grid_70.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/2b5953c986dd08f2f91663a74ccd2338.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/20b0a82068ae767c34cc22336880d45c.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/f215c608fe63e97d4aada2bcdc05aa43.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/7824e41c86f9be776383f517a315e69e.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/541746ddb47aa2af4e186c8346f12e6.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/d409dbda0a34a953c9020fbe6b2ff6.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/ce95fa90122dd67e5935ba184b9bc177.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/57dfb295c3e699ab2875319f84a135b4.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/bbba083270a2b0d031d7d27dc50ba701.png
+/Users/paul/Documents/fcso-chairs/report/trajectories/447856e1071e8b83c036a40816608369.png
+PNGs: 107.0 s
+/Users/paul/Documents/fcso-chairs/report/viewer.html 217.8 s

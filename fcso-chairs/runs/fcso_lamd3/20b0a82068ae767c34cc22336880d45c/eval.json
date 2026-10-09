@@ -1,0 +1,119 @@
+{
+ "id": "20b0a82068ae767c34cc22336880d45c",
+ "name": "fcso_lamd3",
+ "rows": [
+  {
+   "label": "init",
+   "reached": true,
+   "step": 0,
+   "time_s": 0.0,
+   "ratio": 1.0,
+   "r": 0.0,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.28740617167213145,
+   "mesh_ratio": 1.0,
+   "chamfer_to_initial": 0.0
+  },
+  {
+   "label": "10",
+   "reached": true,
+   "step": 90,
+   "time_s": 86.03050354286097,
+   "ratio": 0.8883408571317337,
+   "r": 0.11165914286826628,
+   "components": 4,
+   "stray_components": 3,
+   "stray_share": 0.010722156622284928,
+   "largest_share": 0.9892778433777151,
+   "mesh_volume": 0.23191902766728756,
+   "mesh_ratio": 0.8069382307205888,
+   "chamfer_to_initial": 0.06320654931612368
+  },
+  {
+   "label": "20",
+   "reached": true,
+   "step": 120,
+   "time_s": 114.65762120997533,
+   "ratio": 0.7841376243087548,
+   "r": 0.21586237569124522,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.22453360824711388,
+   "mesh_ratio": 0.781241428953232,
+   "chamfer_to_initial": 0.0726480872575481
+  },
+  {
+   "label": "30",
+   "reached": true,
+   "step": 285,
+   "time_s": 271.7820064178668,
+   "ratio": 0.6925072717109817,
+   "r": 0.3074927282890183,
+   "components": 2,
+   "stray_components": 1,
+   "stray_share": 0.0004718496735002242,
+   "largest_share": 0.9995281503264998,
+   "mesh_volume": 0.18726236105699465,
+   "mesh_ratio": 0.651559985533716,
+   "chamfer_to_initial": 0.08737232934263539
+  },
+  {
+   "label": "40",
+   "reached": true,
+   "step": 645,
+   "time_s": 615.1598284997744,
+   "ratio": 0.596464930946381,
+   "r": 0.403535069053619,
+   "components": 2,
+   "stray_components": 1,
+   "stray_share": 0.00033011462510834644,
+   "largest_share": 0.9996698853748917,
+   "mesh_volume": 0.15986606294004171,
+   "mesh_ratio": 0.5562374044020685,
+   "chamfer_to_initial": 0.09990191078564956
+  },
+  {
+   "label": "50",
+   "reached": true,
+   "step": 915,
+   "time_s": 872.1305192088475,
+   "ratio": 0.4920903865236169,
+   "r": 0.5079096134763831,
+   "components": 2,
+   "stray_components": 1,
+   "stray_share": 0.0004411930985126489,
+   "largest_share": 0.9995588069014874,
+   "mesh_volume": 0.13344150456940462,
+   "mesh_ratio": 0.46429589104868857,
+   "chamfer_to_initial": 0.11121650994758495
+  },
+  {
+   "label": "60",
+   "reached": false
+  },
+  {
+   "label": "70",
+   "reached": false
+  },
+  {
+   "label": "final",
+   "reached": true,
+   "step": 1000,
+   "time_s": 955.2346499589039,
+   "ratio": 0.4395352014871378,
+   "r": 0.5604647985128621,
+   "components": 2,
+   "stray_components": 1,
+   "stray_share": 0.000578439538631792,
+   "largest_share": 0.9994215604613682,
+   "mesh_volume": 0.12556107428272603,
+   "mesh_ratio": 0.436876750252824,
+   "chamfer_to_initial": 0.11388116589782121
+  }
+ ]
+}

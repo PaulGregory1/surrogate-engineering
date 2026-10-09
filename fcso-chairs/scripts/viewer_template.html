@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>FCSO vs GD: chair trajectories</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --panel: #ffffff; --ink: #1d1d1f; --muted: #6b6b70; --line: #dedcd6;
+    --main: #c8a27a; --stray: #d62728; --accent: #2b5d8c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  #c { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
+  header { position: sticky; top: 0; z-index: 3; background: var(--bg);
+    border-bottom: 1px solid var(--line); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 10px 18px;
+    align-items: center; }
+  header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+  header .ctl { display: flex; gap: 6px; align-items: center; }
+  select, button { font: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--panel); color: var(--ink); cursor: pointer; }
+  select { max-width: 360px; }
+  label.tog { display: flex; gap: 6px; align-items: center; cursor: pointer; user-select: none; }
+  .legend { display: flex; gap: 12px; align-items: center; color: var(--muted); }
+  .sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+  .hint { color: var(--muted); }
+  main { padding: 10px 16px 40px; position: relative; z-index: 2; }
+  #info { margin: 2px 0 10px; color: var(--muted); }
+  #info b { color: var(--ink); }
+  .grid { display: grid; grid-template-columns: 170px repeat(9, minmax(96px, 1fr)); gap: 6px 6px;
+    min-width: 1060px; }
+  .wrap { overflow-x: auto; }
+  .colhead { font-weight: 600; text-align: center; padding: 2px 0; color: var(--muted); font-size: 12px; }
+  .rowhead { padding: 6px 8px 6px 0; display: flex; flex-direction: column; justify-content: center; }
+  .rowhead .m { font-weight: 600; }
+  .rowhead .s { color: var(--muted); font-size: 12px; }
+  .cell { display: flex; flex-direction: column; }
+  .view { position: relative; aspect-ratio: 1 / 1; border: 1px solid var(--line); border-radius: 6px;
+    cursor: grab; touch-action: none; }
+  .view:active { cursor: grabbing; }
+  .view.empty { background: repeating-linear-gradient(45deg, #efeee9, #efeee9 6px, #f6f5f2 6px, #f6f5f2 12px);
+    cursor: default; display: flex; align-items: center; justify-content: center; color: var(--muted);
+    text-align: center; font-size: 12px; padding: 4px; }
+  .cap { text-align: center; padding: 3px 0 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .cap .v { font-weight: 600; }
+  .cap .d { color: var(--muted); font-size: 11px; }
+  .cap .x { color: var(--stray); }
+  .sep { grid-column: 1 / -1; border-top: 1px dashed var(--line); margin: 4px 0; }
+  #status { color: var(--muted); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 14px; max-width: 980px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<header>
+  <h1>FCSO vs GD: matched-progress trajectories</h1>
+  <div class="ctl">
+    <button id="prev" title="previous chair (←)">‹</button>
+    <select id="chair" aria-label="chair"></select>
+    <button id="next" title="next chair (→)">›</button>
+  </div>
+  <label class="tog"><input type="checkbox" id="others"> other runs <span class="hint" id="others-n"></span></label>
+  <button id="reset">reset view</button>
+  <span class="legend"><span><span class="sw" style="background:var(--main)"></span>largest component</span>
+    <span><span class="sw" style="background:var(--stray)"></span>stray components</span></span>
+  <span class="hint">drag to rotate · scroll to zoom · right-drag to pan (all cells move together)</span>
+  <span id="status"></span>
+</header>
+<main>
+  <div id="info"></div>
+  <div class="wrap"><div class="grid" id="grid"></div></div>
+  <footer>
+    Snapshots are the first cycle whose 64³ volume ratio crosses each threshold (matched progress). Under each
+    cell: V/V<sub>0</sub> from the 64³ estimator, gradient steps and wall-clock optimization time at that
+    snapshot; small print: 128³ mesh volume ratio, connected components and stray-volume share. Meshes: marching
+    cubes at 128³ on the logits, level 0, every component kept, decimated to about 20k faces. "final" = state
+    at the 1000-step budget for runs that never reached 70 %. Generated __GENERATED__ by scripts/make_report.py.
+  </footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+"use strict";
+const META = /*__META__*/null;
+const COLS = META.labels;
+const COLNAME = {init: "initial", final: "final"};
+const CAM0 = {pos: [2.6, 1.6, -3.4], target: [0, -0.05, 0], half: 1.3};  // same view as the PNG renders
+const $ = (id) => document.getElementById(id);
+const status = (t) => { $("status").textContent = t || ""; };
+
+if (typeof THREE === "undefined" || typeof THREE.OrbitControls === "undefined") {
+  document.body.insertAdjacentHTML("afterbegin",
+    "<p style='padding:16px;color:#d62728'>three.js could not be loaded from the CDN (cdn.jsdelivr.net). " +
+    "This page needs an internet connection for the library; the meshes are local.</p>");
+  throw new Error("three.js missing");
+}
+
+// ------------------------------------------------------------------ renderer and shared camera
+const canvas = $("c");
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setScissorTest(true);
+const camera = new THREE.OrthographicCamera(-CAM0.half, CAM0.half, CAM0.half, -CAM0.half, 0.01, 50);
+const matMain = new THREE.MeshStandardMaterial({color: 0xc8a27a, roughness: 0.65, metalness: 0.0,
+  side: THREE.DoubleSide});
+const matStray = new THREE.MeshStandardMaterial({color: 0xd62728, roughness: 0.6, metalness: 0.0,
+  side: THREE.DoubleSide});
+let views = [];        // {el, scene, light, controls}
+let geoms = [];        // geometries of the current chair, disposed on switch
+let needRender = true;
+
+function resetCamera() {
+  camera.position.set(...CAM0.pos);
+  camera.up.set(0, 1, 0);
+  camera.zoom = 1;
+  camera.lookAt(...CAM0.target);
+  camera.updateProjectionMatrix();
+  for (const v of views) { v.controls.target.set(...CAM0.target); v.controls.update(); }
+  needRender = true;
+}
+
+function b64(s) {
+  const bin = atob(s), n = bin.length, out = new Uint8Array(n);
+  for (let i = 0; i < n; i++) out[i] = bin.charCodeAt(i);
+  return out.buffer;
+}
+
+function buildGeometry(m) {
+  const q = new Uint16Array(b64(m.p));
+  const pos = new Float32Array(q.length);
+  for (let i = 0; i < q.length; i++) pos[i] = q[i] / 65535 * 2 - 1;
+  const idx = m.i32 ? new Uint32Array(b64(m.i)) : new Uint16Array(b64(m.i));
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  g.setIndex(new THREE.BufferAttribute(idx, 1));
+  g.addGroup(0, m.n * 3, 0);
+  if (m.t > m.n) g.addGroup(m.n * 3, (m.t - m.n) * 3, 1);
+  g.computeVertexNormals();
+  geoms.push(g);
+  return g;
+}
+
+function makeView(el, geom) {
+  const scene = new THREE.Scene();
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x6b6560, 0.45));
+  const light = new THREE.DirectionalLight(0xffffff, 0.7);
+  scene.add(light);
+  scene.add(new THREE.Mesh(geom, [matMain, matStray]));
+  const controls = new THREE.OrbitControls(camera, el);
+  controls.target.set(...CAM0.target);
+  controls.enableDamping = false;
+  controls.update();
+  controls.addEventListener("change", () => {
+    for (const v of views) if (v.controls !== controls) v.controls.target.copy(controls.target);
+    needRender = true;
+  });
+  views.push({el, scene, light, controls});
+}
+
+function clearViews() {
+  for (const v of views) v.controls.dispose();
+  views = [];
+  for (const g of geoms) g.dispose();
+  geoms = [];
+}
+
+function render() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  const pr = renderer.getPixelRatio();
+  if (canvas.width !== Math.floor(w * pr) || canvas.height !== Math.floor(h * pr)) renderer.setSize(w, h, false);
+  renderer.setScissor(0, 0, w, h);
+  renderer.setClearColor(0x000000, 0);
+  renderer.clear();
+  const head = document.querySelector("header").getBoundingClientRect().bottom;
+  for (const v of views) {
+    const r = v.el.getBoundingClientRect();
+    if (r.bottom < head || r.top > h || r.right < 0 || r.left > w) continue;
+    const vt = Math.max(r.top, head);                       // clip under the sticky header
+    const vis = r.bottom - vt;
+    if (vis <= 0) continue;
+    renderer.setViewport(r.left, h - r.bottom, r.width, r.height);
+    renderer.setScissor(r.left, h - r.bottom, r.width, vis);
+    renderer.setClearColor(0xffffff, 1);
+    renderer.clear();
+    camera.left = -CAM0.half * r.width / r.height; camera.right = CAM0.half * r.width / r.height;
+    camera.updateProjectionMatrix();
+    v.light.position.copy(camera.position).addScaledVector(camera.up, 1.2);
+    renderer.render(v.scene, camera);
+  }
+}
+function loop() { if (needRender) { needRender = false; render(); } requestAnimationFrame(loop); }
+window.addEventListener("resize", () => needRender = true);
+window.addEventListener("scroll", () => needRender = true, {passive: true});
+document.querySelector(".wrap").addEventListener("scroll", () => needRender = true, {passive: true});
+
+// ------------------------------------------------------------------ page
+const sel = $("chair");
+META.chairs.forEach((c, i) => {
+  const o = document.createElement("option");
+  o.value = c.id; o.textContent = `${i + 1}. ${c.id.slice(0, 8)}  ${c.name}`;
+  sel.appendChild(o);
+});
+const others = META.methods.filter((m) => !m.primary);
+$("others-n").textContent = others.length ? `(${others.map((m) => m.name).join(", ")})` : "(none yet)";
+$("others").disabled = !others.length;
+
+function fmtT(s) { return s < 600 ? `${s.toFixed(0)} s` : `${(s / 60).toFixed(1)} min`; }
+
+function rowSummary(run) {
+  if (!run || run.status !== "done") return run ? run.status : "not run";
+  if (run.stop === "target") return `70 % reached: step ${run.steps}, ${fmtT(run.time)}`;
+  return `budget stop: ${run.steps} steps, ${fmtT(run.time)}, final V/V₀ ${run.final_ratio.toFixed(2)}`;
+}
+
+function caption(c) {
+  const stray = c.comps > 1 ? `<span class="x">${c.comps - 1} stray, ${(100 * c.stray).toFixed(1)}%</span>`
+                            : "1 component";
+  return `<div class="cap"><div class="v">V/V₀ ${c.ratio.toFixed(2)}</div>` +
+         `<div>step ${c.step} · ${fmtT(c.time)}</div>` +
+         `<div class="d">mesh ${c.mesh.toFixed(2)} · ${stray}</div></div>`;
+}
+
+function show(id) {
+  const chair = META.chairs.find((c) => c.id === id) || META.chairs[0];
+  sel.value = chair.id;
+  if (location.hash.slice(1) !== chair.id) history.replaceState(null, "", "#" + chair.id);
+  $("info").innerHTML = `<b>${chair.id}</b> · ${chair.name}`;
+  const data = window.FCSO_MESHES && window.FCSO_MESHES[chair.id];
+  if (!data) {
+    status("loading meshes…");
+    const s = document.createElement("script");
+    s.src = `meshes/${chair.id}.js`;
+    s.onload = () => { status(""); if (sel.value === chair.id) show(chair.id); };
+    s.onerror = () => status(`could not load meshes/${chair.id}.js`);
+    document.head.appendChild(s);
+    clearViews(); $("grid").innerHTML = ""; needRender = true;
+    return;
+  }
+  build(chair, data);
+}
+
+function build(chair, data) {
+  clearViews();
+  const grid = $("grid");
+  grid.innerHTML = "";
+  const add = (cls, html) => { const d = document.createElement("div"); d.className = cls;
+    if (html !== undefined) d.innerHTML = html; grid.appendChild(d); return d; };
+  add("colhead", "");
+  for (const l of COLS) add("colhead", COLNAME[l] || `${l} %`);
+  const showOthers = $("others").checked;
+  const initGeom = data.init ? buildGeometry(data.init) : null;
+  let first = true;
+  for (const m of META.methods) {
+    if (!m.primary && !showOthers) continue;
+    if (!m.primary && first) { add("sep"); first = false; }
+    const run = chair.runs[m.key];
+    add("rowhead", `<div class="m">${m.name}</div><div class="s">${rowSummary(run)}</div>`);
+    for (const l of COLS) {
+      const cellEl = add("cell");
+      const v = document.createElement("div");
+      cellEl.appendChild(v);
+      const c = run && run.status === "done" && run.cells ? run.cells[l] : null;
+      const mesh = l === "init" ? data.init : (data.runs[m.key] || {})[l];
+      if (c && c.state === "ok" && mesh) {
+        v.className = "view";
+        makeView(v, l === "init" ? initGeom : buildGeometry(mesh));
+        cellEl.insertAdjacentHTML("beforeend", caption(c));
+      } else {
+        v.className = "view empty";
+        v.textContent = !c ? (run ? run.status : "not run")
+                      : c.state === "reached" ? "70 % reached" : "not reached";
+        cellEl.insertAdjacentHTML("beforeend", `<div class="cap d">&nbsp;</div>`);
+      }
+    }
+  }
+  resetCameraKeep();
+  needRender = true;
+}
+
+// keep the user's camera when switching chairs, only re-sync the controls
+function resetCameraKeep() {
+  const t = views.length ? views[0].controls.target.clone() : new THREE.Vector3(...CAM0.target);
+  for (const v of views) { v.controls.target.copy(t); v.controls.update(); }
+}
+
+function step(d) {
+  const i = META.chairs.findIndex((c) => c.id === sel.value);
+  show(META.chairs[(i + d + META.chairs.length) % META.chairs.length].id);
+}
+sel.addEventListener("change", () => show(sel.value));
+$("prev").addEventListener("click", () => step(-1));
+$("next").addEventListener("click", () => step(1));
+$("others").addEventListener("change", () => show(sel.value));
+$("reset").addEventListener("click", resetCamera);
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "SELECT") return;
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+
+resetCamera();
+const h0 = location.hash.slice(1);
+show(META.chairs.find((c) => c.id.startsWith(h0) && h0) ? META.chairs.find((c) => c.id.startsWith(h0)).id
+                                                        : META.chairs[0].id);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

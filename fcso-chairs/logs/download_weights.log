@@ -1,0 +1,11 @@
+weights/ae/kl_d512_m512_l8/:
+total 2492408
+drwxr-xr-x  3 paul  staff          96  8 oct 00:48 .
+drwxr-xr-x  3 paul  staff          96  8 oct 00:48 ..
+-rw-r--r--  1 paul  staff  1273856511  8 oct 00:51 checkpoint-199.pth
+
+weights/dm/kl_d512_m512_l8_d24_edm/:
+total 3868672
+drwxr-xr-x  3 paul  staff          96  8 oct 00:51 .
+drwxr-xr-x  3 paul  staff          96  8 oct 00:48 ..
+-rw-r--r--  1 paul  staff  1971137566  8 oct 00:55 checkpoint-499.pth

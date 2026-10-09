@@ -1,0 +1,97 @@
+{
+ "id": "d409dbda0a34a953c9020fbe6b2ff6",
+ "name": "fcso_noguide",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 605.4223830351839,
+ "V_initial": 0.24593281745910645,
+ "V_final": 0.15578295290470123,
+ "ratio_final": 0.6334370276980409,
+ "r_final": 0.3665629723019591,
+ "norm_dz_final": 61.65434646606445,
+ "failures": [
+  "40",
+  "50",
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 30,
+   "cycle": 2,
+   "time_s": 18.130304125137627,
+   "ratio": 0.8758052460599293,
+   "r": 0.12419475394007073,
+   "V": 0.21538925170898438
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 165,
+   "cycle": 11,
+   "time_s": 99.88100412290078,
+   "ratio": 0.7944550356416812,
+   "r": 0.20554496435831882,
+   "V": 0.19538256525993347
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 555,
+   "cycle": 37,
+   "time_s": 335.9578149560839,
+   "ratio": 0.6902175388287347,
+   "r": 0.3097824611712653,
+   "V": 0.16974714398384094
+  },
+  "40": {
+   "reached": false
+  },
+  "50": {
+   "reached": false
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_noguide",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "none",
+  "lam_guid": 0.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

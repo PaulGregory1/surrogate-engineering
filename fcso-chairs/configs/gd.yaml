@@ -1,0 +1,4 @@
+# GD: Phase 1 only, no regularization (SPEC "Methods compared", App. B).
+base: base.yaml
+method: gd
+lam_reg: 0.0

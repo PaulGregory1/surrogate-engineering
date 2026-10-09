@@ -1,0 +1,11 @@
+.venv/
+weights/
+data/
+paper/
+third_party/
+runs/**/*.npz
+runs/**/*.pt
+report/viewer_check/
+REPORT.html
+__pycache__/
+.pytest_cache/

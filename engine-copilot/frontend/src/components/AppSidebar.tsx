@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Box, Grid2x2, LayoutDashboard, Wind } from 'lucide-react'
+import { Armchair, Box, Grid2x2, LayoutDashboard, Wind } from 'lucide-react'
 import { getHealth } from '@/api'
 import { Mark } from '@/components/Mark'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ const NAV = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/flow', label: 'Flow Lab', icon: Wind, end: false },
   { to: '/stress', label: 'Stress Lab', icon: Grid2x2, end: false },
+  { to: '/fcso', label: 'FCSO Review', icon: Armchair, end: false },
   { to: '/bracket', label: 'Bracket Lab', icon: Box, end: false },
 ]
 

@@ -1,0 +1,279 @@
+/Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+2026-10-08 08:53:37 === run_opt fcso_noguide: 10 chairs, out /Users/paul/Documents/fcso-chairs/runs/fcso_noguide, config {"name": "fcso_noguide", "method": "fcso", "optimizer": "adam", "lr": 0.005, "steps_per_cycle": 15, "lam_reg": 0.0, "max_steps": 1000, "target": 0.7, "thresholds": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7], "opt_res": 64, "eval_res": 64, "beta": 1.0, "seed": 0, "encode_seed": 0, "sigma_start": 0.25, "n_ode": 10, "solver": "euler", "guidance": "none", "lam_guid": 0.0, "fmg_factor": 0.97, "extra": {}}
+2026-10-08 08:53:38 device mps, models loaded in 1.7 s
+2026-10-08 08:53:40 [2b5953c9] start: V0 0.24826 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 08:53:49 [2b5953c9] cycle   1 step   15  V/V0 0.9308  P1 0.8557 -> P2 0.9308 (c/V0 0.8557, |g|/|d| 0.00)  |z-z_s| 11.99  |g| 0.0238  9.0 s/cycle  total 9.0 s
+2026-10-08 08:53:58 [2b5953c9]   snapshot 10%: step 30, 18.1 s, V/V0 0.822
+2026-10-08 08:54:07 [2b5953c9]   snapshot 20%: step 45, 27.1 s, V/V0 0.757
+2026-10-08 08:54:25 [2b5953c9]   snapshot 30%: step 75, 45.1 s, V/V0 0.697
+2026-10-08 08:54:34 [2b5953c9] cycle   6 step   90  V/V0 0.6778  P1 0.5517 -> P2 0.6778 (c/V0 0.5517, |g|/|d| 0.00)  |z-z_s| 27.36  |g| 0.0237  9.0 s/cycle  total 54.1 s
+2026-10-08 08:55:19 [2b5953c9]   snapshot 40%: step 165, 99.0 s, V/V0 0.594
+2026-10-08 08:55:19 [2b5953c9] cycle  11 step  165  V/V0 0.5942  P1 0.4505 -> P2 0.5942 (c/V0 0.4505, |g|/|d| 0.00)  |z-z_s| 34.71  |g| 0.0485  9.0 s/cycle  total 99.0 s
+2026-10-08 08:56:04 [2b5953c9]   snapshot 50%: step 240, 144.1 s, V/V0 0.495
+2026-10-08 08:56:04 [2b5953c9] cycle  16 step  240  V/V0 0.4950  P1 0.3956 -> P2 0.4950 (c/V0 0.3956, |g|/|d| 0.00)  |z-z_s| 40.80  |g| 0.0258  9.0 s/cycle  total 144.1 s
+2026-10-08 08:56:49 [2b5953c9] cycle  21 step  315  V/V0 0.4021  P1 0.3208 -> P2 0.4021 (c/V0 0.3208, |g|/|d| 0.00)  |z-z_s| 44.71  |g| 0.0315  9.0 s/cycle  total 189.0 s
+2026-10-08 08:56:58 [2b5953c9]   snapshot 60%: step 330, 198.0 s, V/V0 0.364
+2026-10-08 08:57:34 [2b5953c9] cycle  26 step  390  V/V0 0.3453  P1 0.2240 -> P2 0.3453 (c/V0 0.2240, |g|/|d| 0.00)  |z-z_s| 48.37  |g| 0.0420  9.0 s/cycle  total 233.9 s
+2026-10-08 08:58:19 [2b5953c9] cycle  31 step  465  V/V0 0.3309  P1 0.1999 -> P2 0.3309 (c/V0 0.1999, |g|/|d| 0.00)  |z-z_s| 50.16  |g| 0.1372  9.1 s/cycle  total 278.9 s
+2026-10-08 08:59:04 [2b5953c9] cycle  36 step  540  V/V0 0.3214  P1 0.1864 -> P2 0.3214 (c/V0 0.1864, |g|/|d| 0.00)  |z-z_s| 52.29  |g| 0.0309  9.0 s/cycle  total 323.9 s
+2026-10-08 08:59:49 [2b5953c9] cycle  41 step  615  V/V0 0.3196  P1 0.1874 -> P2 0.3196 (c/V0 0.1874, |g|/|d| 0.00)  |z-z_s| 54.35  |g| 0.0434  9.0 s/cycle  total 368.8 s
+2026-10-08 09:00:34 [2b5953c9] cycle  46 step  690  V/V0 0.3177  P1 0.2027 -> P2 0.3177 (c/V0 0.2027, |g|/|d| 0.00)  |z-z_s| 55.25  |g| 0.0538  9.0 s/cycle  total 413.8 s
+2026-10-08 09:01:10 [2b5953c9]   snapshot 70%: step 750, 449.8 s, V/V0 0.298
+2026-10-08 09:01:10 [2b5953c9] cycle  50 step  750  V/V0 0.2978  P1 0.1635 -> P2 0.2978 (c/V0 0.1635, |g|/|d| 0.00)  |z-z_s| 56.51  |g| 0.0356  8.9 s/cycle  total 449.8 s
+2026-10-08 09:01:10 [2b5953c9] done (target): steps 750, V/V0 0.298, 449.8 s, failures none
+2026-10-08 09:01:13 [2b5953c9] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2417, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 09:01:15 [2b5953c9] eval 10: {"label": "10", "reached": true, "step": 30, "time_s": 18.0591, "ratio": 0.8223, "r": 0.1777, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2001, "mesh_ratio": 0.8276, "chamfer_to_initial": 0.0329}
+2026-10-08 09:01:18 [2b5953c9] eval 20: {"label": "20", "reached": true, "step": 45, "time_s": 27.0586, "ratio": 0.7567, "r": 0.2433, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1896, "mesh_ratio": 0.7842, "chamfer_to_initial": 0.0356}
+2026-10-08 09:01:20 [2b5953c9] eval 30: {"label": "30", "reached": true, "step": 75, "time_s": 45.0903, "ratio": 0.6972, "r": 0.3028, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1738, "mesh_ratio": 0.7189, "chamfer_to_initial": 0.0403}
+2026-10-08 09:01:23 [2b5953c9] eval 40: {"label": "40", "reached": true, "step": 165, "time_s": 99.0348, "ratio": 0.5942, "r": 0.4058, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.146, "mesh_ratio": 0.604, "chamfer_to_initial": 0.0513}
+2026-10-08 09:01:25 [2b5953c9] eval 50: {"label": "50", "reached": true, "step": 240, "time_s": 144.0653, "ratio": 0.495, "r": 0.505, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.126, "mesh_ratio": 0.5211, "chamfer_to_initial": 0.0607}
+2026-10-08 09:01:27 [2b5953c9] eval 60: {"label": "60", "reached": true, "step": 330, "time_s": 198.0392, "ratio": 0.3642, "r": 0.6358, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0901, "mesh_ratio": 0.3726, "chamfer_to_initial": 0.071}
+2026-10-08 09:01:30 [2b5953c9] eval 70: {"label": "70", "reached": true, "step": 750, "time_s": 449.7592, "ratio": 0.2978, "r": 0.7022, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0693, "mesh_ratio": 0.2866, "chamfer_to_initial": 0.0777}
+2026-10-08 09:01:31 [2b5953c9] evaluation 21.7 s
+2026-10-08 09:01:32 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.34}
+2026-10-08 09:01:32 [20b0a820] start: V0 0.27634 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 09:01:41 [20b0a820] cycle   1 step   15  V/V0 1.0476  P1 0.9233 -> P2 1.0476 (c/V0 0.9233, |g|/|d| 0.00)  |z-z_s| 13.32  |g| 0.0755  9.1 s/cycle  total 9.1 s
+2026-10-08 09:02:26 [20b0a820]   snapshot 10%: step 90, 54.2 s, V/V0 0.891
+2026-10-08 09:02:26 [20b0a820] cycle   6 step   90  V/V0 0.8912  P1 0.8201 -> P2 0.8912 (c/V0 0.8201, |g|/|d| 0.00)  |z-z_s| 29.57  |g| 0.0285  9.0 s/cycle  total 54.2 s
+2026-10-08 09:02:44 [20b0a820]   snapshot 20%: step 120, 72.2 s, V/V0 0.792
+2026-10-08 09:03:11 [20b0a820] cycle  11 step  165  V/V0 0.7630  P1 0.6556 -> P2 0.7630 (c/V0 0.6556, |g|/|d| 0.00)  |z-z_s| 37.37  |g| 0.0307  9.0 s/cycle  total 99.2 s
+2026-10-08 09:03:56 [20b0a820] cycle  16 step  240  V/V0 0.7377  P1 0.6487 -> P2 0.7377 (c/V0 0.6487, |g|/|d| 0.00)  |z-z_s| 43.23  |g| 0.0240  9.1 s/cycle  total 144.4 s
+2026-10-08 09:04:42 [20b0a820] cycle  21 step  315  V/V0 0.7134  P1 0.6211 -> P2 0.7134 (c/V0 0.6211, |g|/|d| 0.00)  |z-z_s| 46.71  |g| 0.0274  9.1 s/cycle  total 189.6 s
+2026-10-08 09:05:09 [20b0a820]   snapshot 30%: step 360, 216.7 s, V/V0 0.691
+2026-10-08 09:05:27 [20b0a820] cycle  26 step  390  V/V0 0.6900  P1 0.6162 -> P2 0.6900 (c/V0 0.6162, |g|/|d| 0.00)  |z-z_s| 49.71  |g| 0.0228  9.0 s/cycle  total 234.8 s
+2026-10-08 09:06:12 [20b0a820] cycle  31 step  465  V/V0 0.6585  P1 0.5925 -> P2 0.6585 (c/V0 0.5925, |g|/|d| 0.00)  |z-z_s| 51.97  |g| 0.0316  9.0 s/cycle  total 279.9 s
+2026-10-08 09:06:57 [20b0a820] cycle  36 step  540  V/V0 0.6493  P1 0.5710 -> P2 0.6493 (c/V0 0.5710, |g|/|d| 0.00)  |z-z_s| 54.27  |g| 0.1078  9.1 s/cycle  total 325.1 s
+2026-10-08 09:07:42 [20b0a820] cycle  41 step  615  V/V0 0.6122  P1 0.5403 -> P2 0.6122 (c/V0 0.5403, |g|/|d| 0.00)  |z-z_s| 55.39  |g| 0.0319  9.0 s/cycle  total 370.2 s
+2026-10-08 09:08:18 [20b0a820]   snapshot 40%: step 675, 406.3 s, V/V0 0.590
+2026-10-08 09:08:27 [20b0a820] cycle  46 step  690  V/V0 0.5753  P1 0.5291 -> P2 0.5753 (c/V0 0.5291, |g|/|d| 0.00)  |z-z_s| 57.36  |g| 0.1697  9.0 s/cycle  total 415.3 s
+2026-10-08 09:09:13 [20b0a820] cycle  51 step  765  V/V0 0.5390  P1 0.4813 -> P2 0.5390 (c/V0 0.4813, |g|/|d| 0.00)  |z-z_s| 59.13  |g| 0.0143  9.0 s/cycle  total 460.4 s
+2026-10-08 09:09:58 [20b0a820] cycle  56 step  840  V/V0 0.5228  P1 0.4568 -> P2 0.5228 (c/V0 0.4568, |g|/|d| 0.00)  |z-z_s| 60.20  |g| 0.0133  9.1 s/cycle  total 505.7 s
+2026-10-08 09:10:43 [20b0a820] cycle  61 step  915  V/V0 0.5126  P1 0.4511 -> P2 0.5126 (c/V0 0.4511, |g|/|d| 0.00)  |z-z_s| 60.74  |g| 0.0383  9.1 s/cycle  total 550.8 s
+2026-10-08 09:11:19 [20b0a820]   snapshot 50%: step 975, 586.9 s, V/V0 0.489
+2026-10-08 09:11:28 [20b0a820] cycle  66 step  990  V/V0 0.4854  P1 0.4424 -> P2 0.4854 (c/V0 0.4424, |g|/|d| 0.00)  |z-z_s| 61.57  |g| 0.0110  9.0 s/cycle  total 596.0 s
+2026-10-08 09:11:35 [20b0a820] cycle  67 step 1000  V/V0 0.4832  P1 0.4479 -> P2 0.4832 (c/V0 0.4479, |g|/|d| 0.00)  |z-z_s| 61.71  |g| 0.0102  6.4 s/cycle  total 602.4 s
+2026-10-08 09:11:35 [20b0a820] done (budget): steps 1000, V/V0 0.483, 602.4 s, failures ['60', '70']
+2026-10-08 09:11:37 [20b0a820] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2874, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 09:11:40 [20b0a820] eval 10: {"label": "10", "reached": true, "step": 90, "time_s": 54.1562, "ratio": 0.8912, "r": 0.1088, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.232, "mesh_ratio": 0.8073, "chamfer_to_initial": 0.0574}
+2026-10-08 09:11:42 [20b0a820] eval 20: {"label": "20", "reached": true, "step": 120, "time_s": 72.225, "ratio": 0.7918, "r": 0.2082, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2196, "mesh_ratio": 0.7641, "chamfer_to_initial": 0.0615}
+2026-10-08 09:11:45 [20b0a820] eval 30: {"label": "30", "reached": true, "step": 360, "time_s": 216.7362, "ratio": 0.6906, "r": 0.3094, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1876, "mesh_ratio": 0.6528, "chamfer_to_initial": 0.0882}
+2026-10-08 09:11:47 [20b0a820] eval 40: {"label": "40", "reached": true, "step": 675, "time_s": 406.2859, "ratio": 0.5897, "r": 0.4103, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1595, "mesh_ratio": 0.5548, "chamfer_to_initial": 0.1022}
+2026-10-08 09:11:50 [20b0a820] eval 50: {"label": "50", "reached": true, "step": 975, "time_s": 586.9092, "ratio": 0.4885, "r": 0.5115, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1345, "mesh_ratio": 0.4679, "chamfer_to_initial": 0.1139}
+2026-10-08 09:11:52 [20b0a820] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 602.3695, "ratio": 0.4832, "r": 0.5168, "components": 2, "stray_components": 1, "stray_share": 0.0012, "largest_share": 0.9988, "mesh_volume": 0.1325, "mesh_ratio": 0.4609, "chamfer_to_initial": 0.1149}
+2026-10-08 09:11:53 [20b0a820] evaluation 18.3 s
+2026-10-08 09:11:53 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.37}
+2026-10-08 09:11:53 [f215c608] start: V0 0.11406 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 09:12:02 [f215c608] cycle   1 step   15  V/V0 1.0460  P1 0.9210 -> P2 1.0460 (c/V0 0.9210, |g|/|d| 0.00)  |z-z_s| 12.52  |g| 0.0082  9.1 s/cycle  total 9.1 s
+2026-10-08 09:12:21 [f215c608]   snapshot 10%: step 45, 27.2 s, V/V0 0.897
+2026-10-08 09:12:48 [f215c608] cycle   6 step   90  V/V0 0.8740  P1 0.7606 -> P2 0.8740 (c/V0 0.7606, |g|/|d| 0.00)  |z-z_s| 28.15  |g| 0.0100  9.1 s/cycle  total 54.3 s
+2026-10-08 09:13:24 [f215c608]   snapshot 20%: step 150, 90.5 s, V/V0 0.798
+2026-10-08 09:13:33 [f215c608] cycle  11 step  165  V/V0 0.8108  P1 0.6771 -> P2 0.8108 (c/V0 0.6771, |g|/|d| 0.00)  |z-z_s| 34.93  |g| 0.1502  9.0 s/cycle  total 99.5 s
+2026-10-08 09:14:18 [f215c608] cycle  16 step  240  V/V0 0.8902  P1 0.6716 -> P2 0.8902 (c/V0 0.6716, |g|/|d| 0.00)  |z-z_s| 40.03  |g| 0.0171  9.1 s/cycle  total 144.9 s
+2026-10-08 09:15:04 [f215c608] cycle  21 step  315  V/V0 0.7110  P1 0.5901 -> P2 0.7110 (c/V0 0.5901, |g|/|d| 0.00)  |z-z_s| 43.79  |g| 0.0102  9.0 s/cycle  total 190.5 s
+2026-10-08 09:15:13 [f215c608]   snapshot 30%: step 330, 199.8 s, V/V0 0.654
+2026-10-08 09:15:50 [f215c608] cycle  26 step  390  V/V0 0.8459  P1 0.5955 -> P2 0.8459 (c/V0 0.5955, |g|/|d| 0.00)  |z-z_s| 46.26  |g| 0.0459  9.0 s/cycle  total 236.1 s
+2026-10-08 09:16:35 [f215c608] cycle  31 step  465  V/V0 0.6850  P1 0.5866 -> P2 0.6850 (c/V0 0.5866, |g|/|d| 0.00)  |z-z_s| 48.21  |g| 0.0054  9.1 s/cycle  total 281.3 s
+2026-10-08 09:17:20 [f215c608] cycle  36 step  540  V/V0 0.6583  P1 0.5880 -> P2 0.6583 (c/V0 0.5880, |g|/|d| 0.00)  |z-z_s| 50.10  |g| 0.0078  9.1 s/cycle  total 326.5 s
+2026-10-08 09:18:05 [f215c608] cycle  41 step  615  V/V0 0.6376  P1 0.5774 -> P2 0.6376 (c/V0 0.5774, |g|/|d| 0.00)  |z-z_s| 52.38  |g| 0.0105  9.1 s/cycle  total 371.7 s
+2026-10-08 09:18:50 [f215c608] cycle  46 step  690  V/V0 0.7340  P1 0.5987 -> P2 0.7340 (c/V0 0.5987, |g|/|d| 0.00)  |z-z_s| 54.29  |g| 0.0041  9.0 s/cycle  total 416.8 s
+2026-10-08 09:19:36 [f215c608] cycle  51 step  765  V/V0 0.7850  P1 0.5914 -> P2 0.7850 (c/V0 0.5914, |g|/|d| 0.00)  |z-z_s| 55.43  |g| 0.0096  9.0 s/cycle  total 462.0 s
+2026-10-08 09:20:21 [f215c608] cycle  56 step  840  V/V0 0.7671  P1 0.5957 -> P2 0.7671 (c/V0 0.5957, |g|/|d| 0.00)  |z-z_s| 56.62  |g| 0.0100  9.0 s/cycle  total 507.2 s
+2026-10-08 09:21:06 [f215c608] cycle  61 step  915  V/V0 0.8117  P1 0.5767 -> P2 0.8117 (c/V0 0.5767, |g|/|d| 0.00)  |z-z_s| 57.76  |g| 0.0172  9.0 s/cycle  total 552.3 s
+2026-10-08 09:21:51 [f215c608] cycle  66 step  990  V/V0 0.7238  P1 0.5792 -> P2 0.7238 (c/V0 0.5792, |g|/|d| 0.00)  |z-z_s| 58.53  |g| 0.0136  9.0 s/cycle  total 597.6 s
+2026-10-08 09:21:58 [f215c608] cycle  67 step 1000  V/V0 0.7975  P1 0.5959 -> P2 0.7975 (c/V0 0.5959, |g|/|d| 0.00)  |z-z_s| 58.80  |g| 0.0049  6.4 s/cycle  total 604.0 s
+2026-10-08 09:21:58 [f215c608] done (budget): steps 1000, V/V0 0.797, 604.0 s, failures ['40', '50', '60', '70']
+2026-10-08 09:22:00 [f215c608] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1107, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 09:22:03 [f215c608] eval 10: {"label": "10", "reached": true, "step": 45, "time_s": 27.1933, "ratio": 0.8973, "r": 0.1027, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1228, "mesh_ratio": 1.1087, "chamfer_to_initial": 0.0389}
+2026-10-08 09:22:05 [f215c608] eval 20: {"label": "20", "reached": true, "step": 150, "time_s": 90.4748, "ratio": 0.7983, "r": 0.2017, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1002, "mesh_ratio": 0.9051, "chamfer_to_initial": 0.0434}
+2026-10-08 09:22:08 [f215c608] eval 30: {"label": "30", "reached": true, "step": 330, "time_s": 199.7578, "ratio": 0.6539, "r": 0.3461, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0977, "mesh_ratio": 0.8821, "chamfer_to_initial": 0.0446}
+2026-10-08 09:22:10 [f215c608] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 604.0295, "ratio": 0.7975, "r": 0.2025, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0942, "mesh_ratio": 0.851, "chamfer_to_initial": 0.0454}
+2026-10-08 09:22:11 [f215c608] evaluation 13.0 s
+2026-10-08 09:22:11 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.4}
+2026-10-08 09:22:11 [7824e41c] start: V0 0.55784 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 09:22:20 [7824e41c] cycle   1 step   15  V/V0 0.9520  P1 0.8745 -> P2 0.9520 (c/V0 0.8745, |g|/|d| 0.00)  |z-z_s| 12.44  |g| 0.0345  9.0 s/cycle  total 9.0 s
+2026-10-08 09:23:06 [7824e41c] cycle   6 step   90  V/V0 0.9680  P1 0.8772 -> P2 0.9680 (c/V0 0.8772, |g|/|d| 0.00)  |z-z_s| 27.77  |g| 0.0394  9.1 s/cycle  total 54.4 s
+2026-10-08 09:23:33 [7824e41c]   snapshot 10%: step 135, 81.6 s, V/V0 0.871
+2026-10-08 09:23:51 [7824e41c] cycle  11 step  165  V/V0 0.8475  P1 0.8012 -> P2 0.8475 (c/V0 0.8012, |g|/|d| 0.00)  |z-z_s| 35.65  |g| 0.0274  9.2 s/cycle  total 99.8 s
+2026-10-08 09:24:36 [7824e41c] cycle  16 step  240  V/V0 0.8098  P1 0.7415 -> P2 0.8098 (c/V0 0.7415, |g|/|d| 0.00)  |z-z_s| 41.05  |g| 0.0224  9.1 s/cycle  total 145.0 s
+2026-10-08 09:24:54 [7824e41c]   snapshot 20%: step 270, 163.2 s, V/V0 0.797
+2026-10-08 09:25:22 [7824e41c] cycle  21 step  315  V/V0 0.7689  P1 0.7176 -> P2 0.7689 (c/V0 0.7176, |g|/|d| 0.00)  |z-z_s| 45.51  |g| 0.0262  9.0 s/cycle  total 190.3 s
+2026-10-08 09:26:07 [7824e41c] cycle  26 step  390  V/V0 0.7164  P1 0.6549 -> P2 0.7164 (c/V0 0.6549, |g|/|d| 0.00)  |z-z_s| 49.13  |g| 0.0337  9.1 s/cycle  total 235.6 s
+2026-10-08 09:26:52 [7824e41c] cycle  31 step  465  V/V0 0.7005  P1 0.6353 -> P2 0.7005 (c/V0 0.6353, |g|/|d| 0.00)  |z-z_s| 51.10  |g| 0.0238  9.1 s/cycle  total 280.9 s
+2026-10-08 09:27:01 [7824e41c]   snapshot 30%: step 480, 290.0 s, V/V0 0.694
+2026-10-08 09:27:38 [7824e41c] cycle  36 step  540  V/V0 0.6853  P1 0.6272 -> P2 0.6853 (c/V0 0.6272, |g|/|d| 0.00)  |z-z_s| 53.23  |g| 0.0216  9.1 s/cycle  total 326.3 s
+2026-10-08 09:28:23 [7824e41c] cycle  41 step  615  V/V0 0.6636  P1 0.6034 -> P2 0.6636 (c/V0 0.6034, |g|/|d| 0.00)  |z-z_s| 55.23  |g| 0.0207  9.1 s/cycle  total 371.5 s
+2026-10-08 09:29:08 [7824e41c] cycle  46 step  690  V/V0 0.6643  P1 0.5954 -> P2 0.6643 (c/V0 0.5954, |g|/|d| 0.00)  |z-z_s| 57.05  |g| 0.0263  9.0 s/cycle  total 416.9 s
+2026-10-08 09:29:54 [7824e41c] cycle  51 step  765  V/V0 0.6520  P1 0.5949 -> P2 0.6520 (c/V0 0.5949, |g|/|d| 0.00)  |z-z_s| 58.54  |g| 0.0230  9.0 s/cycle  total 462.4 s
+2026-10-08 09:30:39 [7824e41c] cycle  56 step  840  V/V0 0.6385  P1 0.5841 -> P2 0.6385 (c/V0 0.5841, |g|/|d| 0.00)  |z-z_s| 59.95  |g| 0.0271  9.1 s/cycle  total 507.7 s
+2026-10-08 09:31:25 [7824e41c] cycle  61 step  915  V/V0 0.6459  P1 0.5870 -> P2 0.6459 (c/V0 0.5870, |g|/|d| 0.00)  |z-z_s| 61.40  |g| 0.0207  9.1 s/cycle  total 553.1 s
+2026-10-08 09:32:10 [7824e41c] cycle  66 step  990  V/V0 0.6408  P1 0.5631 -> P2 0.6408 (c/V0 0.5631, |g|/|d| 0.00)  |z-z_s| 62.61  |g| 0.0194  9.1 s/cycle  total 598.4 s
+2026-10-08 09:32:16 [7824e41c] cycle  67 step 1000  V/V0 0.6442  P1 0.5836 -> P2 0.6442 (c/V0 0.5836, |g|/|d| 0.00)  |z-z_s| 62.81  |g| 0.0278  6.4 s/cycle  total 604.9 s
+2026-10-08 09:32:16 [7824e41c] done (budget): steps 1000, V/V0 0.644, 604.9 s, failures ['40', '50', '60', '70']
+2026-10-08 09:32:19 [7824e41c] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.5348, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 09:32:22 [7824e41c] eval 10: {"label": "10", "reached": true, "step": 135, "time_s": 81.5596, "ratio": 0.8715, "r": 0.1285, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.4969, "mesh_ratio": 0.9292, "chamfer_to_initial": 0.0527}
+2026-10-08 09:32:24 [7824e41c] eval 20: {"label": "20", "reached": true, "step": 270, "time_s": 163.1605, "ratio": 0.7973, "r": 0.2027, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.4473, "mesh_ratio": 0.8363, "chamfer_to_initial": 0.0646}
+2026-10-08 09:32:27 [7824e41c] eval 30: {"label": "30", "reached": true, "step": 480, "time_s": 290.0033, "ratio": 0.6944, "r": 0.3056, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.3842, "mesh_ratio": 0.7184, "chamfer_to_initial": 0.0751}
+2026-10-08 09:32:30 [7824e41c] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 604.8514, "ratio": 0.6442, "r": 0.3558, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.3496, "mesh_ratio": 0.6538, "chamfer_to_initial": 0.0939}
+2026-10-08 09:32:31 [7824e41c] evaluation 14.2 s
+2026-10-08 09:32:31 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.44}
+2026-10-08 09:32:31 [541746dd] start: V0 0.16174 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 09:32:40 [541746dd] cycle   1 step   15  V/V0 0.9281  P1 0.7303 -> P2 0.9281 (c/V0 0.7303, |g|/|d| 0.00)  |z-z_s| 11.82  |g| 0.0246  9.1 s/cycle  total 9.1 s
+2026-10-08 09:32:49 [541746dd]   snapshot 10%: step 30, 18.3 s, V/V0 0.900
+2026-10-08 09:33:26 [541746dd] cycle   6 step   90  V/V0 0.8217  P1 0.5608 -> P2 0.8217 (c/V0 0.5608, |g|/|d| 0.00)  |z-z_s| 25.68  |g| 0.0403  9.0 s/cycle  total 54.6 s
+2026-10-08 09:33:44 [541746dd]   snapshot 20%: step 120, 72.7 s, V/V0 0.800
+2026-10-08 09:34:11 [541746dd] cycle  11 step  165  V/V0 0.7834  P1 0.5065 -> P2 0.7834 (c/V0 0.5065, |g|/|d| 0.00)  |z-z_s| 32.65  |g| 0.1669  9.1 s/cycle  total 99.9 s
+2026-10-08 09:34:56 [541746dd] cycle  16 step  240  V/V0 0.7119  P1 0.4476 -> P2 0.7119 (c/V0 0.4476, |g|/|d| 0.00)  |z-z_s| 37.26  |g| 0.0512  9.1 s/cycle  total 145.3 s
+2026-10-08 09:35:42 [541746dd] cycle  21 step  315  V/V0 0.7141  P1 0.4682 -> P2 0.7141 (c/V0 0.4682, |g|/|d| 0.00)  |z-z_s| 40.43  |g| 0.0519  9.0 s/cycle  total 190.6 s
+2026-10-08 09:36:18 [541746dd]   snapshot 30%: step 375, 226.9 s, V/V0 0.699
+2026-10-08 09:36:27 [541746dd] cycle  26 step  390  V/V0 0.7250  P1 0.4397 -> P2 0.7250 (c/V0 0.4397, |g|/|d| 0.00)  |z-z_s| 43.40  |g| 0.0537  9.0 s/cycle  total 235.9 s
+2026-10-08 09:37:12 [541746dd] cycle  31 step  465  V/V0 0.6875  P1 0.4477 -> P2 0.6875 (c/V0 0.4477, |g|/|d| 0.00)  |z-z_s| 45.62  |g| 0.2863  9.0 s/cycle  total 281.3 s
+2026-10-08 09:37:58 [541746dd] cycle  36 step  540  V/V0 0.6785  P1 0.4548 -> P2 0.6785 (c/V0 0.4548, |g|/|d| 0.00)  |z-z_s| 48.80  |g| 0.0307  9.1 s/cycle  total 326.7 s
+2026-10-08 09:38:43 [541746dd] cycle  41 step  615  V/V0 0.6392  P1 0.3940 -> P2 0.6392 (c/V0 0.3940, |g|/|d| 0.00)  |z-z_s| 50.88  |g| 0.0311  9.1 s/cycle  total 372.0 s
+2026-10-08 09:39:29 [541746dd] cycle  46 step  690  V/V0 0.6268  P1 0.3767 -> P2 0.6268 (c/V0 0.3767, |g|/|d| 0.00)  |z-z_s| 52.01  |g| 0.0308  9.1 s/cycle  total 417.4 s
+2026-10-08 09:40:14 [541746dd] cycle  51 step  765  V/V0 0.6109  P1 0.3888 -> P2 0.6109 (c/V0 0.3888, |g|/|d| 0.00)  |z-z_s| 53.99  |g| 0.1354  9.0 s/cycle  total 462.7 s
+2026-10-08 09:40:50 [541746dd]   snapshot 40%: step 825, 498.9 s, V/V0 0.597
+2026-10-08 09:40:59 [541746dd] cycle  56 step  840  V/V0 0.5906  P1 0.3447 -> P2 0.5906 (c/V0 0.3447, |g|/|d| 0.00)  |z-z_s| 55.34  |g| 0.0355  9.1 s/cycle  total 508.0 s
+2026-10-08 09:41:45 [541746dd] cycle  61 step  915  V/V0 0.5590  P1 0.2981 -> P2 0.5590 (c/V0 0.2981, |g|/|d| 0.00)  |z-z_s| 56.57  |g| 0.0542  9.1 s/cycle  total 553.6 s
+2026-10-08 09:42:30 [541746dd] cycle  66 step  990  V/V0 0.5791  P1 0.2900 -> P2 0.5791 (c/V0 0.2900, |g|/|d| 0.00)  |z-z_s| 57.47  |g| 0.0386  9.0 s/cycle  total 599.2 s
+2026-10-08 09:42:37 [541746dd] cycle  67 step 1000  V/V0 0.5779  P1 0.4627 -> P2 0.5779 (c/V0 0.4627, |g|/|d| 0.00)  |z-z_s| 57.58  |g| 0.0451  6.6 s/cycle  total 605.8 s
+2026-10-08 09:42:37 [541746dd] done (budget): steps 1000, V/V0 0.578, 605.8 s, failures ['50', '60', '70']
+2026-10-08 09:42:40 [541746dd] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1594, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 09:42:42 [541746dd] eval 10: {"label": "10", "reached": true, "step": 30, "time_s": 18.2877, "ratio": 0.8998, "r": 0.1002, "components": 2, "stray_components": 1, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.142, "mesh_ratio": 0.8909, "chamfer_to_initial": 0.0285}
+2026-10-08 09:42:45 [541746dd] eval 20: {"label": "20", "reached": true, "step": 120, "time_s": 72.7417, "ratio": 0.8, "r": 0.2, "components": 2, "stray_components": 1, "stray_share": 0.0018, "largest_share": 0.9982, "mesh_volume": 0.1262, "mesh_ratio": 0.7918, "chamfer_to_initial": 0.0324}
+2026-10-08 09:42:47 [541746dd] eval 30: {"label": "30", "reached": true, "step": 375, "time_s": 226.9045, "ratio": 0.699, "r": 0.301, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1097, "mesh_ratio": 0.6885, "chamfer_to_initial": 0.0417}
+2026-10-08 09:42:50 [541746dd] eval 40: {"label": "40", "reached": true, "step": 825, "time_s": 498.9406, "ratio": 0.5971, "r": 0.4029, "components": 4, "stray_components": 3, "stray_share": 0.3802, "largest_share": 0.6198, "mesh_volume": 0.0921, "mesh_ratio": 0.5777, "chamfer_to_initial": 0.0649}
+2026-10-08 09:42:52 [541746dd] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 605.7561, "ratio": 0.5779, "r": 0.4221, "components": 2, "stray_components": 1, "stray_share": 0.0037, "largest_share": 0.9963, "mesh_volume": 0.091, "mesh_ratio": 0.5711, "chamfer_to_initial": 0.0755}
+2026-10-08 09:42:53 [541746dd] evaluation 16.2 s
+2026-10-08 09:42:53 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.48}
+2026-10-08 09:42:54 [d409dbda] start: V0 0.24593 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 09:43:03 [d409dbda] cycle   1 step   15  V/V0 0.9862  P1 0.9289 -> P2 0.9862 (c/V0 0.9289, |g|/|d| 0.00)  |z-z_s| 12.30  |g| 0.0109  9.1 s/cycle  total 9.1 s
+2026-10-08 09:43:12 [d409dbda]   snapshot 10%: step 30, 18.1 s, V/V0 0.876
+2026-10-08 09:43:48 [d409dbda] cycle   6 step   90  V/V0 0.8693  P1 0.7799 -> P2 0.8693 (c/V0 0.7799, |g|/|d| 0.00)  |z-z_s| 27.19  |g| 0.0266  9.1 s/cycle  total 54.5 s
+2026-10-08 09:44:34 [d409dbda]   snapshot 20%: step 165, 99.9 s, V/V0 0.794
+2026-10-08 09:44:34 [d409dbda] cycle  11 step  165  V/V0 0.7945  P1 0.7221 -> P2 0.7945 (c/V0 0.7221, |g|/|d| 0.00)  |z-z_s| 35.02  |g| 0.0193  9.0 s/cycle  total 99.9 s
+2026-10-08 09:45:19 [d409dbda] cycle  16 step  240  V/V0 0.7787  P1 0.7052 -> P2 0.7787 (c/V0 0.7052, |g|/|d| 0.00)  |z-z_s| 40.14  |g| 0.0186  9.0 s/cycle  total 145.3 s
+2026-10-08 09:46:04 [d409dbda] cycle  21 step  315  V/V0 0.7619  P1 0.6957 -> P2 0.7619 (c/V0 0.6957, |g|/|d| 0.00)  |z-z_s| 44.00  |g| 0.0192  9.1 s/cycle  total 190.7 s
+2026-10-08 09:46:50 [d409dbda] cycle  26 step  390  V/V0 0.7288  P1 0.6535 -> P2 0.7288 (c/V0 0.6535, |g|/|d| 0.00)  |z-z_s| 47.69  |g| 0.0200  9.1 s/cycle  total 236.1 s
+2026-10-08 09:47:35 [d409dbda] cycle  31 step  465  V/V0 0.7202  P1 0.6472 -> P2 0.7202 (c/V0 0.6472, |g|/|d| 0.00)  |z-z_s| 49.80  |g| 0.0405  9.1 s/cycle  total 281.5 s
+2026-10-08 09:48:21 [d409dbda] cycle  36 step  540  V/V0 0.7048  P1 0.6481 -> P2 0.7048 (c/V0 0.6481, |g|/|d| 0.00)  |z-z_s| 51.74  |g| 0.1131  9.0 s/cycle  total 326.9 s
+2026-10-08 09:48:30 [d409dbda]   snapshot 30%: step 555, 336.0 s, V/V0 0.690
+2026-10-08 09:49:06 [d409dbda] cycle  41 step  615  V/V0 0.6903  P1 0.6255 -> P2 0.6903 (c/V0 0.6255, |g|/|d| 0.00)  |z-z_s| 54.53  |g| 1.2216  9.0 s/cycle  total 372.1 s
+2026-10-08 09:49:51 [d409dbda] cycle  46 step  690  V/V0 0.6894  P1 0.6084 -> P2 0.6894 (c/V0 0.6084, |g|/|d| 0.00)  |z-z_s| 56.31  |g| 0.0139  9.1 s/cycle  total 417.6 s
+2026-10-08 09:50:37 [d409dbda] cycle  51 step  765  V/V0 0.6774  P1 0.6043 -> P2 0.6774 (c/V0 0.6043, |g|/|d| 0.00)  |z-z_s| 57.99  |g| 0.0403  9.1 s/cycle  total 462.9 s
+2026-10-08 09:51:22 [d409dbda] cycle  56 step  840  V/V0 0.6792  P1 0.6008 -> P2 0.6792 (c/V0 0.6008, |g|/|d| 0.00)  |z-z_s| 59.04  |g| 0.0173  9.1 s/cycle  total 508.3 s
+2026-10-08 09:52:07 [d409dbda] cycle  61 step  915  V/V0 0.6309  P1 0.5586 -> P2 0.6309 (c/V0 0.5586, |g|/|d| 0.00)  |z-z_s| 60.38  |g| 0.0145  9.0 s/cycle  total 553.5 s
+2026-10-08 09:52:53 [d409dbda] cycle  66 step  990  V/V0 0.6312  P1 0.5725 -> P2 0.6312 (c/V0 0.5725, |g|/|d| 0.00)  |z-z_s| 61.32  |g| 0.0101  9.1 s/cycle  total 599.0 s
+2026-10-08 09:52:59 [d409dbda] cycle  67 step 1000  V/V0 0.6334  P1 0.5751 -> P2 0.6334 (c/V0 0.5751, |g|/|d| 0.00)  |z-z_s| 61.65  |g| 0.0204  6.5 s/cycle  total 605.4 s
+2026-10-08 09:52:59 [d409dbda] done (budget): steps 1000, V/V0 0.633, 605.4 s, failures ['40', '50', '60', '70']
+2026-10-08 09:53:02 [d409dbda] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2434, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 09:53:04 [d409dbda] eval 10: {"label": "10", "reached": true, "step": 30, "time_s": 18.1303, "ratio": 0.8758, "r": 0.1242, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2371, "mesh_ratio": 0.9742, "chamfer_to_initial": 0.031}
+2026-10-08 09:53:07 [d409dbda] eval 20: {"label": "20", "reached": true, "step": 165, "time_s": 99.881, "ratio": 0.7945, "r": 0.2055, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.2015, "mesh_ratio": 0.8278, "chamfer_to_initial": 0.0519}
+2026-10-08 09:53:09 [d409dbda] eval 30: {"label": "30", "reached": true, "step": 555, "time_s": 335.9578, "ratio": 0.6902, "r": 0.3098, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1748, "mesh_ratio": 0.718, "chamfer_to_initial": 0.0716}
+2026-10-08 09:53:12 [d409dbda] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 605.4224, "ratio": 0.6334, "r": 0.3666, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.165, "mesh_ratio": 0.6777, "chamfer_to_initial": 0.083}
+2026-10-08 09:53:12 [d409dbda] evaluation 12.9 s
+2026-10-08 09:53:12 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.52}
+2026-10-08 09:53:13 [ce95fa90] start: V0 0.65960 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 09:53:22 [ce95fa90] cycle   1 step   15  V/V0 1.0942  P1 0.8883 -> P2 1.0942 (c/V0 0.8883, |g|/|d| 0.00)  |z-z_s| 12.70  |g| 0.0362  9.1 s/cycle  total 9.1 s
+2026-10-08 09:54:07 [ce95fa90] cycle   6 step   90  V/V0 1.0840  P1 0.9679 -> P2 1.0840 (c/V0 0.9679, |g|/|d| 0.00)  |z-z_s| 29.54  |g| 0.0678  9.0 s/cycle  total 54.5 s
+2026-10-08 09:54:53 [ce95fa90] cycle  11 step  165  V/V0 1.0498  P1 0.9473 -> P2 1.0498 (c/V0 0.9473, |g|/|d| 0.00)  |z-z_s| 37.06  |g| 0.0889  9.1 s/cycle  total 99.9 s
+2026-10-08 09:55:38 [ce95fa90] cycle  16 step  240  V/V0 1.0016  P1 0.9176 -> P2 1.0016 (c/V0 0.9176, |g|/|d| 0.00)  |z-z_s| 43.26  |g| 0.0744  9.0 s/cycle  total 145.2 s
+2026-10-08 09:56:23 [ce95fa90] cycle  21 step  315  V/V0 0.9951  P1 0.9124 -> P2 0.9951 (c/V0 0.9124, |g|/|d| 0.00)  |z-z_s| 47.14  |g| 0.0521  9.1 s/cycle  total 190.5 s
+2026-10-08 09:57:09 [ce95fa90] cycle  26 step  390  V/V0 1.0000  P1 0.9044 -> P2 1.0000 (c/V0 0.9044, |g|/|d| 0.00)  |z-z_s| 50.65  |g| 0.1796  9.1 s/cycle  total 236.0 s
+2026-10-08 09:57:54 [ce95fa90] cycle  31 step  465  V/V0 0.9713  P1 0.8994 -> P2 0.9713 (c/V0 0.8994, |g|/|d| 0.00)  |z-z_s| 52.97  |g| 0.2790  9.1 s/cycle  total 281.3 s
+2026-10-08 09:58:39 [ce95fa90] cycle  36 step  540  V/V0 0.9890  P1 0.9016 -> P2 0.9890 (c/V0 0.9016, |g|/|d| 0.00)  |z-z_s| 55.51  |g| 0.0605  9.0 s/cycle  total 326.6 s
+2026-10-08 09:59:25 [ce95fa90] cycle  41 step  615  V/V0 0.9782  P1 0.8988 -> P2 0.9782 (c/V0 0.8988, |g|/|d| 0.00)  |z-z_s| 58.02  |g| 0.0500  9.1 s/cycle  total 371.9 s
+2026-10-08 10:00:10 [ce95fa90] cycle  46 step  690  V/V0 0.9602  P1 0.8843 -> P2 0.9602 (c/V0 0.8843, |g|/|d| 0.00)  |z-z_s| 59.15  |g| 0.0579  9.0 s/cycle  total 417.4 s
+2026-10-08 10:00:56 [ce95fa90] cycle  51 step  765  V/V0 0.9649  P1 0.8918 -> P2 0.9649 (c/V0 0.8918, |g|/|d| 0.00)  |z-z_s| 61.01  |g| 0.0500  9.1 s/cycle  total 463.0 s
+2026-10-08 10:01:42 [ce95fa90] cycle  56 step  840  V/V0 0.9405  P1 0.8752 -> P2 0.9405 (c/V0 0.8752, |g|/|d| 0.00)  |z-z_s| 62.34  |g| 0.2276  9.2 s/cycle  total 508.6 s
+2026-10-08 10:02:27 [ce95fa90] cycle  61 step  915  V/V0 0.9316  P1 0.8566 -> P2 0.9316 (c/V0 0.8566, |g|/|d| 0.00)  |z-z_s| 63.37  |g| 0.0563  9.1 s/cycle  total 553.8 s
+2026-10-08 10:03:12 [ce95fa90] cycle  66 step  990  V/V0 0.9077  P1 0.8315 -> P2 0.9077 (c/V0 0.8315, |g|/|d| 0.00)  |z-z_s| 63.81  |g| 0.0484  9.0 s/cycle  total 599.1 s
+2026-10-08 10:03:19 [ce95fa90] cycle  67 step 1000  V/V0 0.9076  P1 0.8480 -> P2 0.9076 (c/V0 0.8480, |g|/|d| 0.00)  |z-z_s| 63.78  |g| 0.0458  6.4 s/cycle  total 605.5 s
+2026-10-08 10:03:19 [ce95fa90] done (budget): steps 1000, V/V0 0.908, 605.5 s, failures ['10', '20', '30', '40', '50', '60', '70']
+2026-10-08 10:03:21 [ce95fa90] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 3, "stray_components": 2, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.6544, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 10:03:24 [ce95fa90] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 605.4892, "ratio": 0.9076, "r": 0.0924, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.5918, "mesh_ratio": 0.9043, "chamfer_to_initial": 0.1052}
+2026-10-08 10:03:25 [ce95fa90] evaluation 6.4 s
+2026-10-08 10:03:25 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.56}
+2026-10-08 10:03:25 [57dfb295] start: V0 0.12452 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 10:03:34 [57dfb295] cycle   1 step   15  V/V0 1.0502  P1 0.7287 -> P2 1.0502 (c/V0 0.7287, |g|/|d| 0.00)  |z-z_s| 13.09  |g| 0.0194  9.0 s/cycle  total 9.0 s
+2026-10-08 10:04:20 [57dfb295] cycle   6 step   90  V/V0 1.1839  P1 0.7180 -> P2 1.1839 (c/V0 0.7180, |g|/|d| 0.00)  |z-z_s| 28.22  |g| 0.1171  9.0 s/cycle  total 54.4 s
+2026-10-08 10:05:05 [57dfb295] cycle  11 step  165  V/V0 1.0977  P1 0.7417 -> P2 1.0977 (c/V0 0.7417, |g|/|d| 0.00)  |z-z_s| 35.51  |g| 0.0337  9.0 s/cycle  total 99.7 s
+2026-10-08 10:05:50 [57dfb295] cycle  16 step  240  V/V0 1.0750  P1 0.7463 -> P2 1.0750 (c/V0 0.7463, |g|/|d| 0.00)  |z-z_s| 40.89  |g| 0.0401  9.1 s/cycle  total 145.0 s
+2026-10-08 10:06:36 [57dfb295] cycle  21 step  315  V/V0 1.0297  P1 0.7826 -> P2 1.0297 (c/V0 0.7826, |g|/|d| 0.00)  |z-z_s| 44.39  |g| 0.0560  9.1 s/cycle  total 190.3 s
+2026-10-08 10:07:21 [57dfb295] cycle  26 step  390  V/V0 1.0975  P1 0.7305 -> P2 1.0975 (c/V0 0.7305, |g|/|d| 0.00)  |z-z_s| 47.77  |g| 0.0404  9.0 s/cycle  total 235.6 s
+2026-10-08 10:08:06 [57dfb295] cycle  31 step  465  V/V0 1.0650  P1 0.7356 -> P2 1.0650 (c/V0 0.7356, |g|/|d| 0.00)  |z-z_s| 49.70  |g| 0.1375  9.0 s/cycle  total 280.8 s
+2026-10-08 10:08:52 [57dfb295] cycle  36 step  540  V/V0 1.0300  P1 0.7456 -> P2 1.0300 (c/V0 0.7456, |g|/|d| 0.00)  |z-z_s| 51.52  |g| 0.1244  9.1 s/cycle  total 326.1 s
+2026-10-08 10:09:37 [57dfb295] cycle  41 step  615  V/V0 1.0092  P1 0.7910 -> P2 1.0092 (c/V0 0.7910, |g|/|d| 0.00)  |z-z_s| 53.50  |g| 0.0713  9.1 s/cycle  total 371.4 s
+2026-10-08 10:10:22 [57dfb295] cycle  46 step  690  V/V0 0.9719  P1 0.6749 -> P2 0.9719 (c/V0 0.6749, |g|/|d| 0.00)  |z-z_s| 54.83  |g| 0.1185  9.1 s/cycle  total 416.7 s
+2026-10-08 10:11:08 [57dfb295] cycle  51 step  765  V/V0 1.0605  P1 0.7516 -> P2 1.0605 (c/V0 0.7516, |g|/|d| 0.00)  |z-z_s| 56.77  |g| 0.2839  9.0 s/cycle  total 462.1 s
+2026-10-08 10:11:53 [57dfb295] cycle  56 step  840  V/V0 1.0162  P1 0.7180 -> P2 1.0162 (c/V0 0.7180, |g|/|d| 0.00)  |z-z_s| 58.28  |g| 0.1850  9.1 s/cycle  total 507.5 s
+2026-10-08 10:12:38 [57dfb295] cycle  61 step  915  V/V0 1.0051  P1 0.6960 -> P2 1.0051 (c/V0 0.6960, |g|/|d| 0.00)  |z-z_s| 59.40  |g| 0.0749  9.0 s/cycle  total 552.7 s
+2026-10-08 10:13:24 [57dfb295] cycle  66 step  990  V/V0 1.0159  P1 0.7057 -> P2 1.0159 (c/V0 0.7057, |g|/|d| 0.00)  |z-z_s| 59.74  |g| 0.0390  9.1 s/cycle  total 598.0 s
+2026-10-08 10:13:30 [57dfb295] cycle  67 step 1000  V/V0 1.0401  P1 0.7804 -> P2 1.0401 (c/V0 0.7804, |g|/|d| 0.00)  |z-z_s| 59.59  |g| 0.0467  6.5 s/cycle  total 604.5 s
+2026-10-08 10:13:30 [57dfb295] done (budget): steps 1000, V/V0 1.040, 604.5 s, failures ['10', '20', '30', '40', '50', '60', '70']
+2026-10-08 10:13:33 [57dfb295] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1206, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 10:13:36 [57dfb295] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 604.5031, "ratio": 1.0401, "r": -0.0401, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.1247, "mesh_ratio": 1.0345, "chamfer_to_initial": 0.0708}
+2026-10-08 10:13:36 [57dfb295] evaluation 5.8 s
+2026-10-08 10:13:36 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.59}
+2026-10-08 10:13:37 [bbba0832] start: V0 0.06795 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 10:13:46 [bbba0832] cycle   1 step   15  V/V0 1.0103  P1 0.8883 -> P2 1.0103 (c/V0 0.8883, |g|/|d| 0.00)  |z-z_s| 12.49  |g| 0.0039  9.3 s/cycle  total 9.3 s
+2026-10-08 10:14:31 [bbba0832] cycle   6 step   90  V/V0 1.0643  P1 0.9034 -> P2 1.0643 (c/V0 0.9034, |g|/|d| 0.00)  |z-z_s| 26.18  |g| 0.0060  9.1 s/cycle  total 54.7 s
+2026-10-08 10:14:40 [bbba0832]   snapshot 10%: step 105, 63.7 s, V/V0 0.693
+2026-10-08 10:14:40 [bbba0832]   snapshot 20%: step 105, 63.7 s, V/V0 0.693
+2026-10-08 10:14:40 [bbba0832]   snapshot 30%: step 105, 63.7 s, V/V0 0.693
+2026-10-08 10:15:17 [bbba0832] cycle  11 step  165  V/V0 0.9249  P1 0.5833 -> P2 0.9249 (c/V0 0.5833, |g|/|d| 0.00)  |z-z_s| 32.57  |g| 0.0089  9.1 s/cycle  total 100.3 s
+2026-10-08 10:16:02 [bbba0832] cycle  16 step  240  V/V0 0.9567  P1 0.5381 -> P2 0.9567 (c/V0 0.5381, |g|/|d| 0.00)  |z-z_s| 37.82  |g| 0.0050  9.1 s/cycle  total 145.8 s
+2026-10-08 10:16:48 [bbba0832] cycle  21 step  315  V/V0 0.9615  P1 0.7439 -> P2 0.9615 (c/V0 0.7439, |g|/|d| 0.00)  |z-z_s| 41.67  |g| 0.0511  9.0 s/cycle  total 191.2 s
+2026-10-08 10:17:33 [bbba0832] cycle  26 step  390  V/V0 0.9076  P1 0.7997 -> P2 0.9076 (c/V0 0.7997, |g|/|d| 0.00)  |z-z_s| 45.16  |g| 0.0018  9.1 s/cycle  total 236.6 s
+2026-10-08 10:18:19 [bbba0832] cycle  31 step  465  V/V0 0.9140  P1 0.8032 -> P2 0.9140 (c/V0 0.8032, |g|/|d| 0.00)  |z-z_s| 46.45  |g| 0.0035  9.0 s/cycle  total 281.9 s
+2026-10-08 10:19:04 [bbba0832] cycle  36 step  540  V/V0 0.9285  P1 0.7076 -> P2 0.9285 (c/V0 0.7076, |g|/|d| 0.00)  |z-z_s| 48.11  |g| 0.0271  9.0 s/cycle  total 327.3 s
+2026-10-08 10:19:49 [bbba0832] cycle  41 step  615  V/V0 0.8985  P1 0.7906 -> P2 0.8985 (c/V0 0.7906, |g|/|d| 0.00)  |z-z_s| 50.09  |g| 0.0182  9.0 s/cycle  total 372.6 s
+2026-10-08 10:20:35 [bbba0832] cycle  46 step  690  V/V0 0.8563  P1 0.4519 -> P2 0.8563 (c/V0 0.4519, |g|/|d| 0.00)  |z-z_s| 51.71  |g| 0.0108  9.1 s/cycle  total 417.8 s
+2026-10-08 10:21:20 [bbba0832] cycle  51 step  765  V/V0 0.7798  P1 0.7052 -> P2 0.7798 (c/V0 0.7052, |g|/|d| 0.00)  |z-z_s| 53.53  |g| 0.0024  9.1 s/cycle  total 463.1 s
+2026-10-08 10:22:05 [bbba0832] cycle  56 step  840  V/V0 0.7495  P1 0.6140 -> P2 0.7495 (c/V0 0.6140, |g|/|d| 0.00)  |z-z_s| 54.57  |g| 0.0149  9.0 s/cycle  total 508.4 s
+2026-10-08 10:22:50 [bbba0832] cycle  61 step  915  V/V0 0.7898  P1 0.5815 -> P2 0.7898 (c/V0 0.5815, |g|/|d| 0.00)  |z-z_s| 55.92  |g| 0.0160  9.0 s/cycle  total 553.6 s
+2026-10-08 10:23:36 [bbba0832] cycle  66 step  990  V/V0 0.7237  P1 0.5950 -> P2 0.7237 (c/V0 0.5950, |g|/|d| 0.00)  |z-z_s| 56.81  |g| 0.0251  9.0 s/cycle  total 598.8 s
+2026-10-08 10:23:42 [bbba0832] cycle  67 step 1000  V/V0 0.7467  P1 0.6404 -> P2 0.7467 (c/V0 0.6404, |g|/|d| 0.00)  |z-z_s| 57.00  |g| 0.2825  6.5 s/cycle  total 605.2 s
+2026-10-08 10:23:42 [bbba0832] done (budget): steps 1000, V/V0 0.747, 605.2 s, failures ['40', '50', '60', '70']
+2026-10-08 10:23:45 [bbba0832] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0662, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 10:23:47 [bbba0832] eval 10: {"label": "10", "reached": true, "step": 105, "time_s": 63.6898, "ratio": 0.693, "r": 0.307, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0731, "mesh_ratio": 1.1041, "chamfer_to_initial": 0.0298}
+2026-10-08 10:23:50 [bbba0832] eval 20: {"label": "20", "reached": true, "step": 105, "time_s": 63.6898, "ratio": 0.693, "r": 0.307, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0731, "mesh_ratio": 1.1041, "chamfer_to_initial": 0.0298}
+2026-10-08 10:23:52 [bbba0832] eval 30: {"label": "30", "reached": true, "step": 105, "time_s": 63.6898, "ratio": 0.693, "r": 0.307, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0731, "mesh_ratio": 1.1041, "chamfer_to_initial": 0.0298}
+2026-10-08 10:23:55 [bbba0832] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 605.2386, "ratio": 0.7467, "r": 0.2533, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 0.0546, "mesh_ratio": 0.8242, "chamfer_to_initial": 0.0666}
+2026-10-08 10:23:55 [bbba0832] evaluation 13.2 s
+2026-10-08 10:23:55 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.62}
+2026-10-08 10:23:56 [447856e1] start: V0 2.28706 (64^3), method fcso, adam lr 0.005, lam_reg 0.0, seed 0
+2026-10-08 10:24:05 [447856e1] cycle   1 step   15  V/V0 0.9889  P1 0.9793 -> P2 0.9889 (c/V0 0.9793, |g|/|d| 0.00)  |z-z_s| 11.90  |g| 0.0400  9.1 s/cycle  total 9.1 s
+2026-10-08 10:24:50 [447856e1] cycle   6 step   90  V/V0 0.9860  P1 0.9621 -> P2 0.9860 (c/V0 0.9621, |g|/|d| 0.00)  |z-z_s| 28.57  |g| 0.0693  9.1 s/cycle  total 54.3 s
+2026-10-08 10:25:35 [447856e1] cycle  11 step  165  V/V0 0.9875  P1 0.9674 -> P2 0.9875 (c/V0 0.9674, |g|/|d| 0.00)  |z-z_s| 36.84  |g| 0.1132  9.1 s/cycle  total 99.6 s
+2026-10-08 10:26:26 [447856e1] cycle  16 step  240  V/V0 0.9597  P1 0.9345 -> P2 0.9597 (c/V0 0.9345, |g|/|d| 0.00)  |z-z_s| 42.84  |g| 0.1098  9.8 s/cycle  total 150.5 s
+2026-10-08 10:27:15 [447856e1] cycle  21 step  315  V/V0 0.9302  P1 0.9120 -> P2 0.9302 (c/V0 0.9120, |g|/|d| 0.00)  |z-z_s| 47.04  |g| 0.0656  9.7 s/cycle  total 199.3 s
+2026-10-08 10:28:05 [447856e1] cycle  26 step  390  V/V0 0.9120  P1 0.8964 -> P2 0.9120 (c/V0 0.8964, |g|/|d| 0.00)  |z-z_s| 51.12  |g| 0.0471  10.7 s/cycle  total 249.1 s
+2026-10-08 10:28:58 [447856e1] cycle  31 step  465  V/V0 0.9049  P1 0.8944 -> P2 0.9049 (c/V0 0.8944, |g|/|d| 0.00)  |z-z_s| 53.85  |g| 0.0578  10.8 s/cycle  total 301.6 s
+2026-10-08 10:29:19 [447856e1]   snapshot 10%: step 495, 323.0 s, V/V0 0.898
+2026-10-08 10:29:49 [447856e1] cycle  36 step  540  V/V0 0.8913  P1 0.8722 -> P2 0.8913 (c/V0 0.8722, |g|/|d| 0.00)  |z-z_s| 56.72  |g| 0.0495  10.1 s/cycle  total 352.6 s
+2026-10-08 10:30:39 [447856e1] cycle  41 step  615  V/V0 0.8682  P1 0.8511 -> P2 0.8682 (c/V0 0.8511, |g|/|d| 0.00)  |z-z_s| 58.53  |g| 0.7758  9.7 s/cycle  total 402.9 s
+2026-10-08 10:31:28 [447856e1] cycle  46 step  690  V/V0 0.8443  P1 0.8319 -> P2 0.8443 (c/V0 0.8319, |g|/|d| 0.00)  |z-z_s| 60.62  |g| 0.0482  9.8 s/cycle  total 451.7 s
+2026-10-08 10:32:17 [447856e1] cycle  51 step  765  V/V0 0.8111  P1 0.7968 -> P2 0.8111 (c/V0 0.7968, |g|/|d| 0.00)  |z-z_s| 62.90  |g| 0.0425  9.7 s/cycle  total 500.7 s
+2026-10-08 10:32:27 [447856e1]   snapshot 20%: step 780, 510.6 s, V/V0 0.794
+2026-10-08 10:33:06 [447856e1] cycle  56 step  840  V/V0 0.7720  P1 0.7589 -> P2 0.7720 (c/V0 0.7589, |g|/|d| 0.00)  |z-z_s| 64.70  |g| 0.0741  9.8 s/cycle  total 550.0 s
+2026-10-08 10:33:57 [447856e1] cycle  61 step  915  V/V0 0.7649  P1 0.7506 -> P2 0.7649 (c/V0 0.7506, |g|/|d| 0.00)  |z-z_s| 66.10  |g| 0.0428  10.2 s/cycle  total 600.4 s
+2026-10-08 10:34:47 [447856e1] cycle  66 step  990  V/V0 0.7474  P1 0.7487 -> P2 0.7474 (c/V0 0.7487, |g|/|d| 0.00)  |z-z_s| 67.33  |g| 0.0935  9.9 s/cycle  total 650.3 s
+2026-10-08 10:34:54 [447856e1] cycle  67 step 1000  V/V0 0.7386  P1 0.7358 -> P2 0.7386 (c/V0 0.7358, |g|/|d| 0.00)  |z-z_s| 67.27  |g| 0.0200  6.9 s/cycle  total 657.3 s
+2026-10-08 10:34:54 [447856e1] done (budget): steps 1000, V/V0 0.739, 657.3 s, failures ['30', '40', '50', '60', '70']
+2026-10-08 10:34:57 [447856e1] eval init: {"label": "init", "reached": true, "step": 0, "time_s": 0.0, "ratio": 1.0, "r": 0.0, "components": 3, "stray_components": 2, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 2.2786, "mesh_ratio": 1.0, "chamfer_to_initial": 0.0}
+2026-10-08 10:35:00 [447856e1] eval 10: {"label": "10", "reached": true, "step": 495, "time_s": 323.0423, "ratio": 0.8977, "r": 0.1023, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 2.0455, "mesh_ratio": 0.8977, "chamfer_to_initial": 0.0836}
+2026-10-08 10:35:03 [447856e1] eval 20: {"label": "20", "reached": true, "step": 780, "time_s": 510.6258, "ratio": 0.794, "r": 0.206, "components": 1, "stray_components": 0, "stray_share": 0.0, "largest_share": 1.0, "mesh_volume": 1.8494, "mesh_ratio": 0.8116, "chamfer_to_initial": 0.1082}
+2026-10-08 10:35:06 [447856e1] eval final: {"label": "final", "reached": true, "step": 1000, "time_s": 657.285, "ratio": 0.7386, "r": 0.2614, "components": 5, "stray_components": 4, "stray_share": 0.0002, "largest_share": 0.9998, "mesh_volume": 1.7697, "mesh_ratio": 0.7767, "chamfer_to_initial": 0.1176}
+2026-10-08 10:35:08 [447856e1] evaluation 14.0 s
+2026-10-08 10:35:08 memory {"rss_peak_gb": 1.51, "mps_current_gb": 1.01, "mps_driver_gb": 1.67}
+2026-10-08 10:35:08 summary {"id": "2b5953c986dd08f2f91663a74ccd2338", "stop_reason": "target", "steps": 750, "elapsed_s": 449.7591840013629, "ratio_final": 0.29781317709476895, "norm_dz_final": 56.509674072265625, "failures": []}
+2026-10-08 10:35:08 summary {"id": "20b0a82068ae767c34cc22336880d45c", "stop_reason": "budget", "steps": 1000, "elapsed_s": 602.3694805861451, "ratio_final": 0.4832465128086831, "norm_dz_final": 61.70935821533203, "failures": ["60", "70"]}
+2026-10-08 10:35:08 summary {"id": "f215c608fe63e97d4aada2bcdc05aa43", "stop_reason": "budget", "steps": 1000, "elapsed_s": 604.0294802929275, "ratio_final": 0.7974807164259204, "norm_dz_final": 58.79570007324219, "failures": ["40", "50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "7824e41c86f9be776383f517a315e69e", "stop_reason": "budget", "steps": 1000, "elapsed_s": 604.8513988368213, "ratio_final": 0.6442103569317538, "norm_dz_final": 62.80793762207031, "failures": ["40", "50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "541746ddb47aa2af4e186c8346f12e6", "stop_reason": "budget", "steps": 1000, "elapsed_s": 605.7560865376145, "ratio_final": 0.5778523450359562, "norm_dz_final": 57.58303451538086, "failures": ["50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "d409dbda0a34a953c9020fbe6b2ff6", "stop_reason": "budget", "steps": 1000, "elapsed_s": 605.4223830351839, "ratio_final": 0.6334370276980409, "norm_dz_final": 61.65434646606445, "failures": ["40", "50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "ce95fa90122dd67e5935ba184b9bc177", "stop_reason": "budget", "steps": 1000, "elapsed_s": 605.4891982898116, "ratio_final": 0.9076190193048386, "norm_dz_final": 63.78153991699219, "failures": ["10", "20", "30", "40", "50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "57dfb295c3e699ab2875319f84a135b4", "stop_reason": "budget", "steps": 1000, "elapsed_s": 604.5031360829016, "ratio_final": 1.040054736718657, "norm_dz_final": 59.590431213378906, "failures": ["10", "20", "30", "40", "50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "bbba083270a2b0d031d7d27dc50ba701", "stop_reason": "budget", "steps": 1000, "elapsed_s": 605.2385933295591, "ratio_final": 0.7467004657617783, "norm_dz_final": 56.9971809387207, "failures": ["40", "50", "60", "70"]}
+2026-10-08 10:35:08 summary {"id": "447856e1071e8b83c036a40816608369", "stop_reason": "budget", "steps": 1000, "elapsed_s": 657.2850196679356, "ratio_final": 0.7385593868789186, "norm_dz_final": 67.27002716064453, "failures": ["30", "40", "50", "60", "70"]}

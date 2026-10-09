@@ -1,0 +1,75 @@
+{
+ "id": "541746ddb47aa2af4e186c8346f12e6",
+ "name": "fmg",
+ "rows": [
+  {
+   "label": "init",
+   "reached": true,
+   "step": 0,
+   "time_s": 0.0,
+   "ratio": 1.0,
+   "r": 0.0,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.1593823719668732,
+   "mesh_ratio": 1.0,
+   "chamfer_to_initial": 0.0
+  },
+  {
+   "label": "10",
+   "reached": true,
+   "step": 570,
+   "time_s": 487.710396956536,
+   "ratio": 0.8981984946794896,
+   "r": 0.10180150532051035,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.14147222794737183,
+   "mesh_ratio": 0.8876278235887725,
+   "chamfer_to_initial": 0.03884721197651214
+  },
+  {
+   "label": "20",
+   "reached": false
+  },
+  {
+   "label": "30",
+   "reached": false
+  },
+  {
+   "label": "40",
+   "reached": false
+  },
+  {
+   "label": "50",
+   "reached": false
+  },
+  {
+   "label": "60",
+   "reached": false
+  },
+  {
+   "label": "70",
+   "reached": false
+  },
+  {
+   "label": "final",
+   "reached": true,
+   "step": 1000,
+   "time_s": 836.7300622033654,
+   "ratio": 0.8371209266527081,
+   "r": 0.1628790733472919,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.1321511192871622,
+   "mesh_ratio": 0.8291451410613285,
+   "chamfer_to_initial": 0.04458982010477565
+  }
+ ]
+}

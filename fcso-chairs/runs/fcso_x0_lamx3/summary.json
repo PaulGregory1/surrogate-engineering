@@ -1,0 +1,66 @@
+{
+ "config": {
+  "name": "fcso_x0_lamx3",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 30000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ },
+ "chairs": [
+  {
+   "id": "2b5953c986dd08f2f91663a74ccd2338",
+   "stop_reason": "target",
+   "steps": 90,
+   "elapsed_s": 95.6471550008282,
+   "ratio_final": 0.22204367271388437,
+   "norm_dz_final": 35.21550369262695,
+   "failures": []
+  },
+  {
+   "id": "20b0a82068ae767c34cc22336880d45c",
+   "stop_reason": "target",
+   "steps": 330,
+   "elapsed_s": 348.654503834201,
+   "ratio_final": 0.2940480839361054,
+   "norm_dz_final": 52.677703857421875,
+   "failures": []
+  },
+  {
+   "id": "f215c608fe63e97d4aada2bcdc05aa43",
+   "stop_reason": "budget",
+   "steps": 1000,
+   "elapsed_s": 1057.6984719978645,
+   "ratio_final": 0.6042934893120007,
+   "norm_dz_final": 60.54433822631836,
+   "failures": [
+    "50",
+    "60",
+    "70"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,115 @@
+{
+ "id": "20b0a82068ae767c34cc22336880d45c",
+ "name": "fcso_x0",
+ "method": "fcso",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 67,
+ "elapsed_s": 1055.9064494159538,
+ "V_initial": 0.27634432911872864,
+ "V_final": 0.09916956722736359,
+ "ratio_final": 0.35886232058250905,
+ "r_final": 0.641137679417491,
+ "norm_dz_final": 63.498600006103516,
+ "failures": [
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 30,
+   "cycle": 2,
+   "time_s": 31.66044379095547,
+   "ratio": 0.8825476456005704,
+   "r": 0.11745235439942958,
+   "V": 0.2438870370388031
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 75,
+   "cycle": 5,
+   "time_s": 78.95941841602325,
+   "ratio": 0.7938707330227617,
+   "r": 0.20612926697723832,
+   "V": 0.2193816751241684
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 105,
+   "cycle": 7,
+   "time_s": 110.58329083316494,
+   "ratio": 0.6870096630095388,
+   "r": 0.3129903369904612,
+   "V": 0.18985122442245483
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 285,
+   "cycle": 19,
+   "time_s": 299.7753017921932,
+   "ratio": 0.5967891665930626,
+   "r": 0.4032108334069374,
+   "V": 0.16491930186748505
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 420,
+   "cycle": 28,
+   "time_s": 442.25055612495635,
+   "ratio": 0.49656352274022636,
+   "r": 0.5034364772597737,
+   "V": 0.1372225135564804
+  },
+  "60": {
+   "reached": true,
+   "threshold": 0.6,
+   "step": 780,
+   "cycle": 52,
+   "time_s": 821.5598336679395,
+   "ratio": 0.3995910198427039,
+   "r": 0.600408980157296,
+   "V": 0.1104247123003006
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fcso_x0",
+  "method": "fcso",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

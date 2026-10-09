@@ -1,0 +1,8 @@
+# FMG (App. B, SPEC "Methods compared"): Phase 2 only, repeated: noise to sigma_start, guided ODE toward
+# c = 0.97 V_current. Same guidance as the recommended FCSO run (configs/fcso_x0.yaml: x0 mode, lam 1e4).
+# Each repetition counts its N = 10 guidance gradients against the 1000-gradient-step budget (DECISIONS.md).
+base: base.yaml
+method: fmg
+guidance: x0
+lam_guid: 10000.0
+fmg_factor: 0.97

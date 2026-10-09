@@ -1,0 +1,109 @@
+{
+ "id": "7824e41c86f9be776383f517a315e69e",
+ "name": "fmg",
+ "method": "fmg",
+ "seed": 0,
+ "done": true,
+ "stop_reason": "budget",
+ "steps": 1000,
+ "cycles": 100,
+ "elapsed_s": 859.5850291260285,
+ "V_initial": 0.5578391551971436,
+ "V_final": 0.27456581592559814,
+ "ratio_final": 0.49219531000573996,
+ "r_final": 0.5078046899942601,
+ "norm_dz_final": 72.24080657958984,
+ "failures": [
+  "60",
+  "70"
+ ],
+ "snapshots": {
+  "10": {
+   "reached": true,
+   "threshold": 0.1,
+   "step": 50,
+   "cycle": 5,
+   "time_s": 40.32873629312962,
+   "ratio": 0.8948998011323447,
+   "r": 0.10510019886765531,
+   "V": 0.4992101490497589
+  },
+  "20": {
+   "reached": true,
+   "threshold": 0.2,
+   "step": 170,
+   "cycle": 17,
+   "time_s": 138.1952817090787,
+   "ratio": 0.79525382445196,
+   "r": 0.20474617554803998,
+   "V": 0.44362372159957886
+  },
+  "30": {
+   "reached": true,
+   "threshold": 0.3,
+   "step": 210,
+   "cycle": 21,
+   "time_s": 170.7349348750431,
+   "ratio": 0.6974436766026412,
+   "r": 0.30255632339735883,
+   "V": 0.3890613913536072
+  },
+  "40": {
+   "reached": true,
+   "threshold": 0.4,
+   "step": 450,
+   "cycle": 45,
+   "time_s": 377.2827655378496,
+   "ratio": 0.5935657252685868,
+   "r": 0.40643427473141325,
+   "V": 0.3311142027378082
+  },
+  "50": {
+   "reached": true,
+   "threshold": 0.5,
+   "step": 950,
+   "cycle": 95,
+   "time_s": 817.5782952930313,
+   "ratio": 0.4982341573682967,
+   "r": 0.5017658426317033,
+   "V": 0.2779345214366913
+  },
+  "60": {
+   "reached": false
+  },
+  "70": {
+   "reached": false
+  }
+ },
+ "config": {
+  "name": "fmg",
+  "method": "fmg",
+  "optimizer": "adam",
+  "lr": 0.005,
+  "steps_per_cycle": 15,
+  "lam_reg": 0.0,
+  "max_steps": 1000,
+  "target": 0.7,
+  "thresholds": [
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7
+  ],
+  "opt_res": 64,
+  "eval_res": 64,
+  "beta": 1.0,
+  "seed": 0,
+  "encode_seed": 0,
+  "sigma_start": 0.25,
+  "n_ode": 10,
+  "solver": "euler",
+  "guidance": "x0",
+  "lam_guid": 10000.0,
+  "fmg_factor": 0.97,
+  "extra": {}
+ }
+}

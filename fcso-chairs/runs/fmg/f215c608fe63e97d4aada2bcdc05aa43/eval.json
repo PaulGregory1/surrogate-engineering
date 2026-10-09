@@ -1,0 +1,86 @@
+{
+ "id": "f215c608fe63e97d4aada2bcdc05aa43",
+ "name": "fmg",
+ "rows": [
+  {
+   "label": "init",
+   "reached": true,
+   "step": 0,
+   "time_s": 0.0,
+   "ratio": 1.0,
+   "r": 0.0,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.11072134306925803,
+   "mesh_ratio": 1.0,
+   "chamfer_to_initial": 0.0
+  },
+  {
+   "label": "10",
+   "reached": true,
+   "step": 120,
+   "time_s": 99.03499070787802,
+   "ratio": 0.8857591082215335,
+   "r": 0.11424089177846652,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.11299142309200655,
+   "mesh_ratio": 1.0205026416752239,
+   "chamfer_to_initial": 0.04360235340385202
+  },
+  {
+   "label": "20",
+   "reached": true,
+   "step": 760,
+   "time_s": 639.5584085449809,
+   "ratio": 0.7874272018011568,
+   "r": 0.21257279819884323,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.09205064451204914,
+   "mesh_ratio": 0.8313721813731065,
+   "chamfer_to_initial": 0.051244849094454065
+  },
+  {
+   "label": "30",
+   "reached": false
+  },
+  {
+   "label": "40",
+   "reached": false
+  },
+  {
+   "label": "50",
+   "reached": false
+  },
+  {
+   "label": "60",
+   "reached": false
+  },
+  {
+   "label": "70",
+   "reached": false
+  },
+  {
+   "label": "final",
+   "reached": true,
+   "step": 1000,
+   "time_s": 840.9511022114893,
+   "ratio": 0.786318723299271,
+   "r": 0.213681276700729,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.08944515696578857,
+   "mesh_ratio": 0.8078402454876216,
+   "chamfer_to_initial": 0.05319144243303878
+  }
+ ]
+}

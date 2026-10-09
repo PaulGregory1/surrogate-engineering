@@ -1,0 +1,20 @@
+noisy c=0.8V 2b5953c9: lam 347 |d| 42.77 |g| 12.83  (V-c)^2: x 2.418e-03, unguided 2.923e-03, guided 2.428e-03
+noisy c=0.8V 20b0a820: lam 477 |d| 42.60 |g| 12.78  (V-c)^2: x 4.484e-03, unguided 2.283e-03, guided 1.516e-03
+noisy c=0.8V f215c608: lam 2.6e+03 |d| 41.69 |g| 12.51  (V-c)^2: x 6.716e-04, unguided 5.830e-04, guided 4.388e-04
+.x0 c=0.8V 2b5953c9: lam 4.09e+03 |d| 42.77 |g| 12.83  (V-c)^2: x 2.418e-03, unguided 2.923e-03, guided 2.555e-03
+x0 c=0.8V 20b0a820: lam 4.79e+03 |d| 42.60 |g| 12.78  (V-c)^2: x 4.484e-03, unguided 2.283e-03, guided 1.830e-03
+x0 c=0.8V f215c608: lam 8.86e+03 |d| 41.69 |g| 12.51  (V-c)^2: x 6.716e-04, unguided 5.830e-04, guided 5.696e-04
+.noisy c=1.2V 2b5953c9: lam 347 |d| 42.77 |g| 12.83  (V-c)^2: x 2.418e-03, unguided 1.961e-03, guided 1.735e-03
+noisy c=1.2V 20b0a820: lam 477 |d| 42.60 |g| 12.78  (V-c)^2: x 4.484e-03, unguided 7.421e-03, guided 5.716e-03
+noisy c=1.2V f215c608: lam 2.6e+03 |d| 41.69 |g| 12.51  (V-c)^2: x 6.716e-04, unguided 7.665e-04, guided 5.629e-04
+.x0 c=1.2V 2b5953c9: lam 2.34e+03 |d| 42.77 |g| 12.83  (V-c)^2: x 2.418e-03, unguided 1.961e-03, guided 1.557e-03
+x0 c=1.2V 20b0a820: lam 1.07e+03 |d| 42.60 |g| 12.78  (V-c)^2: x 4.484e-03, unguided 7.421e-03, guided 6.466e-03
+x0 c=1.2V f215c608: lam 2.86e+03 |d| 41.69 |g| 12.51  (V-c)^2: x 6.716e-04, unguided 7.665e-04, guided 7.513e-04
+..
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49
+  /Users/paul/Documents/fcso-chairs/.venv/lib/python3.12/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+    warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+5 passed, 1 warning in 44.39s

@@ -1,0 +1,5 @@
+# FCSO without guidance (App. E ablation): same as fcso.yaml with lam_guid = 0 (unguided correction).
+base: base.yaml
+method: fcso
+guidance: none
+lam_guid: 0.0

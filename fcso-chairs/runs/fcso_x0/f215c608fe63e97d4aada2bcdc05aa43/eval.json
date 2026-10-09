@@ -1,0 +1,97 @@
+{
+ "id": "f215c608fe63e97d4aada2bcdc05aa43",
+ "name": "fcso_x0",
+ "rows": [
+  {
+   "label": "init",
+   "reached": true,
+   "step": 0,
+   "time_s": 0.0,
+   "ratio": 1.0,
+   "r": 0.0,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.11072134306925803,
+   "mesh_ratio": 1.0,
+   "chamfer_to_initial": 0.0
+  },
+  {
+   "label": "10",
+   "reached": true,
+   "step": 30,
+   "time_s": 31.889868000987917,
+   "ratio": 0.8960804997075955,
+   "r": 0.10391950029240449,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.1187488114118415,
+   "mesh_ratio": 1.0725015441472938,
+   "chamfer_to_initial": 0.03591875194303363
+  },
+  {
+   "label": "20",
+   "reached": true,
+   "step": 60,
+   "time_s": 63.45185896009207,
+   "ratio": 0.7669920707534578,
+   "r": 0.23300792924654223,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.10407007178371384,
+   "mesh_ratio": 0.9399278305233011,
+   "chamfer_to_initial": 0.038651299065183664
+  },
+  {
+   "label": "30",
+   "reached": true,
+   "step": 120,
+   "time_s": 126.76249287696555,
+   "ratio": 0.6851629074744437,
+   "r": 0.31483709252555625,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.1009860282334547,
+   "mesh_ratio": 0.9120737288228727,
+   "chamfer_to_initial": 0.042614427219043585
+  },
+  {
+   "label": "40",
+   "reached": false
+  },
+  {
+   "label": "50",
+   "reached": false
+  },
+  {
+   "label": "60",
+   "reached": false
+  },
+  {
+   "label": "70",
+   "reached": false
+  },
+  {
+   "label": "final",
+   "reached": true,
+   "step": 1000,
+   "time_s": 1059.3969727969961,
+   "ratio": 0.6353344799586499,
+   "r": 0.3646655200413501,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 0.09297966484313674,
+   "mesh_ratio": 0.8397627979004593,
+   "chamfer_to_initial": 0.04425479117510087
+  }
+ ]
+}

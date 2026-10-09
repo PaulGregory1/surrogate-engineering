@@ -1,0 +1,4 @@
+# GD with lam_reg ||z - z_s||^2, lam_reg = 1e-3 (SPEC "Methods compared", App. B).
+base: base.yaml
+method: gd
+lam_reg: 0.001

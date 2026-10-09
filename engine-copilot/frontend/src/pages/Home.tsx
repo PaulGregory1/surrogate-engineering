@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Box, Grid2x2, Wind } from 'lucide-react'
+import { Armchair, ArrowRight, Box, Grid2x2, Wind } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { usePublishChatContext } from '@/chat/ChatProvider'
 import { reveal } from '@/lib/motion'
@@ -30,6 +31,19 @@ const LABS = [
     description:
       'Place the holes in a loaded plate, watch the von Mises map recompute on every move, and let the model search for a layout that lowers the stress peak.',
     method: 'MeshGraphNet, 10 message-passing steps',
+  },
+  {
+    to: '/fcso',
+    icon: Armchair,
+    title: 'FCSO Review',
+    domain: '3D SHAPE OPTIMISATION',
+    // Read from public/fcso/summary.json at render time, never typed in.
+    stat: null as string | null,
+    statUnit: '',
+    statLabel: 'CHAIRS CLEANER THAN GD AT −50 %',
+    description:
+      'Ten chairs lose half their volume through a learned shape latent. A diffusion prior corrects each step, and the chairs keep far fewer detached fragments than with plain gradient descent.',
+    method: '3DShape2VecSet + EDM prior',
   },
   {
     to: '/bracket',
@@ -64,12 +78,25 @@ const PRINCIPLES = [
 export function Home() {
   const { data: bracket } = useBracketData()
   const bracketStat = bracket ? Math.abs(massDeltaPct(bracket, bestRun(bracket).mass_g)).toFixed(1) : '—'
+  const [fcsoStat, setFcsoStat] = useState<{ stat: string; unit: string } | null>(null)
+  useEffect(() => {
+    fetch('/fcso/summary.json')
+      .then((r) => r.json())
+      .then((s: { paired: Record<string, { n: number; fewer_stray: number }> }) =>
+        setFcsoStat({ stat: String(s.paired['50'].fewer_stray), unit: `/${s.paired['50'].n}` }),
+      )
+      .catch(() => {})
+  }, [])
+  const dynamic: Record<string, { stat: string; unit?: string }> = {
+    '/bracket': { stat: bracketStat },
+    '/fcso': fcsoStat ?? { stat: '—' },
+  }
 
   usePublishChatContext({
     label: 'Overview',
     lines: [],
     suggestions: [
-      'What is the difference between the two labs?',
+      'What does each lab show?',
       'Which models are available, and what is their measured error?',
       'Predict the Cd of a shape at a2=0.05, b2=-0.02, a3=0.03, b3=0.01, a4=-0.04, b4=0, Re=80',
     ],
@@ -116,8 +143,8 @@ export function Home() {
                     {/* The ratio is the headline of the whole card — set big and
                         bold on purpose, above the charte's 40px ceiling. */}
                     <div className="cq-hero">
-                      {lab.stat ?? bracketStat}
-                      <i>{lab.statUnit}</i>
+                      {lab.stat ?? dynamic[lab.to]?.stat}
+                      <i>{dynamic[lab.to]?.unit ?? lab.statUnit}</i>
                     </div>
                     <div className="cq-k mt-3 text-burnt">{lab.statLabel}</div>
                   </div>

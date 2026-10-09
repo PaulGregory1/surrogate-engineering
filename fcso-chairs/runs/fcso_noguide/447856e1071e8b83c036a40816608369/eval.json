@@ -1,0 +1,86 @@
+{
+ "id": "447856e1071e8b83c036a40816608369",
+ "name": "fcso_noguide",
+ "rows": [
+  {
+   "label": "init",
+   "reached": true,
+   "step": 0,
+   "time_s": 0.0,
+   "ratio": 1.0,
+   "r": 0.0,
+   "components": 3,
+   "stray_components": 2,
+   "stray_share": 7.740271756873085e-10,
+   "largest_share": 0.9999999992259728,
+   "mesh_volume": 2.278579048999592,
+   "mesh_ratio": 1.0,
+   "chamfer_to_initial": 0.0
+  },
+  {
+   "label": "10",
+   "reached": true,
+   "step": 495,
+   "time_s": 323.0423188371351,
+   "ratio": 0.8976504239090368,
+   "r": 0.10234957609096318,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 2.0455294533904493,
+   "mesh_ratio": 0.8977215226693747,
+   "chamfer_to_initial": 0.08362241019149155
+  },
+  {
+   "label": "20",
+   "reached": true,
+   "step": 780,
+   "time_s": 510.62580112577416,
+   "ratio": 0.7939991706127542,
+   "r": 0.20600082938724584,
+   "components": 1,
+   "stray_components": 0,
+   "stray_share": 0.0,
+   "largest_share": 1.0,
+   "mesh_volume": 1.8493966815457494,
+   "mesh_ratio": 0.8116447319910737,
+   "chamfer_to_initial": 0.10818736714063236
+  },
+  {
+   "label": "30",
+   "reached": false
+  },
+  {
+   "label": "40",
+   "reached": false
+  },
+  {
+   "label": "50",
+   "reached": false
+  },
+  {
+   "label": "60",
+   "reached": false
+  },
+  {
+   "label": "70",
+   "reached": false
+  },
+  {
+   "label": "final",
+   "reached": true,
+   "step": 1000,
+   "time_s": 657.2850196679356,
+   "ratio": 0.7385593868789186,
+   "r": 0.26144061312108136,
+   "components": 5,
+   "stray_components": 4,
+   "stray_share": 0.0001770157502204439,
+   "largest_share": 0.9998229842497796,
+   "mesh_volume": 1.769728577147614,
+   "mesh_ratio": 0.77668079056753,
+   "chamfer_to_initial": 0.11762665492640545
+  }
+ ]
+}

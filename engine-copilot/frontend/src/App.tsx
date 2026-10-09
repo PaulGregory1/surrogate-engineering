@@ -8,6 +8,7 @@ import { ChatSidebar } from '@/chat/ChatSidebar'
 import { Home } from '@/pages/Home'
 import { FlowLab } from '@/pages/FlowLab'
 import { StressLab } from '@/pages/StressLab'
+import { FcsoReview } from '@/pages/FcsoReview'
 import { BracketLab } from '@/pages/BracketLab'
 
 /**
@@ -70,6 +71,7 @@ function Shell() {
               <Route path="/" element={<Home />} />
               <Route path="/flow" element={<FlowLab />} />
               <Route path="/stress" element={<StressLab />} />
+              <Route path="/fcso" element={<FcsoReview />} />
               <Route path="/bracket" element={<BracketLab />} />
               {/* The chat used to be its own page; it now lives in the sidebar on
                   every page, so the old route just lands on the overview with the

@@ -24,7 +24,7 @@ export function StatTile({
   interval,
   className,
 }: {
-  label: string
+  label: React.ReactNode
   value: number | null
   /** rendered as the `<i>` of the 40px figure — 16px, italic, ink3 */
   unit?: string

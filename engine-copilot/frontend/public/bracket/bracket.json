@@ -1,0 +1,299 @@
+{
+ "limits": {
+  "sigma_eval": 138.0,
+  "delta_max": 0.5
+ },
+ "fea_budget": 15,
+ "baseline": {
+  "mass_g": 101.4,
+  "sigma_eval": 180.0,
+  "delta_max": 0.71,
+  "feasible": false
+ },
+ "runs": [
+  {
+   "key": "agent-01",
+   "label": "Agent 1",
+   "kind": "agent",
+   "mass_g": 90.52305755013401,
+   "sigma_eval": 131.12021026264608,
+   "delta_max": 0.4746021434227905,
+   "feasible": true,
+   "fea_used": 7,
+   "sigma_eval_fine": 131.01636489594839,
+   "params": {
+    "t_arm": 6.0,
+    "t_back": 3.8,
+    "r_fillet": 2.0,
+    "rib_on": 1,
+    "rib_t": 2.0,
+    "rib_len": 50.0,
+    "cutout_d": 0.0
+   },
+   "trace": [
+    {
+     "n": 1,
+     "mass_g": 111.32299140278776,
+     "sigma_eval": 111.70609576222643,
+     "delta_max": 0.3741771263301352,
+     "feasible": true,
+     "best_g": 111.32299140278776
+    },
+    {
+     "n": 2,
+     "mass_g": 107.6486506272615,
+     "sigma_eval": 113.49865943543959,
+     "delta_max": 0.38277846205529475,
+     "feasible": true,
+     "best_g": 107.6486506272615
+    },
+    {
+     "n": 3,
+     "mass_g": 105.92361942828025,
+     "sigma_eval": 125.4025717023726,
+     "delta_max": 0.4222829529505478,
+     "feasible": true,
+     "best_g": 105.92361942828025
+    },
+    {
+     "n": 4,
+     "mass_g": 99.78489240927435,
+     "sigma_eval": 105.46013116935352,
+     "delta_max": 0.36670483304829254,
+     "feasible": true,
+     "best_g": 99.78489240927435
+    },
+    {
+     "n": 5,
+     "mass_g": 93.10812937826405,
+     "sigma_eval": 119.76248674019466,
+     "delta_max": 0.4302214219296329,
+     "feasible": true,
+     "best_g": 93.10812937826405
+    },
+    {
+     "n": 6,
+     "mass_g": 91.86850865061876,
+     "sigma_eval": 119.86273807317227,
+     "delta_max": 0.4401433521786851,
+     "feasible": true,
+     "best_g": 91.86850865061876
+    },
+    {
+     "n": 7,
+     "mass_g": 90.52305755013401,
+     "sigma_eval": 131.12021026264608,
+     "delta_max": 0.4746021434227905,
+     "feasible": true,
+     "best_g": 90.52305755013401
+    }
+   ]
+  },
+  {
+   "key": "agent-02",
+   "label": "Agent 2",
+   "kind": "agent",
+   "mass_g": 94.09618958714755,
+   "sigma_eval": 120.5495567039755,
+   "delta_max": 0.43448260992053733,
+   "feasible": true,
+   "fea_used": 7,
+   "sigma_eval_fine": 125.63795342894315,
+   "params": {
+    "t_arm": 6.0,
+    "t_back": 3.9,
+    "r_fillet": 12.0,
+    "rib_on": 1,
+    "rib_t": 2.0,
+    "rib_len": 50.0,
+    "cutout_d": 0.0
+   },
+   "trace": [
+    {
+     "n": 1,
+     "mass_g": 102.43426121364121,
+     "sigma_eval": 112.0274539841855,
+     "delta_max": 0.35653783336494577,
+     "feasible": true,
+     "best_g": 102.43426121364121
+    },
+    {
+     "n": 2,
+     "mass_g": 99.7802574880747,
+     "sigma_eval": 116.65913984014625,
+     "delta_max": 0.37701479862104936,
+     "feasible": true,
+     "best_g": 99.7802574880747
+    },
+    {
+     "n": 3,
+     "mass_g": 98.93653363900188,
+     "sigma_eval": 115.61746128223842,
+     "delta_max": 0.38360557785054095,
+     "feasible": true,
+     "best_g": 98.93653363900188
+    },
+    {
+     "n": 4,
+     "mass_g": 96.4499849655316,
+     "sigma_eval": 121.35549272795217,
+     "delta_max": 0.4045923118348409,
+     "feasible": true,
+     "best_g": 96.4499849655316
+    },
+    {
+     "n": 5,
+     "mass_g": 95.57439398271858,
+     "sigma_eval": 117.08526305726096,
+     "delta_max": 0.4145772371545289,
+     "feasible": true,
+     "best_g": 95.57439398271858
+    },
+    {
+     "n": 6,
+     "mass_g": 95.03874172756252,
+     "sigma_eval": 122.88099268726391,
+     "delta_max": 0.43611607527091284,
+     "feasible": true,
+     "best_g": 95.03874172756252
+    },
+    {
+     "n": 7,
+     "mass_g": 94.09618958714755,
+     "sigma_eval": 120.5495567039755,
+     "delta_max": 0.43448260992053733,
+     "feasible": true,
+     "best_g": 94.09618958714755
+    }
+   ]
+  },
+  {
+   "key": "optuna-01",
+   "label": "Optuna",
+   "kind": "optuna",
+   "mass_g": 91.49948493556666,
+   "sigma_eval": 126.7782705578731,
+   "delta_max": 0.44662886500181553,
+   "feasible": true,
+   "fea_used": 6,
+   "sigma_eval_fine": 129.0062508522678,
+   "params": {
+    "t_arm": 5.904193692933774,
+    "t_back": 4.071724075815545,
+    "r_fillet": 1.4569621052350588,
+    "rib_on": 1,
+    "rib_t": 2.013463581866322,
+    "rib_len": 49.81829915479796,
+    "cutout_d": 1.641765376738188
+   },
+   "trace": [
+    {
+     "n": 1,
+     "mass_g": 93.51242152768731,
+     "sigma_eval": 118.45703250538018,
+     "delta_max": 0.43220223683875536,
+     "feasible": true,
+     "best_g": 93.51242152768731
+    },
+    {
+     "n": 2,
+     "mass_g": 93.89248112757917,
+     "sigma_eval": 115.59613499612865,
+     "delta_max": 0.4149094167584168,
+     "feasible": true,
+     "best_g": 93.51242152768731
+    },
+    {
+     "n": 3,
+     "mass_g": 91.49948493556666,
+     "sigma_eval": 126.7782705578731,
+     "delta_max": 0.44662886500181553,
+     "feasible": true,
+     "best_g": 91.49948493556666
+    },
+    {
+     "n": 4,
+     "mass_g": 91.7701171737216,
+     "sigma_eval": 129.296672233113,
+     "delta_max": 0.45504076059068643,
+     "feasible": true,
+     "best_g": 91.49948493556666
+    },
+    {
+     "n": 5,
+     "mass_g": 91.91410331901903,
+     "sigma_eval": 124.58843245684818,
+     "delta_max": 0.4096580001389511,
+     "feasible": true,
+     "best_g": 91.49948493556666
+    },
+    {
+     "n": 6,
+     "mass_g": 92.08142901017769,
+     "sigma_eval": 122.56776812442043,
+     "delta_max": 0.4231534429737781,
+     "feasible": true,
+     "best_g": 91.49948493556666
+    }
+   ]
+  }
+ ],
+ "params": [
+  {
+   "name": "t_arm",
+   "meaning": "arm thickness",
+   "unit": "mm",
+   "min": 3.0,
+   "max": 10.0,
+   "baseline": 6.0
+  },
+  {
+   "name": "t_back",
+   "meaning": "back plate thickness",
+   "unit": "mm",
+   "min": 3.0,
+   "max": 10.0,
+   "baseline": 6.0
+  },
+  {
+   "name": "r_fillet",
+   "meaning": "inner corner fillet radius",
+   "unit": "mm",
+   "min": 1.0,
+   "max": 12.0,
+   "baseline": 3.0
+  },
+  {
+   "name": "rib_on",
+   "meaning": "gusset pair present",
+   "unit": "",
+   "min": 0.0,
+   "max": 1.0,
+   "baseline": 1.0
+  },
+  {
+   "name": "rib_t",
+   "meaning": "gusset thickness",
+   "unit": "mm",
+   "min": 2.0,
+   "max": 6.0,
+   "baseline": 4.0
+  },
+  {
+   "name": "rib_len",
+   "meaning": "gusset leg length",
+   "unit": "mm",
+   "min": 15.0,
+   "max": 50.0,
+   "baseline": 30.0
+  },
+  {
+   "name": "cutout_d",
+   "meaning": "lightening hole in the arm",
+   "unit": "mm",
+   "min": 0.0,
+   "max": 16.0,
+   "baseline": 0.0
+  }
+ ]
+}

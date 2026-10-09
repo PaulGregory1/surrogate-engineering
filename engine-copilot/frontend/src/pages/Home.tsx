@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Grid2x2, Wind } from 'lucide-react'
+import { ArrowRight, Box, Grid2x2, Wind } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import { usePublishChatContext } from '@/chat/ChatProvider'
 import { reveal } from '@/lib/motion'
+import { bestRun, massDeltaPct, useBracketData } from '@/lib/bracket'
 
 const LABS = [
   {
@@ -30,6 +31,19 @@ const LABS = [
       'Place the holes in a loaded plate, watch the von Mises map recompute on every move, and let the model search for a layout that lowers the stress peak.',
     method: 'MeshGraphNet, 10 message-passing steps',
   },
+  {
+    to: '/bracket',
+    icon: Box,
+    title: 'Bracket Lab',
+    domain: '3D STRUCTURAL DESIGN',
+    // Read from the study's extracted results at render time, never typed in.
+    stat: null as string | null,
+    statUnit: '%',
+    statLabel: 'LIGHTER, VERIFIED BY FEA',
+    description:
+      'An AI agent lowers the mass of an aluminium bracket under stress and deflection limits, each candidate checked by 3D FEA, and is compared with Optuna on the same budget.',
+    method: 'Claude agent + GP surrogate, CalculiX FEA',
+  },
 ]
 
 const PRINCIPLES = [
@@ -48,6 +62,9 @@ const PRINCIPLES = [
 ]
 
 export function Home() {
+  const { data: bracket } = useBracketData()
+  const bracketStat = bracket ? Math.abs(massDeltaPct(bracket, bestRun(bracket).mass_g)).toFixed(1) : '—'
+
   usePublishChatContext({
     label: 'Overview',
     lines: [],
@@ -62,7 +79,7 @@ export function Home() {
     <>
       <PageHeader
         title="Overview"
-        subtitle="Two engineering workflows driven by trained surrogates"
+        subtitle="Engineering workflows driven by trained surrogates"
       />
 
       {/* This is an index of instruments, not a landing page — which is why nothing
@@ -99,7 +116,7 @@ export function Home() {
                     {/* The ratio is the headline of the whole card — set big and
                         bold on purpose, above the charte's 40px ceiling. */}
                     <div className="cq-hero">
-                      {lab.stat}
+                      {lab.stat ?? bracketStat}
                       <i>{lab.statUnit}</i>
                     </div>
                     <div className="cq-k mt-3 text-burnt">{lab.statLabel}</div>

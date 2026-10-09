@@ -8,6 +8,7 @@ import { ChatSidebar } from '@/chat/ChatSidebar'
 import { Home } from '@/pages/Home'
 import { FlowLab } from '@/pages/FlowLab'
 import { StressLab } from '@/pages/StressLab'
+import { BracketLab } from '@/pages/BracketLab'
 
 /**
  * The viewport-wide background layers: the drifting gradient masses, then the grain.
@@ -69,6 +70,7 @@ function Shell() {
               <Route path="/" element={<Home />} />
               <Route path="/flow" element={<FlowLab />} />
               <Route path="/stress" element={<StressLab />} />
+              <Route path="/bracket" element={<BracketLab />} />
               {/* The chat used to be its own page; it now lives in the sidebar on
                   every page, so the old route just lands on the overview with the
                   panel open. */}

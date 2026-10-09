@@ -12,7 +12,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:8000',
+      // API_URL lets a second checkout run its backend beside the first one.
+      '/api': process.env.API_URL ?? 'http://localhost:8000',
     },
   },
 })

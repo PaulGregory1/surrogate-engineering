@@ -155,6 +155,10 @@ App.tsx — <ChatProvider> + <TooltipProvider> wrapping <Backdrop> + a 3-column 
 │   │   │      export-report (sends `verify` only once the LBM has run, so an
 │   │   │      unconfirmed optimum is reported as unconfirmed)
 │   │   │   └─ ConvergencePlot.tsx — live cd_best/cd_mean
+│   ├─ pages/FcsoReview.tsx — static review of fcso-chairs (no backend): 3 tiles, FCSO vs GD
+│   │      trajectory grid per chair, all-methods table; reads public/fcso/{summary.json,meshes/<id>.json}
+│   │   └─ ChairViewer.tsx — useChairViewer: one three.js canvas over the grid, a scissored
+│   │          viewport per `data-cell`, shared orbit camera (no wheel zoom)
 └─ chat/ChatSidebar.tsx — right panel on EVERY page (overlay + backdrop < lg)
    └─ chat/Markdown.tsx — react-markdown + remark-gfm, every element mapped onto the
           charte; the agent answers in Markdown and hands `render_report` back verbatim,
@@ -402,6 +406,7 @@ Full spec in `PLATFORM_PLAN.md` (French). Status as of baseline commit, cross-ch
 | Change how the copilot's answers are displayed | `chat/Markdown.tsx` (element → charte mapping), not `ChatSidebar.tsx` |
 | Add a new agent tool | `tools.py` (`@tool`-decorated function + add to `ALL_TOOLS`), `agent.py` (`SYSTEM_PROMPT` if it should mention the tool) |
 | Change the agent's behavior/persona | `agent.py` (`SYSTEM_PROMPT`), `agent.py` (`_options`, e.g. `max_turns`) |
+| Change the FCSO review page or its data | `pages/FcsoReview.tsx`, `components/ChairViewer.tsx`; data: rerun `python3 fcso-chairs/scripts/export_platform.py` after `make_report.py` (writes `engine-copilot/frontend/public/fcso/`, never hand-edit) |
 | Add a new frontend page | `App.tsx` (route), new file in `pages/`, `AppSidebar.tsx` (nav entry), `PageHeader` at the top of the page, `usePublishChatContext` so the copilot sees it |
 | Style / restyle anything visual | Read `~/.claude/skills/calque/SKILL.md` **first** (+ `references/components.md` for a screen with more than one block, `references/charts.md` once a number becomes a shape) |
 | Change the color theme or the type scale | `frontend/src/index.css` (Calque tokens → shadcn names, the `--text-*` scale, plus the `data-slot` overrides at the bottom) **and** `lib/chartTheme.ts` (the mirrored hexes Plotly needs) |

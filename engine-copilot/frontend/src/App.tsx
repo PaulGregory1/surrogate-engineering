@@ -7,6 +7,7 @@ import { ChatProvider, useChat } from '@/chat/ChatProvider'
 import { ChatSidebar } from '@/chat/ChatSidebar'
 import { Home } from '@/pages/Home'
 import { FlowLab } from '@/pages/FlowLab'
+import { FcsoReview } from '@/pages/FcsoReview'
 
 /**
  * The viewport-wide background layers: the drifting gradient masses, then the grain.
@@ -67,6 +68,7 @@ function Shell() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/flow" element={<FlowLab />} />
+              <Route path="/fcso" element={<FcsoReview />} />
               {/* The chat used to be its own page; it now lives in the sidebar on
                   every page, so the old route just lands on the overview with the
                   panel open. */}

@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Wind } from 'lucide-react'
+import { Armchair, LayoutDashboard, Wind } from 'lucide-react'
 import { getHealth } from '@/api'
 import { cn } from '@/lib/utils'
 
 const NAV = [
   { to: '/', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/flow', label: 'Flow Lab', icon: Wind, end: false },
+  { to: '/fcso', label: 'FCSO Review', icon: Armchair, end: false },
 ]
 
 /** Backend reachability + whether the local `claude` CLI the agent drives is present.

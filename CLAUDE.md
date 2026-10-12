@@ -16,9 +16,14 @@ If you change the repo's structure, apply the *Update protocol* at the end of th
   `stress-gnn/` (ML research repos, read-only libraries from the platform's point of view)
   and `engine-copilot/` (FastAPI + React platform on top). Always run `./.venv/bin/python`
   from inside the relevant directory, never a shared interpreter.
-- **`main` carries the Flow Lab and the Stress Lab.** The one remaining lab lives on its
-  own branch — `thermal-pinn` — and none of its files exist here. Don't re-add it to `main`
-  without being asked; build on its branch instead.
+- A fourth independent part, `fcso-chairs/`, is a third research repo (its own `.venv`, `requirements.txt`,
+  public 3DShape2VecSet weights); the platform never imports it, it only reads what
+  `fcso-chairs/scripts/export_platform.py` writes to `frontend/public/fcso/`. The Bracket Lab's
+  study lives **outside** this repo; `/bracket` reads `frontend/public/bracket/`, written by
+  `frontend/scripts/build_bracket_data.py <path-to-bracket-lab>`.
+- **`main` carries the Flow Lab, the Stress Lab, the FCSO Review and the Bracket Lab.** The
+  one remaining lab lives on its own branch — `thermal-pinn` — and none of its files exist
+  here. Don't re-add it to `main` without being asked; build on its branch instead.
 - `stress-gnn/data/` and `stress-gnn/runs/` are gitignored but **must be present** for the
   backend to import: `StressService.__init__` loads `data/train.npz` for the normalisation
   stats at import time. Regenerate with `stress-gnn/run_all.py`, or copy them from the

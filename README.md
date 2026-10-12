@@ -3,22 +3,33 @@
 </p>
 
 <p align="center">
-  <a href="flow-surrogate">flow-surrogate</a>&nbsp; · &nbsp;<a href="stress-gnn">stress-gnn</a>&nbsp; · &nbsp;<a href="engine-copilot">engine-copilot</a>&nbsp; · &nbsp;<a href="flow-surrogate/RESULTS.md">results</a>&nbsp; · &nbsp;<a href="KNOWLEDGE-GRAPH.md">code&nbsp;map</a>
+  <a href="flow-surrogate">flow-surrogate</a>&nbsp; · &nbsp;<a href="stress-gnn">stress-gnn</a>&nbsp; · &nbsp;<a href="fcso-chairs">fcso-chairs</a>&nbsp; · &nbsp;<a href="#bracket-lab-an-agent-in-the-design-loop">bracket-lab</a>&nbsp; · &nbsp;<a href="engine-copilot">engine-copilot</a>&nbsp; · &nbsp;<a href="flow-surrogate/RESULTS.md">results</a>&nbsp; · &nbsp;<a href="KNOWLEDGE-GRAPH.md">code&nbsp;map</a>
 </p>
 
 <p align="center">
   <sub>
-    lattice Boltzmann &nbsp;·&nbsp; finite elements &nbsp;·&nbsp; POD / U-Net / FNO / MeshGraphNet
+    lattice Boltzmann &nbsp;·&nbsp; finite elements &nbsp;·&nbsp; POD / U-Net / FNO / MeshGraphNet &nbsp;·&nbsp; latent diffusion &nbsp;·&nbsp; Gaussian processes
     <br>
-    PyTorch (Apple MPS) &nbsp;·&nbsp; FastAPI &nbsp;·&nbsp; React + Vite &nbsp;·&nbsp; Claude Agent SDK
+    PyTorch (Apple MPS) &nbsp;·&nbsp; CalculiX + Gmsh &nbsp;·&nbsp; FastAPI &nbsp;·&nbsp; React + Vite &nbsp;·&nbsp; Claude Agent SDK &nbsp;·&nbsp; MCP
   </sub>
 </p>
 
 ---
 
-Two self-contained research repositories, each taking an expensive physics solver and
-asking a different question about how to replace it with a learned model — and, on top of
-them, an interactive platform that puts both results in an engineer's hands.
+Four studies of the same loop — a design, an expensive evaluation, a cheaper stand-in for
+it, and an optimiser that will exploit whatever the stand-in gets wrong — and, on top of
+them, an interactive platform that puts the results in an engineer's hands.
+
+- **Two surrogate repos**, [`flow-surrogate`](flow-surrogate) and [`stress-gnn`](stress-gnn),
+  each replacing a physics solver with a learned model and asking whether the optimum
+  survives contact with the solver.
+- **[`fcso-chairs`](fcso-chairs)** — a *generative* prior instead of a solver surrogate:
+  shape optimisation in the latent space of a pretrained 3D diffusion model, where the
+  question is whether the optimised shape is still a chair.
+- **`bracket-lab`** — an *agentic* design loop: a Claude Code agent redesigns a 3D bracket
+  through MCP tools that build the CAD, run a real FEA and query a surrogate, against a
+  classical optimiser on the same budget.  The study lives in its own repository; this one
+  carries its results page.
 
 > **One more branch holds work in progress.**  `thermal-pinn` is a physics-informed network
 > with no platform wiring yet.  It is not on `main`.
@@ -41,6 +52,76 @@ project; training is minutes per model.
 *The two problems, top and bottom: a body in a channel, parametrised by six Fourier
 coefficients on a fixed 192x96 lattice; and a perforated plate, parametrised by 2-6 holes,
 meshed differently for every design.*
+
+## Two more studies: a generative prior, and an agent
+
+| | [`fcso-chairs`](fcso-chairs) | `bracket-lab` |
+|---|---|---|
+| object | 10 ShapeNet chairs (3D occupancy field) | parametric aluminium shelf bracket (3D, CAD) |
+| design space | 512 x 8 latent of a pretrained shape autoencoder | 7 parameters: thicknesses, fillet, gussets, cutout |
+| evaluation | differentiable volume on a 64³ grid; marching cubes at 128³ | Gmsh + CalculiX, second-order tets, ~58k nodes, ~14 s |
+| stand-in | class-conditional EDM diffusion prior (3DShape2VecSet), **no training** | Gaussian process on 160 FEA designs |
+| optimiser | FCSO (Adam + prior correction) vs plain latent gradient descent | a Claude Code agent over MCP vs Optuna TPE, ≤ 15 FEA each |
+| the question | *at equal volume reduction, how much slower is FCSO, and are the chairs still chairs?* | *does an agent that reasons over stress maps beat a classical optimiser on the same FEA budget?* |
+
+### FCSO: optimising inside a generative model
+
+[`fcso-chairs`](fcso-chairs) reproduces Flow-Corrected Shape Optimization (arXiv 2608.07199)
+on a laptop.  Plain gradient descent on a shape latent reaches any volume target, and
+leaves the decoder's domain on the way: the chair shatters into dozens of floating
+fragments.  FCSO alternates a short Adam phase with a *correction* — the latent is
+integrated back down the diffusion model's probability-flow ODE from a small noise level,
+with a guidance term that holds the volume — so the prior pulls the shape back towards
+something it recognises as a chair.  Both the decoder and the corrector are the public
+3DShape2VecSet weights; nothing is trained.
+
+<p align="center">
+  <img src="fcso-chairs/report/trajectories/2b5953c986dd08f2f91663a74ccd2338.png" alt="One chair, six methods, from the initial shape to 70 % volume reduction: FCSO on the top row stays whole, plain gradient descent below it breaks into red stray fragments" width="880">
+</p>
+
+*One chair, every method, from the initial shape to −70 % volume.  FCSO (top row) thins
+it in one piece; gradient descent (second row) gets there faster and in fragments, drawn
+in red.  This is one of the three chairs FCSO keeps recognisable at −70 %, not a typical
+one — the per-chair grids for all ten are in [`report/trajectories/`](fcso-chairs/report/trajectories),
+and [`report/viewer.html`](fcso-chairs/report/viewer.html) shows them in 3D.*
+
+The expected result — whole chairs at 70 %, at 2-4x the cost of GD — is only partly
+reproduced.  FCSO is slower than advertised (5.3x GD's time to −70 %, paired), it stalls
+on 4 of the 10 chairs before reaching the target, and of the 6 it brings there, only 3
+still look like the chair they started as: on the two bulky upholstered chairs the
+guidance term dominates the ODE drift and pushes the latent off the prior altogether.
+What does hold is the comparison with GD on the same chairs: fewer stray components on 6
+of 6, a smaller stray volume on 5 of 6.  The full account, including why FCSO behaves in
+two regimes, is [`fcso-chairs/REPORT.md`](fcso-chairs/REPORT.md).
+
+### bracket-lab: an agent in the design loop
+
+An AI agent (Claude Code) is asked to lower the mass of a bracket carrying 500 N at its
+tip, subject to $\sigma_{vM} \le 138$ MPa and $\delta_{max} \le 0.5$ mm — a baseline that
+starts infeasible.  It has no shell, only MCP tools: *evaluate* (CAD → mesh → CalculiX),
+*render*, *stress_map*, *retrain*, *history*, plus a freeform build123d server.  The
+server enforces a budget of 15 FEA runs and 60 surrogate queries.  The protocol it follows
+(`AGENT.md`) is the Flow Lab's *Verify* button made systematic: write a rationale citing
+earlier numbers, screen with the GP (mean + 2σ must clear both limits), spend FEA only on
+the lightest survivor, retrain after every FEA, and look at the stress map before touching
+a structural feature.  Every call is logged.
+
+<p align="center">
+  <img src="engine-copilot/frontend/public/bracket/best_stress.png" alt="Von Mises stress on the lightest FEA-verified bracket: long thin gussets, a thin back plate, peak at the gusset toe" width="520">
+</p>
+
+*The lightest verified design (agent-01, 90.5 g): long, thin gussets and a thin back
+plate, which the agent chose by comparing earlier FEA runs at equal mass.  The solver was verified
+first — a cantilever against beam theory to 0.18 %, and a mesh-convergence study that
+found, and fixed, a stress singularity at the gusset toe the optimiser would otherwise
+have exploited.*
+
+The honest result: the two agent runs bracket Optuna (90.5 g and 94.1 g against 91.5 g),
+and a 160-sample Latin hypercube already contains a feasible design at 91.8 g.  On seven
+parameters the agent is not clearly better than a classical optimiser; most of the gain
+comes from the structure of the design space, and the optimisers add about 1 %.  What the
+agent adds is the trail — every proposal carries its reason, and its structural decisions
+follow the stress maps.  All three optima stay feasible on a finer mesh.
 
 ## The platform
 
@@ -83,6 +164,20 @@ baseline typically misses the peak by a quarter to a third, and the panel says b
 much.  *Optimise* is a randomised local search over the surrogate at constant removed
 area, not a gradient descent: the mesh topology changes on every hole move, so there is no
 gradient to descend (which is the whole point of the comparison below).
+
+The two later studies have a page each, read-only: they present a finished run rather
+than drive a live one, and need no backend.
+
+- **FCSO Review** (`/fcso`) — three measured tiles at −50 % volume (whole chairs, stray
+  volume, time cost against GD), a 3D trajectory grid per chair with FCSO and GD side by
+  side under one shared camera, and the table of all six methods at −50 and −70 %.
+- **Bracket Lab** (`/bracket`) — best feasible mass, $\sigma_{eval}$ and $\delta_{max}$
+  against their limits, FEA runs used; the baseline and best stress maps; the lightest
+  feasible mass per FEA run for both agents and Optuna; the comparison table.
+
+Both are generated, never typed: `fcso-chairs/scripts/export_platform.py` and
+`engine-copilot/frontend/scripts/build_bracket_data.py` write `public/fcso/` and
+`public/bracket/` from the studies' own run logs and result tables.
 
 <p align="center">
   <img src="docs/copilot.png" alt="The copilot sidebar: a question about the design on screen, the flow_predict call it makes, and an answer that quotes the expected error and the training range" width="400">
@@ -136,6 +231,33 @@ coarse solve ranks designs slightly better (Spearman +0.892) than the debiased s
 The conclusion that survives all of it: a surrogate earns its place where an *absolute*
 number is needed inside a trained envelope, not where a cheap solve can already order the
 candidates.
+
+**`fcso-chairs`** — 10 ShapeNet test chairs, six methods, ~7 h on an M3 Pro.
+
+| at −70 % volume | FCSO (x0 guidance) | latent GD |
+|---|---|---|
+| chairs reaching it (1 000-step budget) | 6/10 | **10/10** |
+| median time | 254 s | **76 s** |
+| reached chairs in one piece | **2/6** | 0/10 |
+| stray volume, same 6 chairs (median) | **1.2 %** | 42.4 % |
+
+The prior does what it is for — far fewer fragments than GD on every chair both methods
+bring to −70 % — at 5.3x GD's time, with four budget stalls and three chairs out of six no
+longer recognisable.  The fragment count under-reports that last failure; the Chamfer
+distance to the initial shape is what shows it.
+
+**`bracket-lab`** — at most 15 FEA per run, same initial surrogate.
+
+| | mass | vs baseline | $\sigma_{eval}$ / 138 MPa | $\delta_{max}$ / 0.5 mm | FEA used |
+|---|---|---|---|---|---|
+| baseline | 101.4 g | — | 180.0 (infeasible) | 0.710 | — |
+| agent-01 | **90.5 g** | **−10.7 %** | 131.1 | 0.475 | 7 |
+| agent-02 | 94.1 g | −7.2 % | 120.5 | 0.434 | 7 |
+| Optuna TPE | 91.5 g | −9.8 % | 126.8 | 0.447 | 6 |
+| best of 160 random samples | 91.8 g | −9.5 % | 134.3 | 0.455 | 160 |
+
+Two agent runs and one TPE seed are too few to rank them, and the table says so: the agent
+is not a better optimiser here, it is a more legible one.
 
 ---
 
@@ -209,6 +331,24 @@ at all, and that the case for it is the certification question ("does this part 
 250 MPa?"), where the bias that ranking forgives is exactly what matters — which is why the
 Stress Lab shows the coarse solve next to the prediction rather than hiding it.
 
+### Where the other two studies sit in the template
+
+**`fcso-chairs` changes the encoder and the constraint.**  The design vector is the latent
+$z$ of a pretrained autoencoder, so $X(z)$ is differentiable and stage 3 is gradient
+descent, as in the Flow Lab.  But the constraint that keeps the optimiser honest is no
+longer an equation $g(d) = 0$: it is *stay on the data manifold*, which nobody can write
+down, and which the diffusion prior enforces by correction instead.  GD shows what happens
+without it — the volume objective is met by walking off the manifold, the same move as
+walking into the surrogate's error, with the decoder's extrapolation playing the part of
+$e(d)$.
+
+**`bracket-lab` changes the optimiser.**  Stage 3 is run by an agent, the surrogate is a
+GP that reports its own uncertainty, and the first failure mode is handled by
+construction: a candidate is only sent to the solver if $\hat\mu + 2\hat\sigma$ clears
+both limits, and only the solver's number counts.  In the logged runs the FEA tended to
+come in *below* the GP's prediction, so the screen was conservative — both agents stopped
+with about 8 of 15 FEA unspent.
+
 ## "Isn't that the same project twice?"
 
 Mathematically, yes, and the section above says so up front: both are the same recipe.
@@ -257,8 +397,16 @@ Both repos follow the same discipline, because it is the part that transfers:
 - **cost is measured end to end**, including the meshing and the data generation, not just
   the forward pass.
 
-What is not shared: the two repos have separate environments, separate dependencies and no
-common package.  They are meant to be read independently; only the platform imports both.
+The two later studies hold to the same rules.  `fcso-chairs` keeps plain latent GD and
+four other variants in every table and judges shape by fragments *and* by Chamfer distance,
+because the volume it optimises says nothing about whether a chair is left.  `bracket-lab`
+verifies CalculiX against beam theory and a mesh-convergence ladder before any
+optimisation, pits the agent against Optuna and a random Latin hypercube on the same
+budget, and re-checks every optimum on a finer mesh.
+
+What is not shared: the repos have separate environments, separate dependencies and no
+common package.  They are meant to be read independently; only the platform imports the
+two surrogate repos, and it reads the other two studies' results as exported files.
 
 ## Run it
 
@@ -286,6 +434,17 @@ cd engine-copilot/frontend && pnpm install && pnpm dev      # http://localhost:5
 npm install -g @anthropic-ai/claude-code && claude login
 ```
 
+`fcso-chairs` has its own environment and needs the public 3DShape2VecSet weights and a
+few hundred megabytes of ShapeNet chairs; the steps are in
+[`fcso-chairs/README.md`](fcso-chairs/README.md).  A full run of the six methods on ten
+chairs is about 7 h.  `bracket-lab` lives in its own repository (CalculiX through conda,
+the agent run through `claude -p` with its two MCP servers); to refresh its page here:
+
+```bash
+python3 engine-copilot/frontend/scripts/build_bracket_data.py /path/to/bracket-lab
+python3 fcso-chairs/scripts/export_platform.py       # after fcso-chairs/scripts/make_report.py
+```
+
 Reading the results requires none of it to be re-run: every table and figure is committed.
 
 ## Layout
@@ -293,7 +452,9 @@ Reading the results requires none of it to be re-run: every table and figure is 
 ```
 flow-surrogate/     LBM solver, surrogates, gradient-based shape optimisation
 stress-gnn/         FEM solver, mesh graph networks, design-ranking study
-engine-copilot/     FastAPI + React platform on top, with a Claude Agent SDK copilot
+fcso-chairs/        FCSO vs latent gradient descent on 10 ShapeNet chairs, with a 3D viewer
+engine-copilot/     FastAPI + React platform on top, with a Claude Agent SDK copilot, and
+                    the static FCSO Review and Bracket Lab pages
 docs/               README assets — the mark, the banner, the screenshots, and the
                     scripts that generate them
 ```
